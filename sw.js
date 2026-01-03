@@ -1,5 +1,5 @@
 // Chronicle PWA Service Worker v1
-const CACHE_NAME = 'chronicle-v1';
+const CACHE_NAME = 'chronicle-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
