@@ -1,0 +1,1917 @@
+<!-- Chronicle v73 -->
+<!DOCTYPE html>
+<html lang="en" spellcheck="false">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1a0f0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Chronicle">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+    <title>Chronicle — The Timeline Game</title>
+    <style>
+        :root{--parchment:#f4e4c1;--parchment-dark:#e8d4a8;--ink:#2c1810;--ink-light:#5c4030;--accent:#8b0000;--gold:#c4a44d;--gold-dark:#9a7b3a;--success:#2d5a27;--error:#8b0000}
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;text-decoration:none !important}
+        html{height:100%;width:100%;background:#1a0f0a;overflow:hidden}
+        body{font-family:Georgia,'Times New Roman',serif;background:transparent;min-height:100%;min-height:100vh;min-height:-webkit-fill-available;width:100%;color:var(--ink);overflow-x:hidden;overflow-y:auto;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);position:fixed;top:0;left:0;right:0;bottom:0}
+        #bg-cover{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;transition:opacity 0.5s;overflow:hidden}
+        #bg-cover img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.35}
+        #bg-cover::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(26,15,10,0.4) 0%,rgba(26,15,10,0.1) 50%,rgba(26,15,10,0.5) 100%)}
+        #bg-cover.hide{opacity:0}
+        .container{max-width:100%;margin:0 auto;padding:15px;position:relative;z-index:1;min-height:100vh}
+        #home-screen .card-box,#lobby-screen .card-box,#gameover-screen .card-box{max-width:500px;margin-left:auto;margin-right:auto}
+        .screen{display:none;flex-direction:column;min-height:100vh}
+        .screen.active{display:flex}
+        #game-screen.active{display:flex;flex-direction:column;padding-bottom:60px}
+        #game-screen .container{max-width:100%;padding:10px}
+        .game-center{flex:1;display:flex;align-items:center;justify-content:center;overflow-x:auto;padding:10px 0;width:100%}
+        .game-bottom{padding:0 15px;position:fixed;bottom:70px;left:0;right:0;display:flex;flex-direction:column;align-items:center}
+        @media(max-height:500px) and (orientation:landscape){
+            /* Fix white spaces */
+            html{background:#1a0f0a !important;overflow:visible !important}
+            body{background:#1a0f0a !important;margin:0 !important;padding:0 !important;overflow:visible !important}
+            body::before{display:none !important}
+            .screen{background:transparent !important}
+            .container{padding:0 !important;background:transparent !important;height:100vh !important;display:flex !important;flex-direction:column !important}
+            /* Game background - ensure it shows in landscape */
+            #bg-cover.hide{opacity:0 !important}
+            #game-bg{position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;z-index:0 !important;pointer-events:none !important}
+            #game-bg.show{opacity:1 !important;z-index:1 !important}
+            #game-bg img{position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;object-fit:cover !important;opacity:0.35 !important}
+            #game-bg::after{content:'' !important;position:absolute !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;background:rgba(26,15,10,0.4) !important}
+            /* Game screen - full height flex column */
+            #game-screen{height:100vh !important;display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:center !important;padding:0 !important}
+            #game-screen.active{height:100vh !important;display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:center !important;padding:0 !important}
+            /* Turn banner at top */
+            #game-screen .turn-banner{position:fixed !important;top:5px !important;left:50% !important;transform:translateX(-50%) !important;font-size:0.7rem !important;padding:6px 20px !important;margin:0 !important;z-index:100 !important}
+            #game-screen .turn-banner::before,#game-screen .turn-banner::after{display:none !important}
+            /* Timeline centered */
+            #game-screen .game-center{flex:none !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 5px !important;width:100% !important;height:auto !important;margin:0 !important}
+            #game-screen .timeline-container{padding:3px !important;margin:0 auto !important;max-height:calc(100vh - 70px) !important;overflow-x:auto !important;overflow-y:hidden !important;background:transparent !important;box-shadow:none !important;border:none !important;-webkit-overflow-scrolling:touch !important}
+            #game-screen .timeline{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark)) !important;border-radius:8px !important;padding:5px !important}
+            #game-screen .timeline-row{padding:2px 3px !important}
+            /* Current card at top right */
+            #game-screen .game-bottom{position:fixed !important;top:5px !important;right:10px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
+            #game-screen .game-bottom .game-card{max-width:160px !important;padding:10px 12px !important}
+            #game-screen .game-bottom .game-card.thinking{animation:thinking-glow-gold 2s ease-in-out infinite !important}
+            #game-screen .game-bottom .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite !important}
+            #game-screen .game-bottom .card-event{font-size:0.6rem !important}
+            #game-screen .game-bottom .cards-left,#game-screen .game-bottom .status-text{display:none !important}
+            /* Mistakes tray - visible, show 80px (2x bigger) */
+            .mistakes-tray{display:block !important;transform:translateY(calc(100% - 50px)) !important}
+            .mistakes-tray.visible{display:block !important;transform:translateY(calc(100% - 50px)) !important}
+            .mistakes-tray.visible.expanded{transform:translateY(0) !important}
+            .mistakes-tray .tray-header,.mistakes-tray .mistakes-header{height:45px !important;padding:5px 15px !important}
+            .mistakes-tray h3{font-size:.9rem !important}
+            .mistakes-tray .mistakes-toggle{font-size:1rem !important;padding:4px 8px !important;width:28px !important;height:28px !important}
+            /* Cards use original size - JS handles scaling */
+        }
+        .card-box{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border-radius:12px;padding:25px;box-shadow:0 8px 30px rgba(0,0,0,.4);border:3px solid var(--gold);margin-bottom:15px}
+        h1{font-family:'Cinzel Decorative',Georgia,serif;font-size:2.8rem;color:var(--accent);text-align:center;margin-bottom:5px;text-shadow:2px 2px 0 var(--gold),3px 3px 6px rgba(0,0,0,.3);letter-spacing:0.08em;font-weight:900}
+        h1::first-letter{font-size:1.2em}
+        h2{font-family:'Cinzel',Georgia,serif;font-size:1.3rem;color:var(--ink);text-align:center;margin-bottom:15px;font-weight:600;letter-spacing:0.05em}
+        .subtitle{font-family:'Cinzel',Georgia,serif;font-style:normal;color:var(--ink-light);text-align:center;margin-bottom:20px;font-size:1rem;letter-spacing:0.2em;text-transform:uppercase;padding:10px 0;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px}
+        .subtitle::before,.subtitle::after{content:'⚜';color:var(--gold);font-size:0.8em}
+        .btn{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;padding:14px 28px;border:none;border-radius:8px;cursor:pointer;transition:all .3s;text-transform:uppercase;letter-spacing:.1em;width:100%;margin:8px 0;display:block}
+        .btn-primary{background:linear-gradient(145deg,var(--gold),var(--gold-dark));color:var(--ink);box-shadow:0 4px 15px rgba(196,164,77,.4)}
+        .btn-primary:hover,.btn-primary:active{transform:translateY(-2px);box-shadow:0 6px 20px rgba(196,164,77,.5)}
+        .btn-secondary{background:transparent;border:2px solid var(--gold);color:var(--ink)}
+        .btn-demo{background:linear-gradient(145deg,var(--success),#1e4a1e);color:#fff}
+        .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        input[type="text"],input[type="number"]{width:100%;padding:14px 18px;border:2px solid var(--gold);border-radius:8px;font-family:'Crimson Text',serif;font-size:1.1rem;background:#fffef5;color:var(--ink);margin:8px 0}
+        input[type="text"]:focus,input[type="number"]:focus{outline:none;border-color:var(--accent)}
+        input[type="text"]::placeholder{color:var(--ink-light)}
+        .lobby-code{font-family:Georgia,'Times New Roman',serif;font-size:2.5rem;font-weight:700;color:var(--accent);text-align:center;letter-spacing:.2em;padding:15px;background:rgba(255,255,255,.5);border-radius:8px;margin:15px 0}
+        .player-list{margin:15px 0}
+        .player-item{display:flex;align-items:center;gap:10px;padding:12px 15px;background:rgba(255,255,255,.3);border-radius:8px;margin:8px 0}
+        .player-item.you{border:2px solid var(--gold)}
+        .player-item.current-turn{background:rgba(196,164,77,.3);border:2px solid var(--gold)}
+        .player-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+        .player-name{flex:1;font-family:Georgia,'Times New Roman',serif;font-weight:600;font-size:.95rem}
+        .player-score{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:1.2rem;color:var(--accent)}
+        .player-status{font-size:.8rem;color:var(--ink-light)}
+        .host-badge{background:var(--gold);color:var(--ink);padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:700;text-transform:uppercase}
+        .waiting-msg{text-align:center;color:var(--ink-light);font-style:italic;padding:20px}
+        .game-card{
+            background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));
+            border:3px solid var(--gold);
+            border-radius:12px;
+            padding:14px 20px;
+            text-align:center;
+            box-shadow:0 4px 15px rgba(0,0,0,.3);
+            max-width:300px;width:100%;
+            position:relative
+        }
+        .game-card.thinking{animation:thinking-glow-gold 2s ease-in-out infinite}
+        .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite;cursor:grab}
+        .game-card.selected{animation:none;box-shadow:0 0 25px var(--gold);transform:scale(1.05)}
+        .game-card.dragging{cursor:grabbing;transform:scale(1.05);box-shadow:0 15px 50px rgba(0,0,0,.5);animation:none;opacity:.9;z-index:1000;position:relative}
+        .game-card.drag-enabled{cursor:grab}
+        @keyframes thinking-glow-gold{
+            0%,100%{box-shadow:0 0 15px rgba(196,164,77,.5),0 0 30px rgba(196,164,77,.2);transform:scale(1)}
+            50%{box-shadow:0 0 30px rgba(196,164,77,.9),0 0 60px rgba(196,164,77,.5),0 0 90px rgba(196,164,77,.3);transform:scale(1.02)}
+        }
+        @keyframes thinking-glow-green{
+            0%,100%{box-shadow:0 0 15px rgba(45,90,39,.5),0 0 30px rgba(45,90,39,.2);transform:scale(1)}
+            50%{box-shadow:0 0 30px rgba(45,90,39,.9),0 0 60px rgba(45,90,39,.5),0 0 90px rgba(45,90,39,.3);transform:scale(1.02)}
+        }
+        .card-event{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:10px}
+        .card-year{font-family:Georgia,'Times New Roman',serif;font-size:1.2rem;font-weight:700;color:var(--accent)}
+        .card-year.hidden{background:var(--ink);color:var(--ink);border-radius:4px;padding:3px 15px;display:inline-block}
+        .turn-banner{
+            font-family:'Cinzel',Georgia,serif;font-weight:700;text-align:center;margin:10px auto;
+            background:linear-gradient(180deg,#8b6914 0%,var(--gold) 15%,var(--gold-dark) 85%,#6b5a1e 100%);
+            color:var(--ink);padding:14px 40px;font-size:1.1rem;letter-spacing:0.1em;
+            position:relative;box-shadow:0 4px 15px rgba(0,0,0,.4);
+            border-top:3px solid #d4b45d;border-bottom:3px solid #7a6420;
+            text-shadow:1px 1px 0 rgba(255,255,255,.3)
+        }
+        .turn-banner::before,.turn-banner::after{
+            content:'';position:absolute;bottom:-20px;width:25px;height:25px;
+            background:linear-gradient(135deg,var(--gold) 50%,transparent 50%);
+        }
+        .turn-banner::before{left:0;transform:skewY(-5deg)}
+        .turn-banner::after{right:0;background:linear-gradient(-135deg,var(--gold) 50%,transparent 50%);transform:skewY(5deg)}
+        .turn-banner.my-turn{
+            background:linear-gradient(180deg,#1e4a1e 0%,var(--success) 15%,#234d23 85%,#152815 100%);
+            color:#fff;border-top-color:#4a9f44;border-bottom-color:#1a3a1a;text-shadow:1px 1px 2px rgba(0,0,0,.4)
+        }
+        .turn-banner.my-turn::before{background:linear-gradient(135deg,var(--success) 50%,transparent 50%)}
+        .turn-banner.my-turn::after{background:linear-gradient(-135deg,var(--success) 50%,transparent 50%)}
+        .timeline-container{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border-radius:12px;padding:15px;box-shadow:0 4px 20px rgba(0,0,0,.4);margin:0 15px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+        .timeline{min-width:max-content}
+        .timeline-row{display:flex;align-items:center;position:relative;padding:5px 10px}
+        .timeline-row::before{content:'';position:absolute;top:50%;left:10px;right:10px;height:8px;background:linear-gradient(90deg,var(--gold-dark),var(--gold),var(--gold-dark));transform:translateY(-50%);border-radius:4px}
+        .tl-item{position:relative;z-index:1;flex-shrink:0}
+        .tl-card{
+            background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));
+            border:2px solid var(--gold);
+            border-radius:8px;
+            padding:10px 12px;
+            min-width:120px;max-width:140px;
+            text-align:center;
+            box-shadow:2px 2px 8px rgba(0,0,0,.3);
+            position:relative
+        }
+        #game-bg{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;overflow:hidden;opacity:0;transition:opacity 0.5s}
+        #game-bg.show{opacity:1;z-index:1}
+        #game-bg img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.35}
+        #game-bg::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(26,15,10,0.4)}
+        #game-screen .container{position:relative;z-index:1}
+        #game-screen .turn-banner{position:relative;z-index:2}
+        .tl-card .ev{font-family:Georgia,'Times New Roman',serif;font-size:.75rem;font-weight:600;color:var(--ink);margin-bottom:5px;line-height:1.2}
+        .tl-card .yr{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:700;color:var(--accent)}
+        .drop-zone{width:48px;height:84px;border:2px dashed var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(196,164,77,.1);margin:0 4px;transition:all .2s;cursor:pointer}
+        /* Scaling classes for timeline to fit 10 items */
+        .timeline-row.tl-scale-90 .tl-card{min-width:100px;max-width:120px;padding:8px 10px}
+        .timeline-row.tl-scale-90 .tl-card .ev{font-size:.65rem}
+        .timeline-row.tl-scale-90 .tl-card .yr{font-size:.9rem}
+        .timeline-row.tl-scale-90 .drop-zone{width:38px;height:72px}
+        .timeline-row.tl-scale-75 .tl-card{min-width:85px;max-width:100px;padding:6px 8px}
+        .timeline-row.tl-scale-75 .tl-card .ev{font-size:.55rem}
+        .timeline-row.tl-scale-75 .tl-card .yr{font-size:.8rem}
+        .timeline-row.tl-scale-75 .drop-zone{width:32px;height:60px}
+        .timeline-row.tl-scale-60 .tl-card{min-width:70px;max-width:85px;padding:5px 6px}
+        .timeline-row.tl-scale-60 .tl-card .ev{font-size:.5rem}
+        .timeline-row.tl-scale-60 .tl-card .yr{font-size:.7rem}
+        .timeline-row.tl-scale-60 .drop-zone{width:26px;height:54px;margin:0 2px}
+        .drop-zone::after{content:'+';font-size:1rem;color:var(--gold);transition:transform .2s}
+        .drop-zone:active,.drop-zone.selected{background:rgba(196,164,77,.4);transform:scale(1.1)}
+        .drop-zone.drag-over{background:rgba(45,90,39,.3);border-color:var(--success);transform:scale(1.15)}
+        .drop-zone.drag-over::after{content:'✓';color:var(--success);transform:scale(1.3)}
+        .drop-zone:disabled,.drop-zone.disabled{opacity:.3;pointer-events:none}
+        .drop-zone.placement-highlight{opacity:1;transform:scale(1.3);z-index:10}
+        .drop-zone.placement-correct{background:rgba(45,90,39,.5);border-color:var(--success);box-shadow:0 0 20px var(--success)}
+        .drop-zone.placement-correct::after{content:'✓';color:var(--success);font-size:1.5rem}
+        .drop-zone.placement-wrong{background:rgba(139,0,0,.5);border-color:var(--error);box-shadow:0 0 30px var(--error);animation:wrong-pulse 0.5s ease-out 3}
+        .drop-zone.placement-wrong::after{content:'✗';color:var(--error);font-size:1.5rem}
+        @keyframes wrong-pulse{0%,100%{box-shadow:0 0 30px var(--error)}50%{box-shadow:0 0 50px var(--error)}}
+        .tl-card.card-placed{animation:highlight-placed 4s ease-in-out;box-shadow:0 0 20px #00ff00,0 0 40px #00ff00;border-color:#00ff00}
+        @keyframes highlight-placed{0%{transform:scale(1.3);box-shadow:0 0 40px #00ff00,0 0 80px #00ff00;border-color:#00ff00}25%{transform:scale(1.1);box-shadow:0 0 50px #00ff00,0 0 100px #00ff00}50%{transform:scale(1.15);box-shadow:0 0 40px #00ff00,0 0 80px #00ff00}75%{transform:scale(1.05);box-shadow:0 0 30px #00ff00,0 0 60px #00ff00}100%{transform:scale(1);box-shadow:0 4px 15px rgba(0,0,0,.2);border-color:var(--gold);border-width:2px}}
+        .feedback-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;justify-content:center;align-items:center;z-index:100;overflow:hidden}
+        .feedback-overlay.show{display:flex}
+        .firework-particle{position:absolute;width:8px;height:8px;border-radius:50%;pointer-events:none;animation:firework-burst 1.2s ease-out forwards}
+        @keyframes firework-burst{
+            0%{transform:translate(0,0) scale(1);opacity:1}
+            100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}
+        }
+        .scoreboard-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;justify-content:center;align-items:center;z-index:99}
+        .scoreboard-overlay.show{display:flex}
+        .scoreboard-box{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));padding:20px 30px;border-radius:12px;text-align:center;border:4px solid var(--gold);min-width:250px;max-width:90vw;max-height:80vh;display:flex;flex-direction:column}
+        .scoreboard-title{font-family:Georgia,'Times New Roman',serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:15px;flex-shrink:0}
+        .scoreboard-list{list-style:none;padding:0;margin:0;overflow-y:auto;flex:1}
+        .scoreboard-item{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid var(--gold-dark)}
+        .scoreboard-item:last-child{border-bottom:none}
+        .scoreboard-name{font-family:Georgia,'Times New Roman',serif;font-size:0.9rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+        .scoreboard-score{font-family:Georgia,'Times New Roman',serif;font-size:0.95rem;font-weight:700;color:var(--accent);margin-left:15px;flex-shrink:0}
+        .feedback-box{background-color:var(--parchment);background-image:linear-gradient(145deg,var(--parchment),var(--parchment-dark));padding:30px 40px;border-radius:12px;text-align:center;border:4px solid var(--gold);position:relative;overflow:hidden;min-width:300px;background-size:cover;background-position:center}
+        .feedback-box.success{border-color:var(--success)}
+        .feedback-box.error{border-color:var(--error)}
+        .feedback-text{font-family:Georgia,'Times New Roman',serif;font-size:1.5rem;font-weight:700;text-shadow:0 1px 3px rgba(255,255,255,0.8)}
+        .feedback-box.success .feedback-text{color:var(--success)}
+        .feedback-box.error .feedback-text{color:var(--error)}
+        .feedback-year{font-family:Georgia,'Times New Roman',serif;font-size:2rem;font-weight:700;color:var(--ink);margin:10px 0;text-shadow:0 1px 3px rgba(255,255,255,0.8)}
+        .feedback-player{font-size:0.9rem;color:var(--ink-light);text-shadow:0 1px 2px rgba(255,255,255,0.8)}
+        .feedback-desc{display:none;font-style:italic;color:var(--ink);margin-top:15px;padding:10px;background:rgba(255,255,255,0.7);border-radius:8px;font-size:0.95rem}
+        .feedback-desc.show{display:block}
+        .game-over-content{text-align:center}
+        .winner-text{font-family:Georgia,'Times New Roman',serif;font-size:1.5rem;color:var(--success);margin:15px 0}
+        .final-scores{margin:20px 0}
+        .qr-container{text-align:center;margin:15px 0;display:none}
+        .qr-container.has-qr{display:block}
+        .qr-container canvas{border:4px solid var(--gold);border-radius:8px}
+        .share-url{font-size:.75rem;color:var(--ink-light);word-break:break-all;margin-top:10px;padding:10px;background:rgba(255,255,255,.5);border-radius:6px}
+        .copy-btn{font-size:.85rem;padding:8px 16px;margin-top:10px}
+        .status-text{text-align:center;color:var(--ink-light);font-style:italic;padding:10px}
+        .cards-left{font-size:.9rem;color:var(--ink-light);text-align:center;margin-top:10px}
+        .mistakes-tray{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(0deg,rgba(26,15,10,.98),rgba(26,15,10,.9));padding:8px 15px;z-index:50;transform:translateY(100%);transition:transform .3s ease;display:none}
+        .mistakes-tray.visible{display:block;transform:translateY(calc(100% - 35px))}
+        .mistakes-tray.visible.expanded{transform:translateY(0)}
+        .mistakes-header{display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;padding:3px;color:var(--parchment)}
+        .mistakes-header h3{font-family:Georgia,'Times New Roman',serif;font-size:.8rem;color:var(--gold)}
+        .mistakes-toggle{background:var(--error);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:.8rem}
+        .mistakes-arrow{transition:transform .3s}
+        .mistakes-tray.expanded .mistakes-arrow{transform:rotate(180deg)}
+        .mistakes-icons{display:flex;gap:8px;overflow-x:auto;padding:10px 0;-webkit-overflow-scrolling:touch}
+        .mistake-icon{width:40px;height:40px;background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border:2px solid var(--error);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:Georgia,'Times New Roman',serif;font-size:.7rem;font-weight:700;color:var(--error);cursor:pointer;flex-shrink:0;transition:transform .2s}
+        .mistake-icon:hover,.mistake-icon:active{transform:scale(1.1)}
+        .mistakes-detail{display:none;padding:15px;background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border-radius:8px;margin-top:10px}
+        .mistakes-detail.show{display:block}
+        .mistakes-detail .event-name{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:5px}
+        .mistakes-detail .event-year{font-family:Georgia,'Times New Roman',serif;font-size:1.3rem;font-weight:700;color:var(--error)}
+        .mistakes-detail .close-btn{background:var(--ink);color:var(--parchment);border:none;padding:8px 20px;border-radius:6px;font-family:Georgia,'Times New Roman',serif;font-size:.8rem;cursor:pointer;margin-top:10px}
+        .error-msg{color:var(--error);text-align:center;padding:10px;font-weight:600}
+        .reconnecting{position:fixed;top:0;left:0;right:0;background:var(--accent);color:#fff;text-align:center;padding:12px 20px;font-size:.95rem;z-index:200;display:none;font-family:Georgia,'Times New Roman',serif}
+        .reconnecting.show{display:block}
+        .demo-controls{margin-top:15px;padding-top:15px;border-top:2px dashed var(--gold)}
+        .demo-label{font-family:Georgia,'Times New Roman',serif;font-size:.9rem;color:var(--ink-light);text-align:center;margin-bottom:10px}
+        .player-count-row{display:flex;align-items:center;gap:10px;margin:10px 0}
+        .player-count-row label{flex:1;font-family:Georgia,'Times New Roman',serif}
+        .player-count-row input{width:80px;text-align:center}
+        @media(max-width:400px){h1{font-size:1.6rem}.lobby-code{font-size:2rem}.card-event{font-size:1.1rem}.btn{padding:12px 20px;font-size:.9rem}}
+        /* Hide any external loading indicators from CDNs */
+        body>*:not(.container):not(.reconnecting):not(.mistakes-tray):not(.feedback-overlay):not(.scoreboard-overlay):not(.version-tag):not(#bg-cover):not(#game-bg):not(script):not(style){display:none!important}
+    </style>
+</head>
+<body>
+    <div id="bg-cover"><img src="library.jpg" alt=""></div>
+    <div id="game-bg"><img src="background.jpg" alt=""></div>
+    <div class="reconnecting" id="reconnecting">Reconnecting...</div>
+    
+    <div class="container">
+        <!-- HOME SCREEN -->
+        <div class="screen active" id="home-screen">
+            <div class="card-box" style="margin-top:30px">
+                <h1>Chronicle</h1>
+                <p class="subtitle">The Timeline Game</p>
+            </div>
+            <div class="card-box">
+                <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
+                <button class="btn btn-primary" id="create-btn">Create Online Game</button>
+                <button class="btn btn-secondary" id="join-btn">Join Online Game</button>
+                <div class="demo-controls">
+                    <div class="demo-label">Or play locally to test:</div>
+                    <div style="display:flex;gap:10px;align-items:center;justify-content:center">
+                        <input type="number" id="demo-player-count" value="2" min="1" max="8" style="width:60px;text-align:center">
+                        <span style="color:var(--ink-light)">players</span>
+                    </div>
+                    <button class="btn btn-demo" id="demo-btn">Play Locally</button>
+                </div>
+            </div>
+            <div class="card-box" id="join-box" style="display:none">
+                <h2>Enter Game Code</h2>
+                <input type="text" id="join-code" placeholder="XXXX" maxlength="4" style="text-transform:uppercase;text-align:center;font-size:1.5rem;letter-spacing:.3em">
+                <button class="btn btn-primary" id="join-submit">Join</button>
+                <p class="error-msg" id="join-error" style="display:none"></p>
+            </div>
+            <p class="status-text" id="home-status"></p>
+        </div>
+
+        <!-- LOBBY SCREEN -->
+        <div class="screen" id="lobby-screen">
+            <div class="card-box">
+                <h2>Game Lobby</h2>
+                <div class="lobby-code" id="lobby-code-display">----</div>
+                <p class="subtitle">Share this code with friends</p>
+                <p class="share-url" id="share-url"></p>
+                <button class="btn copy-btn" id="copy-btn">Copy Link</button>
+            </div>
+            <div class="card-box">
+                <h2>Players</h2>
+                <div class="player-list" id="lobby-players"></div>
+                <p class="waiting-msg" id="waiting-msg">Waiting for players...</p>
+            </div>
+            <button class="btn btn-primary" id="start-game-btn" style="display:none">Start Game</button>
+            <button class="btn btn-secondary" id="leave-lobby-btn">Leave Lobby</button>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div class="screen" id="game-screen">
+            <div class="turn-banner" id="turn-banner">Waiting...</div>
+            <div class="game-center">
+                <div class="timeline-container">
+                    <div class="timeline" id="timeline"></div>
+                </div>
+            </div>
+            <div class="game-bottom">
+                <div class="game-card" id="current-card" draggable="true">
+                    <div class="card-event" id="card-event">Loading...</div>
+                    <div class="card-year hidden" id="card-year">????</div>
+                </div>
+                <p class="cards-left" id="cards-left"></p>
+                <p class="status-text" id="game-status"></p>
+            </div>
+        </div>
+
+        <!-- GAME OVER SCREEN -->
+        <div class="screen" id="gameover-screen">
+            <div class="card-box game-over-content">
+                <h1>Game Over!</h1>
+                <p class="winner-text" id="winner-text"></p>
+                <div class="final-scores" id="final-scores"></div>
+                <button class="btn btn-primary" id="play-again-btn">Play Again</button>
+                <button class="btn btn-secondary" id="home-btn">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MISTAKES TRAY (outside container so it's fixed to bottom) -->
+    <div class="mistakes-tray empty" id="mistakes-tray">
+        <div class="mistakes-header" onclick="toggleMistakesTray()">
+            <span class="mistakes-arrow">▲</span>
+            <h3>Your Mistakes</h3>
+            <span class="mistakes-toggle" id="mistakes-count">0</span>
+        </div>
+        <div class="mistakes-icons" id="mistakes-icons"></div>
+        <div class="mistakes-detail" id="mistakes-detail">
+            <div class="event-name" id="detail-event"></div>
+            <div class="event-year" id="detail-year"></div>
+            <button class="close-btn" onclick="closeMistakeDetail()">Close</button>
+        </div>
+    </div>
+
+    <!-- FEEDBACK OVERLAY -->
+    <div class="feedback-overlay" id="feedback-overlay">
+        <div class="feedback-box" id="feedback-box">
+            <div class="feedback-text" id="feedback-text">Correct!</div>
+            <div class="feedback-year" id="feedback-year">1969</div>
+            <div class="feedback-player" id="feedback-player">Player 1</div>
+            <div class="feedback-desc" id="feedback-desc"></div>
+        </div>
+    </div>
+
+    <div class="scoreboard-overlay" id="scoreboard-overlay">
+        <div class="scoreboard-box">
+            <div class="scoreboard-title">Scoreboard</div>
+            <ul class="scoreboard-list" id="scoreboard-list"></ul>
+        </div>
+    </div>
+
+    <div class="version-tag" style="position:fixed;top:5px;left:5px;font-size:0.75rem;color:#4a90d9;z-index:9999;background:rgba(0,0,0,0.5);padding:2px 6px;border-radius:4px;">v73</div>
+
+    <script>
+// Load PeerJS on demand
+let peerJSLoaded = false;
+function loadPeerJS() {
+    return new Promise((resolve, reject) => {
+        if (peerJSLoaded || typeof Peer !== 'undefined') {
+            resolve();
+            return;
+        }
+        const s = document.createElement('script');
+        s.src = 'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js';
+        s.onload = () => { peerJSLoaded = true; resolve(); };
+        s.onerror = () => reject(new Error('Could not load networking library'));
+        document.head.appendChild(s);
+    });
+}
+
+const EVENTS=[{e:"Great Pyramid of Giza built",y:-2560,d:"The oldest of the Seven Wonders of the Ancient World, built as a tomb for Pharaoh Khufu."},{e:"Code of Hammurabi written",y:-1754,d:"One of the oldest written legal codes, featuring 282 laws including 'an eye for an eye'."},{e:"Tutankhamun becomes Pharaoh",y:-1332,d:"The 'Boy King' took the throne at age 9 and ruled until his death at 19."},{e:"Trojan War",y:-1184,d:"Legendary war between Greeks and Troy, featuring the famous wooden horse trick."},{e:"First Olympic Games",y:-776,d:"Ancient Greeks held athletic competitions to honor Zeus at Olympia."},{e:"Founding of Rome",y:-753,d:"According to legend, twin brothers Romulus and Remus founded the city."},{e:"Homer writes Iliad",y:-750,d:"Epic poem about the Trojan War, one of the oldest works of Western literature."},{e:"Birth of Buddha",y:-563,d:"Siddhartha Gautama, who would become the Buddha and found Buddhism."},{e:"Birth of Confucius",y:-551,d:"Chinese philosopher whose teachings profoundly influenced East Asian culture."},{e:"Roman Republic established",y:-509,d:"Romans overthrew their king and created a republic that lasted nearly 500 years."},{e:"Battle of Marathon",y:-490,d:"Athenians defeated a larger Persian force; a messenger's run inspired the marathon race."},{e:"Battle of Thermopylae",y:-480,d:"300 Spartans and allies held off the Persian army in a legendary last stand."},{e:"Parthenon construction begins",y:-447,d:"The iconic temple to Athena on the Athenian Acropolis took 15 years to complete."},{e:"Death of Socrates",y:-399,d:"The philosopher was sentenced to death by drinking hemlock for 'corrupting youth'."},{e:"Plato founds Academy",y:-387,d:"One of the first institutions of higher learning in the Western world."},{e:"Alexander conquers Persia",y:-331,d:"At just 25, Alexander the Great defeated the mighty Persian Empire."},{e:"Death of Alexander",y:-323,d:"He died at 32, leaving an empire stretching from Greece to India."},{e:"Great Wall of China begins",y:-221,d:"Emperor Qin Shi Huang connected existing walls to protect against northern invaders."},{e:"Hannibal crosses Alps",y:-218,d:"The Carthaginian general famously brought war elephants over the mountains to attack Rome."},{e:"Caesar conquers Gaul",y:-50,d:"Julius Caesar's military campaigns added modern-day France to Roman territory."},{e:"Caesar assassinated",y:-44,d:"Stabbed 23 times by senators on the Ides of March in the Roman Senate."},{e:"Battle of Actium",y:-31,d:"Octavian defeated Antony and Cleopatra, paving the way for the Roman Empire."},{e:"Birth of Jesus",y:-4,d:"The central figure of Christianity, born in Bethlehem during King Herod's reign."},{e:"Crucifixion of Jesus",y:33,d:"Executed by Roman authorities in Jerusalem, an event central to Christian faith."},{e:"Great Fire of Rome",y:64,d:"Devastating fire that burned for 6 days; Emperor Nero was rumored to have fiddled."},{e:"Destruction of Pompeii",y:79,d:"Mount Vesuvius erupted, burying the city in ash and preserving it for centuries."},{e:"Colosseum completed",y:80,d:"Rome's iconic amphitheater could hold 50,000 spectators for gladiator fights."},{e:"Hadrian's Wall begins",y:122,d:"Roman Emperor Hadrian built this 73-mile wall across northern Britain."},{e:"Constantine converts",y:312,d:"First Roman emperor to convert to Christianity, changing the course of history."},{e:"Council of Nicaea",y:325,d:"First major Christian council, which established the Nicene Creed."},{e:"Fall of Western Rome",y:476,d:"The last Roman emperor was deposed, traditionally marking the end of ancient history."},{e:"Birth of Muhammad",y:570,d:"The founder of Islam, born in Mecca in present-day Saudi Arabia."},{e:"Muhammad's Hijra",y:622,d:"Muhammad's migration to Medina marks year one of the Islamic calendar."},{e:"Death of Muhammad",y:632,d:"The Prophet died in Medina, leaving behind a rapidly growing religious movement."},{e:"Islamic conquest of Spain",y:711,d:"Moors from North Africa crossed Gibraltar and conquered most of the Iberian Peninsula."},{e:"Battle of Tours",y:732,d:"Charles Martel stopped the Muslim advance into Western Europe."},{e:"Vikings raid Lindisfarne",y:793,d:"This attack on an English monastery marked the beginning of the Viking Age."},{e:"Charlemagne crowned",y:800,d:"Pope Leo III crowned him Emperor, reviving the idea of a unified Christian Europe."},{e:"Treaty of Verdun",y:843,d:"Divided Charlemagne's empire into three parts, shaping modern European borders."},{e:"Leif Erikson reaches America",y:1000,d:"The Viking explorer reached North America 500 years before Columbus."},{e:"Norman Conquest",y:1066,d:"William the Conqueror defeated King Harold at the Battle of Hastings."},{e:"First Crusade begins",y:1096,d:"Pope Urban II called for Christians to reclaim the Holy Land from Muslims."},{e:"Crusaders take Jerusalem",y:1099,d:"After a brutal siege, Crusaders captured the holy city."},{e:"Templars founded",y:1119,d:"Knights Templar formed to protect Christian pilgrims traveling to Jerusalem."},{e:"Becket murdered",y:1170,d:"Archbishop Thomas Becket was killed in Canterbury Cathedral by knights of Henry II."},{e:"Saladin takes Jerusalem",y:1187,d:"The Muslim leader recaptured Jerusalem, sparking the Third Crusade."},{e:"Magna Carta signed",y:1215,d:"English nobles forced King John to sign, limiting royal power for the first time."},{e:"Genghis Khan takes Beijing",y:1215,d:"The Mongol conqueror captured the capital of the Jin dynasty."},{e:"Death of Genghis Khan",y:1227,d:"He left behind the largest contiguous land empire in history."},{e:"Marco Polo reaches China",y:1275,d:"The Venetian merchant's travels introduced Europeans to Asian wonders."},{e:"Mongol Empire peak",y:1279,d:"Under Kublai Khan, the empire stretched from Korea to Eastern Europe."},{e:"William Wallace victory",y:1297,d:"Scottish hero defeated the English at the Battle of Stirling Bridge."},{e:"Dante's Divine Comedy",y:1308,d:"The Italian poet began his epic journey through Hell, Purgatory, and Paradise."},{e:"Hundred Years War begins",y:1337,d:"England and France began a series of conflicts lasting 116 years."},{e:"Black Death in Europe",y:1347,d:"The plague killed 30-60% of Europe's population within a few years."},{e:"Chaucer's Canterbury Tales",y:1387,d:"Geoffrey Chaucer began writing his famous collection of stories in Middle English."},{e:"Battle of Agincourt",y:1415,d:"Henry V's English army defeated a much larger French force."},{e:"Joan of Arc burned",y:1431,d:"The teenage French heroine was executed for heresy at age 19."},{e:"Fall of Constantinople",y:1453,d:"Ottoman Turks conquered the Byzantine capital, ending the Roman Empire for good."},{e:"Gutenberg Bible",y:1455,d:"First major book printed with movable type, revolutionizing communication."},{e:"Wars of Roses begin",y:1455,d:"English civil war between the houses of York and Lancaster for the throne."},{e:"Spanish Inquisition",y:1478,d:"Catholic tribunal established to maintain religious orthodoxy in Spain."},{e:"Columbus reaches Americas",y:1492,d:"His voyage opened sustained European contact with the New World."},{e:"Vasco da Gama reaches India",y:1498,d:"First European to reach India by sea, opening lucrative trade routes."},{e:"Michelangelo's David",y:1504,d:"The 17-foot marble statue became a symbol of the Italian Renaissance."},{e:"Luther's 95 Theses",y:1517,d:"Martin Luther's criticisms of the Catholic Church sparked the Protestant Reformation."},{e:"Cortés conquers Aztecs",y:1521,d:"Spanish conquistador defeated the Aztec Empire with guns, germs, and steel."},{e:"Magellan circumnavigation",y:1522,d:"First expedition to sail around the world, though Magellan died en route."},{e:"Pizarro conquers Incas",y:1533,d:"Spanish conquistador toppled the Inca Empire in South America."},{e:"Church of England founded",y:1534,d:"Henry VIII broke from Rome after the Pope refused to annul his marriage."},{e:"Copernicus heliocentric theory",y:1543,d:"Proposed that Earth revolves around the Sun, not vice versa."},{e:"Council of Trent",y:1545,d:"Catholic Church's response to the Protestant Reformation."},{e:"Elizabeth I crowned",y:1558,d:"The 'Virgin Queen' began her 45-year reign over England."},{e:"Shakespeare born",y:1564,d:"The Bard of Avon, widely regarded as the greatest writer in English."},{e:"St. Bartholomew Massacre",y:1572,d:"French Catholics killed thousands of Protestant Huguenots in Paris."},{e:"Spanish Armada defeated",y:1588,d:"England's navy and storms destroyed Spain's invasion fleet."},{e:"Shakespeare's Hamlet",y:1600,d:"'To be or not to be' - one of the most famous plays ever written."},{e:"Jamestown founded",y:1607,d:"First permanent English settlement in North America."},{e:"Galileo confirms heliocentrism",y:1610,d:"His telescope observations proved Copernicus right about the solar system."},{e:"King James Bible",y:1611,d:"Influential English translation that shaped the language for centuries."},{e:"Thirty Years War begins",y:1618,d:"Devastating religious conflict that killed millions in Central Europe."},{e:"Pilgrims at Plymouth",y:1620,d:"English Separatists established a colony in Massachusetts."},{e:"Taj Mahal begins",y:1632,d:"Mughal emperor Shah Jahan built this marble mausoleum for his wife."},{e:"English Civil War",y:1642,d:"Conflict between King Charles I and Parliament over power and religion."},{e:"Charles I executed",y:1649,d:"The king was beheaded, and England briefly became a republic."},{e:"Great Fire of London",y:1666,d:"Destroyed 13,200 houses and 87 churches, but killed only 6 people officially."},{e:"Newton's Principia",y:1687,d:"Isaac Newton's laws of motion and gravity revolutionized physics."},{e:"Salem Witch Trials",y:1692,d:"Mass hysteria in Massachusetts led to 20 executions for witchcraft."},{e:"St. Petersburg founded",y:1703,d:"Peter the Great built Russia's 'Window to the West' on a swamp."},{e:"Bach's Brandenburg Concertos",y:1721,d:"Six concertos showcasing the Baroque master's genius."},{e:"Voltaire's Candide",y:1759,d:"Satirical novella mocking optimism: 'We must cultivate our garden.'"},{e:"Boston Tea Party",y:1773,d:"Colonists dumped tea into the harbor to protest British taxation."},{e:"Declaration of Independence",y:1776,d:"American colonies declared freedom from British rule."},{e:"Mozart's Don Giovanni",y:1787,d:"One of the greatest operas ever composed."},{e:"US Constitution ratified",y:1788,d:"Established the framework of American government still in use today."},{e:"French Revolution begins",y:1789,d:"Overthrow of the monarchy with cries of 'Liberty, Equality, Fraternity!'"},{e:"Storming of Bastille",y:1789,d:"Parisian revolutionaries seized the royal fortress-prison."},{e:"Reign of Terror",y:1793,d:"Revolutionary tribunals executed thousands, including the king and queen."},{e:"Marie Antoinette executed",y:1793,d:"The queen was guillotined nine months after her husband Louis XVI."},{e:"Smallpox vaccine",y:1796,d:"Edward Jenner's discovery led to the eventual eradication of the disease."},{e:"Napoleon becomes Emperor",y:1804,d:"Crowned himself Emperor of the French at Notre-Dame Cathedral."},{e:"Haiti independence",y:1804,d:"First successful slave revolution created the first free Black republic."},{e:"Battle of Trafalgar",y:1805,d:"British navy under Nelson defeated Napoleon's fleet but Nelson died in victory."},{e:"Napoleon invades Russia",y:1812,d:"His Grand Army of 600,000 was destroyed by Russian winter and tactics."},{e:"Battle of Waterloo",y:1815,d:"Napoleon's final defeat ended 23 years of French Revolutionary wars."},{e:"First photograph",y:1826,d:"Nicéphore Niépce captured the first permanent photograph from his window."},{e:"Greek independence",y:1832,d:"Greece won freedom from the Ottoman Empire after a long war."},{e:"British abolish slavery",y:1833,d:"Slavery banned throughout the British Empire."},{e:"Victoria crowned",y:1837,d:"Beginning of the Victorian era that defined the 19th century."},{e:"First Opium War",y:1839,d:"Britain forced China to open ports and cede Hong Kong."},{e:"Irish Potato Famine",y:1845,d:"Blight destroyed potato crops, causing a million deaths and mass emigration."},{e:"Communist Manifesto",y:1848,d:"Marx and Engels' pamphlet declared 'Workers of the world, unite!'"},{e:"California Gold Rush",y:1848,d:"Discovery at Sutter's Mill brought 300,000 people to California."},{e:"Great Exhibition",y:1851,d:"World's fair in London's Crystal Palace showcased industrial progress."},{e:"Crimean War begins",y:1853,d:"Britain and France fought Russia; Florence Nightingale revolutionized nursing."},{e:"Origin of Species",y:1859,d:"Darwin's theory of evolution by natural selection transformed biology."},{e:"US Civil War begins",y:1861,d:"Conflict over slavery and states' rights tore America apart."},{e:"Emancipation Proclamation",y:1863,d:"Lincoln declared slaves in rebel states 'forever free.'"},{e:"Lincoln assassinated",y:1865,d:"Shot by John Wilkes Booth at Ford's Theatre, five days after the war ended."},{e:"Meiji Restoration",y:1868,d:"Japan rapidly modernized after the emperor regained power."},{e:"Suez Canal opens",y:1869,d:"Connecting the Mediterranean to the Red Sea transformed global shipping."},{e:"Franco-Prussian War",y:1870,d:"Prussia's victory led to German unification and French humiliation."},{e:"German Empire formed",y:1871,d:"Bismarck united German states into a powerful new nation."},{e:"Telephone patented",y:1876,d:"Alexander Graham Bell's invention revolutionized communication."},{e:"Battle of Little Bighorn",y:1876,d:"Lakota and Cheyenne warriors defeated Custer's 7th Cavalry."},{e:"Phonograph invented",y:1877,d:"Edison's 'talking machine' could record and play back sound."},{e:"Light bulb demonstrated",y:1879,d:"Edison's practical incandescent bulb lit up the world."},{e:"First automobile",y:1886,d:"Karl Benz patented the first true automobile powered by gasoline."},{e:"Jack the Ripper",y:1888,d:"Unidentified serial killer terrorized London's East End."},{e:"Eiffel Tower completed",y:1889,d:"Built for the World's Fair, it was the tallest structure for 41 years."},{e:"Wounded Knee",y:1890,d:"US Army massacred 250-300 Lakota people in South Dakota."},{e:"X-rays discovered",y:1895,d:"Wilhelm Röntgen's discovery revolutionized medicine."},{e:"Modern Olympics begin",y:1896,d:"First international Olympic Games held in Athens, Greece."},{e:"Spanish-American War",y:1898,d:"US gained Cuba, Puerto Rico, Guam, and Philippines from Spain."},{e:"Boxer Rebellion",y:1900,d:"Chinese nationalists besieged foreign diplomats in Beijing."},{e:"Victoria dies",y:1901,d:"End of an era after 63 years on the British throne."},{e:"Wright Brothers flight",y:1903,d:"First powered airplane flight lasted 12 seconds at Kitty Hawk."},{e:"Special Relativity",y:1905,d:"Einstein's theory introduced E=mc² and changed physics forever."},{e:"SF Earthquake",y:1906,d:"Magnitude 7.9 quake and fires destroyed much of San Francisco."},{e:"Model T introduced",y:1908,d:"Ford's affordable car put America on wheels."},{e:"Titanic sinks",y:1912,d:"'Unsinkable' ship hit an iceberg; 1,500 died in the icy Atlantic."},{e:"WWI begins",y:1914,d:"The 'Great War' would kill 17 million people over four years."},{e:"Franz Ferdinand killed",y:1914,d:"Assassination of the Austrian heir sparked World War I."},{e:"Battle of Somme",y:1916,d:"One million casualties in five months of trench warfare."},{e:"Spanish Flu",y:1918,d:"Pandemic killed 50-100 million people worldwide."},{e:"Treaty of Versailles",y:1919,d:"Peace treaty that ended WWI but planted seeds for WWII."},{e:"US Women vote",y:1920,d:"19th Amendment finally granted women's suffrage nationwide."},{e:"Tut's tomb found",y:1922,d:"Howard Carter discovered the nearly intact tomb in Egypt's Valley of the Kings."},{e:"Stalin takes power",y:1924,d:"Began a brutal reign that would kill millions of Soviets."},{e:"Lindbergh flight",y:1927,d:"First solo nonstop transatlantic flight from New York to Paris."},{e:"Penicillin discovered",y:1928,d:"Alexander Fleming's accidental discovery launched the antibiotic era."},{e:"Empire State completed",y:1931,d:"World's tallest building for nearly 40 years."},{e:"Hitler becomes Chancellor",y:1933,d:"Nazi leader gained power legally, then destroyed democracy."},{e:"Hindenburg disaster",y:1937,d:"Hydrogen airship exploded in New Jersey, ending the airship era."},{e:"Kristallnacht",y:1938,d:"'Night of Broken Glass' - Nazi mobs attacked Jews across Germany."},{e:"WWII begins",y:1939,d:"Germany invaded Poland, starting history's deadliest conflict."},{e:"Dunkirk evacuation",y:1940,d:"338,000 Allied troops rescued from France by military and civilian boats."},{e:"Pearl Harbor",y:1941,d:"Japan's surprise attack brought the US into World War II."},{e:"D-Day",y:1944,d:"Allied invasion of Normandy began the liberation of Western Europe."},{e:"Hiroshima bombing",y:1945,d:"First atomic bomb used in warfare killed 80,000 instantly."},{e:"UN founded",y:1945,d:"International organization created to prevent future world wars."},{e:"India independence",y:1947,d:"End of British colonial rule, but partition caused massive violence."},{e:"Israel established",y:1948,d:"Jewish state declared, leading to immediate war with Arab neighbors."},{e:"NATO founded",y:1949,d:"Western military alliance formed to counter Soviet expansion."},{e:"PRC proclaimed",y:1949,d:"Mao Zedong declared the People's Republic after communist victory."},{e:"Korean War begins",y:1950,d:"North Korea invaded the South, drawing in US and Chinese forces."},{e:"DNA discovered",y:1953,d:"Watson and Crick revealed the double helix structure of life."},{e:"Brown v. Board",y:1954,d:"Supreme Court ruled school segregation unconstitutional."},{e:"Rosa Parks",y:1955,d:"Her refusal to give up her bus seat sparked the Montgomery Bus Boycott."},{e:"Sputnik launched",y:1957,d:"Soviet satellite started the Space Race with the US."},{e:"Cuban Revolution",y:1959,d:"Fidel Castro overthrew the US-backed dictator Batista."},{e:"Berlin Wall built",y:1961,d:"East Germany built the wall to stop citizens fleeing to the West."},{e:"Cuban Missile Crisis",y:1962,d:"US and USSR came closest to nuclear war over Soviet missiles in Cuba."},{e:"I Have a Dream",y:1963,d:"MLK's iconic speech at the March on Washington."},{e:"JFK assassinated",y:1963,d:"President Kennedy shot in Dallas; his death shocked the world."},{e:"Civil Rights Act",y:1964,d:"Landmark law outlawed discrimination based on race, color, religion, sex."},{e:"Malcolm X killed",y:1965,d:"The Black nationalist leader was shot at a rally in New York."},{e:"Six-Day War",y:1967,d:"Israel defeated Arab neighbors and captured Jerusalem, Gaza, and more."},{e:"MLK assassinated",y:1968,d:"Civil rights leader shot in Memphis, sparking riots nationwide."},{e:"Moon landing",y:1969,d:"'One small step for man' - Neil Armstrong walked on the Moon."},{e:"Woodstock",y:1969,d:"Legendary music festival drew 400,000 to a New York farm."},{e:"First email",y:1971,d:"Ray Tomlinson sent the first network email using the @ symbol."},{e:"Watergate",y:1972,d:"Break-in and cover-up scandal that forced Nixon to resign."},{e:"Vietnam War ends",y:1975,d:"Fall of Saigon ended America's longest and most divisive war."},{e:"Apple founded",y:1976,d:"Steve Jobs and Steve Wozniak started the company in a garage."},{e:"First PC",y:1977,d:"Apple II, Commodore PET, and TRS-80 brought computers home."},{e:"Iranian Revolution",y:1979,d:"Islamic revolutionaries overthrew the US-backed Shah."},{e:"Lennon killed",y:1980,d:"Former Beatle shot outside his New York apartment."},{e:"AIDS recognized",y:1981,d:"CDC reported first cases of what became a global pandemic."},{e:"Chernobyl",y:1986,d:"Worst nuclear disaster in history contaminated vast areas."},{e:"Berlin Wall falls",y:1989,d:"East Germans flooded through as the Iron Curtain collapsed."},{e:"Tiananmen Square",y:1989,d:"Chinese military crushed pro-democracy protests in Beijing."},{e:"Mandela freed",y:1990,d:"After 27 years in prison, the anti-apartheid leader walked free."},{e:"WWW invented",y:1991,d:"Tim Berners-Lee created the World Wide Web at CERN."},{e:"USSR dissolves",y:1991,d:"End of the Soviet Union and the Cold War."},{e:"Mandela President",y:1994,d:"South Africa's first Black president after the end of apartheid."},{e:"Rwandan Genocide",y:1994,d:"800,000 Tutsis killed by Hutu extremists in 100 days."},{e:"Dolly cloned",y:1996,d:"First mammal cloned from an adult cell was a Scottish sheep."},{e:"Hong Kong returned",y:1997,d:"British colony handed back to China after 156 years."},{e:"Diana dies",y:1997,d:"Princess Diana killed in Paris car crash, mourned worldwide."},{e:"Google founded",y:1998,d:"Larry Page and Sergey Brin started the search engine at Stanford."},{e:"Y2K",y:2000,d:"Fears of computer crashes at midnight proved largely unfounded."},{e:"9/11 attacks",y:2001,d:"Terrorists flew planes into the World Trade Center and Pentagon."},{e:"Afghanistan invasion",y:2001,d:"US-led forces toppled the Taliban after 9/11."},{e:"Euro circulation",y:2002,d:"New currency replaced francs, marks, lira across Europe."},{e:"Iraq invasion",y:2003,d:"US-led coalition invaded based on claims of weapons of mass destruction."},{e:"Facebook founded",y:2004,d:"Mark Zuckerberg launched the social network from his Harvard dorm."},{e:"YouTube launched",y:2005,d:"Video-sharing site changed how we consume media."},{e:"Twitter launched",y:2006,d:"Microblogging platform limited posts to 140 characters."},{e:"iPhone released",y:2007,d:"Apple's smartphone revolutionized mobile technology."},{e:"Obama elected",y:2008,d:"First African American president in US history."},{e:"Bin Laden killed",y:2011,d:"US Navy SEALs found and killed the 9/11 mastermind in Pakistan."},{e:"Arab Spring",y:2011,d:"Wave of protests toppled dictators across the Middle East."},{e:"Higgs Boson",y:2012,d:"'God particle' discovered at CERN, confirming physics theory."},{e:"Boston bombing",y:2013,d:"Terror attack at the marathon killed 3 and injured hundreds."},{e:"Crimea annexed",y:2014,d:"Russia seized the Ukrainian peninsula after a disputed referendum."},{e:"Brexit vote",y:2016,d:"UK voted to leave the European Union in a shock referendum."},{e:"Trump elected",y:2016,d:"Businessman and reality TV star won the US presidency."},{e:"COVID pandemic",y:2020,d:"Coronavirus spread globally, killing millions and changing daily life."},{e:"Floyd protests",y:2020,d:"George Floyd's death sparked worldwide protests against police brutality."},{e:"Biden elected",y:2020,d:"Defeated Trump in an election marked by record turnout."},{e:"Capitol storming",y:2021,d:"Trump supporters attacked the US Capitol during election certification."},{e:"Ukraine invasion",y:2022,d:"Russia launched full-scale invasion, causing Europe's largest war since WWII."},{e:"Elizabeth II dies",y:2022,d:"Britain's longest-reigning monarch died after 70 years on the throne."},{e:"ChatGPT released",y:2022,d:"OpenAI's chatbot sparked global conversation about AI's future."},
+// Prehistoric Events
+{e:"First humans leave Africa",y:-70000,d:"Homo sapiens began migrating out of Africa to populate the world."},
+{e:"Cave paintings at Lascaux",y:-17000,d:"Prehistoric artists created stunning animal paintings in French caves."},
+{e:"Last Ice Age ends",y:-10000,d:"Warming climate transformed landscapes and enabled agriculture."},
+{e:"Domestication of dogs",y:-15000,d:"Wolves were first domesticated, becoming humanity's oldest animal companions."},
+{e:"Agriculture begins",y:-10000,d:"Humans in the Fertile Crescent began farming wheat and barley."},
+{e:"Göbekli Tepe built",y:-9500,d:"World's oldest known temple complex, predating Stonehenge by 6,000 years."},
+{e:"Çatalhöyük settlement",y:-7500,d:"One of the first large human settlements in present-day Turkey."},
+{e:"Domestication of horses",y:-4000,d:"Horses were tamed on the Eurasian steppes, revolutionizing transportation."},
+{e:"Wheel invented",y:-3500,d:"First wheels appeared in Mesopotamia, transforming trade and warfare."},
+{e:"Writing invented in Sumer",y:-3400,d:"Cuneiform script emerged, beginning recorded history."},
+{e:"Bronze Age begins",y:-3300,d:"Metalworking with bronze transformed tools and weapons."},
+{e:"Stonehenge constructed",y:-3000,d:"Mysterious stone circle built on England's Salisbury Plain."},
+{e:"Indus Valley civilization",y:-2600,d:"Advanced urban centers at Mohenjo-daro and Harappa flourished."},
+{e:"First Egyptian dynasty",y:-3100,d:"Narmer unified Upper and Lower Egypt, founding the pharaonic tradition."},
+{e:"Minoan civilization peak",y:-2000,d:"Crete's palace culture created Europe's first advanced civilization."},
+{e:"Iron Age begins",y:-1200,d:"Iron tools and weapons began replacing bronze across Eurasia."},
+// Asian History
+{e:"Qin unifies China",y:-221,d:"Qin Shi Huang became first emperor, standardizing weights and writing."},
+{e:"Terracotta Army buried",y:-210,d:"Thousands of clay soldiers entombed with China's first emperor."},
+{e:"Silk Road opens",y:-130,d:"Trade route connected China to Rome, spreading goods and ideas."},
+{e:"Paper invented in China",y:105,d:"Cai Lun improved papermaking, revolutionizing record-keeping."},
+{e:"Tang Dynasty begins",y:618,d:"Golden age of Chinese poetry, art, and cosmopolitan culture."},
+{e:"Tale of Genji written",y:1010,d:"World's first novel written by Japanese noblewoman Murasaki Shikibu."},
+{e:"Khmer Empire peak",y:1150,d:"Angkor Wat completed, largest religious monument in the world."},
+{e:"Mongols conquer China",y:1279,d:"Kublai Khan completed conquest, founding the Yuan Dynasty."},
+{e:"Ming Dynasty founded",y:1368,d:"Zhu Yuanzhang expelled Mongols, restored Chinese rule."},
+{e:"Forbidden City completed",y:1420,d:"Ming emperors' palace complex became China's political center."},
+{e:"Mughal Empire founded",y:1526,d:"Babur conquered India, beginning three centuries of Mughal rule."},
+{e:"Tokugawa Shogunate",y:1603,d:"Ieyasu established 250 years of peace and isolation in Japan."},
+{e:"Perry opens Japan",y:1853,d:"American warships forced Japan to end 200 years of isolation."},
+{e:"Russo-Japanese War",y:1904,d:"Japan's victory shocked the world, first Asian defeat of Europeans."},
+{e:"Chinese Republic founded",y:1912,d:"Sun Yat-sen's revolution ended 2,000 years of imperial rule."},
+{e:"Long March begins",y:1934,d:"Chinese Communists' 6,000-mile retreat became founding myth."},
+{e:"Nanjing Massacre",y:1937,d:"Japanese troops killed hundreds of thousands of Chinese civilians."},
+{e:"Partition of India",y:1947,d:"British India split into India and Pakistan amid massive violence."},
+{e:"Chinese Civil War ends",y:1949,d:"Communists defeated Nationalists, who fled to Taiwan."},
+{e:"Korean War armistice",y:1953,d:"Fighting stopped but no peace treaty; Korea remains divided."},
+{e:"Cultural Revolution",y:1966,d:"Mao's purge devastated Chinese society for a decade."},
+{e:"Deng Xiaoping reforms",y:1978,d:"China opened economy, beginning unprecedented growth."},
+{e:"Fukushima disaster",y:2011,d:"Earthquake and tsunami caused nuclear meltdown in Japan."},
+// Mesopotamia
+{e:"Uruk becomes first city",y:-4000,d:"World's first true city emerged in southern Mesopotamia."},
+{e:"Sumerians invent writing",y:-3400,d:"Cuneiform on clay tablets began recorded history."},
+{e:"Akkadian Empire founded",y:-2334,d:"Sargon of Akkad created world's first empire."},
+
+{e:"Nebuchadnezzar II rules",y:-605,d:"Built Hanging Gardens and destroyed Solomon's Temple."},
+{e:"Cyrus conquers Babylon",y:-539,d:"Persian king freed the Jews and ended Babylonian Empire."},
+// Americas (Pre-Columbian and Colonial)
+{e:"Olmec civilization",y:-1500,d:"First major Mesoamerican civilization, carved colossal stone heads."},
+{e:"Maya civilization peak",y:250,d:"Advanced astronomy, writing, and pyramids in Central America."},
+{e:"Teotihuacan peak",y:450,d:"Massive Mexican city had 125,000 residents, Pyramid of the Sun."},
+{e:"Maya collapse",y:900,d:"Classic Maya cities abandoned for reasons still debated."},
+{e:"Toltec Empire",y:950,d:"Militaristic Mesoamerican culture influenced later Aztecs."},
+{e:"Aztec Empire founded",y:1428,d:"Triple Alliance created dominant power in central Mexico."},
+{e:"Inca Empire expands",y:1438,d:"Pachacuti built empire stretching length of South America."},
+{e:"Machu Picchu built",y:1450,d:"Inca citadel constructed high in the Peruvian Andes."},
+{e:"Roanoke Colony vanishes",y:1590,d:"'Lost Colony' of English settlers disappeared mysteriously."},
+{e:"First enslaved Africans arrive",y:1619,d:"Beginning of slavery in English North America."},
+{e:"Pueblo Revolt",y:1680,d:"Native Americans expelled Spanish from New Mexico."},
+{e:"French and Indian War",y:1754,d:"Colonial conflict reshaped North American power balance."},
+{e:"Mexican independence",y:1821,d:"New Spain became independent after decade-long war."},
+{e:"Monroe Doctrine",y:1823,d:"US warned European powers against further colonization."},
+{e:"Trail of Tears",y:1838,d:"Forced relocation of Native Americans killed thousands."},
+{e:"Mexican-American War",y:1846,d:"US acquired California and Southwest from Mexico."},
+
+{e:"Panama Canal opens",y:1914,d:"Waterway connecting Atlantic and Pacific transformed shipping."},
+{e:"Mexican Revolution",y:1910,d:"Decade of civil war transformed Mexican society."},
+
+{e:"Bay of Pigs invasion",y:1961,d:"CIA-backed Cuban exiles failed to overthrow Castro."},
+{e:"Chilean coup",y:1973,d:"Pinochet overthrew Allende with US backing."},
+{e:"Falklands War",y:1982,d:"Britain defeated Argentina's invasion of disputed islands."},
+// Middle East
+{e:"Persian Empire founded",y:-550,d:"Cyrus the Great created history's first superpower."},
+{e:"Phoenician alphabet spreads",y:-1050,d:"Ancestor of Greek, Latin, Arabic, and Hebrew scripts."},
+{e:"Persepolis built",y:-515,d:"Magnificent capital of Persian Empire."},
+{e:"Library of Alexandria",y:-283,d:"Greatest repository of ancient knowledge."},
+{e:"Palmyra flourishes",y:200,d:"Desert trading city linked Rome and Persia."},
+{e:"Sassanid Empire peak",y:531,d:"Last pre-Islamic Persian dynasty rivaled Rome."},
+{e:"Dome of the Rock built",y:691,d:"Islamic shrine on Jerusalem's Temple Mount."},
+{e:"House of Wisdom Baghdad",y:830,d:"Translation movement preserved Greek knowledge."},
+{e:"Seljuk Turks take Baghdad",y:1055,d:"Sunni Turks became power behind Abbasid caliphs."},
+{e:"Assassins fortress",y:1090,d:"Ismaili sect created legendary network of killers."},
+{e:"Fall of Baghdad to Mongols",y:1258,d:"Destroyed Abbasid Caliphate, killed hundreds of thousands."},
+{e:"Ottoman Empire founded",y:1299,d:"Turkish state that would dominate Middle East for centuries."},
+{e:"Siege of Vienna fails",y:1683,d:"Ottoman defeat marked beginning of empire's decline."},
+{e:"Suez Crisis",y:1956,d:"Britain and France humiliated trying to seize canal."},
+{e:"Yom Kippur War",y:1973,d:"Egypt and Syria's surprise attack nearly overwhelmed Israel."},
+{e:"Iranian hostage crisis",y:1979,d:"52 Americans held for 444 days after embassy seizure."},
+{e:"Iran-Iraq War",y:1980,d:"Eight-year conflict killed over a million people."},
+
+// European History (Additional)
+{e:"Minoans decline",y:-1450,d:"Volcanic eruption and invasions ended Cretan civilization."},
+{e:"Phoenicians found colonies",y:-1000,d:"Mediterranean traders established cities across region."},
+{e:"Etruscan civilization",y:-700,d:"Pre-Roman Italian culture influenced early Rome."},
+{e:"Persian Wars end",y:-449,d:"Greek victory preserved Western civilization's foundations."},
+{e:"Peloponnesian War",y:-431,d:"Athens and Sparta's conflict weakened all Greek states."},
+{e:"Celtic La Tène culture",y:-450,d:"Iron Age Celts spread across Europe."},
+{e:"Punic Wars begin",y:-264,d:"Rome's century-long struggle with Carthage for Mediterranean."},
+{e:"Destruction of Carthage",y:-146,d:"Rome razed rival city, salted the earth."},
+{e:"Caesar crosses Rubicon",y:-49,d:"'The die is cast' - began Roman civil war."},
+{e:"Antonine Plague",y:165,d:"Pandemic killed 5 million, weakening Roman Empire."},
+{e:"Diocletian divides empire",y:285,d:"Split Roman Empire into Eastern and Western halves."},
+{e:"Visigoths sack Rome",y:410,d:"First foreign army to capture Rome in 800 years."},
+{e:"Attila invades Europe",y:451,d:"Hun leader's rampage ended at Battle of Catalaunian Plains."},
+{e:"Justinian's Plague",y:541,d:"Killed 25-50 million, halted Byzantine reconquest."},
+{e:"Lombards invade Italy",y:568,d:"Germanic tribe's conquest ended Byzantine rule in north."},
+{e:"Iconoclasm controversy",y:726,d:"Byzantine Empire torn over religious images."},
+{e:"Alfred defeats Vikings",y:878,d:"English king's victory saved Anglo-Saxon England."},
+{e:"Kievan Rus founded",y:882,d:"Viking rulers established Russian state."},
+{e:"Otto I crowned",y:962,d:"Holy Roman Empire established in Germany."},
+{e:"Christianity in Russia",y:988,d:"Vladimir I converted, aligning Russia with Byzantium."},
+{e:"Reconquista ends",y:1492,d:"Spanish Christians completed 700-year reconquest from Moors."},
+{e:"Italian Wars begin",y:1494,d:"French invasion sparked decades of European conflict."},
+
+{e:"Peace of Westphalia",y:1648,d:"Treaties ended religious wars, established sovereignty."},
+{e:"Glorious Revolution",y:1688,d:"Parliament replaced Catholic king with Protestant rulers."},
+{e:"War of Spanish Succession",y:1701,d:"Major powers fought over Spanish throne."},
+{e:"Seven Years War",y:1756,d:"First truly global conflict involved all major powers."},
+
+{e:"Congress of Vienna",y:1815,d:"European powers redrew map after Napoleon's defeat."},
+{e:"Revolutions of 1848",y:1848,d:"Wave of uprisings swept across Europe."},
+{e:"Italian unification",y:1861,d:"Risorgimento united Italian peninsula under one kingdom."},
+{e:"Balkan Wars",y:1912,d:"Ottoman Empire lost nearly all European territory."},
+{e:"Russian Civil War",y:1917,d:"Reds defeated Whites, establishing Soviet rule."},
+{e:"League of Nations",y:1920,d:"First international peacekeeping organization."},
+{e:"Spanish Civil War",y:1936,d:"Nationalist victory brought Franco's dictatorship."},
+{e:"Anschluss",y:1938,d:"Nazi Germany annexed Austria."},
+{e:"Battle of Britain",y:1940,d:"RAF defeated Luftwaffe, preventing German invasion."},
+{e:"Holocaust",y:1941,d:"Nazi Germany systematically murdered 6 million Jews."},
+{e:"Marshall Plan",y:1948,d:"US aid rebuilt Western Europe after WWII."},
+{e:"European Coal and Steel",y:1951,d:"First step toward European Union integration."},
+
+{e:"Prague Spring crushed",y:1968,d:"Warsaw Pact invasion ended Czechoslovak reforms."},
+{e:"Solidarity founded",y:1980,d:"Polish trade union began Communist bloc's unraveling."},
+{e:"Maastricht Treaty",y:1992,d:"Created European Union and path to euro currency."},
+{e:"Yugoslav Wars begin",y:1991,d:"Ethnic conflicts killed 140,000 as Yugoslavia collapsed."},
+{e:"Good Friday Agreement",y:1998,d:"Peace deal largely ended Northern Ireland conflict."},
+{e:"Euro introduced",y:1999,d:"Common currency launched in 11 European countries."}
+];
+const COLORS=['#1e5f8a','#8a1e5f','#5f8a1e','#8a5f1e','#1e8a5f','#5f1e8a','#8a3a1e','#1e8a8a','#8a1e3a','#3a8a1e','#5f5f1e','#1e5f5f','#8a6b1e','#1e3a8a','#6b1e8a'];
+
+// Image URLs for events - disabled for now
+function getEventImage(name){return '';}
+const fY=y=>y<0?Math.abs(y)+' BCE':y+' CE';
+const shuffle=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;};
+const genCode=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='';for(let i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r;};
+
+let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,gameState=null;
+let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3;
+
+// Check for pending rejoin on page load
+function checkPendingRejoin(){
+    const pendingCode = sessionStorage.getItem('chronicle-rejoin-code');
+    const pendingName = sessionStorage.getItem('chronicle-rejoin-name');
+    if(pendingCode && pendingName){
+        sessionStorage.removeItem('chronicle-rejoin-code');
+        sessionStorage.removeItem('chronicle-rejoin-name');
+        // Auto-rejoin after a short delay
+        setTimeout(()=>{
+            $('player-name').value = pendingName;
+            $('join-code').value = pendingCode;
+            joinGame();
+        }, 500);
+        return true;
+    }
+    return false;
+}
+
+const $=id=>document.getElementById(id);
+const showScreen=id=>{
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    $(id).classList.add('active');
+    // Toggle backgrounds - library for menus, game background for gameplay
+    if(id==='game-screen'){
+        $('bg-cover').classList.add('hide');
+        $('game-bg').classList.add('show');
+    }else{
+        $('bg-cover').classList.remove('hide');
+        $('game-bg').classList.remove('show');
+    }
+};
+
+function init(){
+    // Check for pending rejoin from connection loss
+    if(checkPendingRejoin()) return;
+    
+    const urlParams=new URLSearchParams(window.location.search);
+    const joinCode=urlParams.get('join');
+    if(joinCode){
+        $('join-code').value=joinCode.toUpperCase();
+        $('join-box').style.display='block';
+    }
+    $('create-btn').onclick=createGame;
+    $('join-btn').onclick=()=>{$('join-box').style.display=$('join-box').style.display==='none'?'block':'none';};
+    $('join-submit').onclick=joinGame;
+    $('demo-btn').onclick=startDemo;
+    $('start-game-btn').onclick=startGame;
+    $('leave-lobby-btn').onclick=leaveLobby;
+    $('play-again-btn').onclick=playAgain;
+    $('home-btn').onclick=goHome;
+    $('copy-btn').onclick=copyLink;
+    $('join-code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase();});
+    
+    // Handle orientation change - scroll to top and re-render
+    window.addEventListener('orientationchange', ()=>{
+        setTimeout(()=>{
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+            if(gameState) renderGame();
+        }, 100);
+    });
+    
+    // Also handle resize for desktop testing
+    window.addEventListener('resize', ()=>{
+        if(gameState) renderGame();
+    });
+    
+    // Keep connection alive when tab is backgrounded (mobile)
+    document.addEventListener('visibilitychange', ()=>{
+        if(document.visibilityState === 'visible' && !isHost && !isDemo && lobbyCode){
+            console.log('Tab visible - checking connection...');
+            // Check if connection is actually alive
+            checkConnectionHealth();
+        }
+    });
+    
+    // Also check on page focus (backup for Safari)
+    window.addEventListener('focus', ()=>{
+        if(!isHost && !isDemo && lobbyCode){
+            setTimeout(checkConnectionHealth, 500);
+        }
+    });
+}
+
+let connectionCheckPending = false;
+
+function checkConnectionHealth(){
+    if(connectionCheckPending || isHost || isDemo || !lobbyCode) return;
+    
+    // Check if we have a connection and it's open
+    if(!conns.length || !conns[0] || !conns[0].open){
+        console.log('Connection dead, attempting reconnect...');
+        attemptReconnect(lobbyCode);
+        return;
+    }
+    
+    // Try to send ping - if it fails, reconnect
+    connectionCheckPending = true;
+    
+    try {
+        conns[0].send({type:'ping'});
+        // If send succeeds, connection might be ok
+        setTimeout(()=>{
+            connectionCheckPending = false;
+        }, 1000);
+    } catch(e) {
+        console.log('Ping send failed, reconnecting...');
+        connectionCheckPending = false;
+        attemptReconnect(lobbyCode);
+    }
+}
+
+// ============ DEMO MODE (Local Play) ============
+function startDemo(){
+    isDemo=true;
+    isHost=true;
+    myName=$('player-name').value.trim()||'Player 1';
+    const numPlayers=Math.min(15,Math.max(1,parseInt($('demo-player-count').value)||2));
+    
+    const players=[];
+    for(let i=0;i<numPlayers;i++){
+        players.push({
+            id:'player-'+i,
+            name:i===0?myName:'Player '+(i+1),
+            color:COLORS[i%COLORS.length],
+            score:0,
+            connected:true,
+            mistakes:[]
+        });
+    }
+    
+    const shuffled=shuffle(EVENTS);
+    gameState={
+        players,
+        timeline:[{e:shuffled[0].e,y:shuffled[0].y}],
+        deck:shuffled.slice(1),
+        currentCard:null,
+        currentPlayer:0
+    };
+    drawCard();
+    showScreen('game-screen');
+    renderGame();
+}
+
+// ============ ONLINE MODE ============
+function createPeer(id){
+    return new Promise((resolve,reject)=>{
+        if(typeof Peer==='undefined'){
+            reject(new Error('PeerJS not loaded. Try refreshing the page.'));
+            return;
+        }
+        // Use PeerJS cloud server with multiple TURN fallbacks
+        const config = {
+            host: '0.peerjs.com',
+            secure: true,
+            port: 443,
+            debug: 2,
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:global.stun.twilio.com:3478' },
+                    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+                    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+                    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+                ]
+            }
+        };
+        peer=new Peer(id, config);
+        const timeout=setTimeout(()=>{
+            reject(new Error('Connection timeout - server may be down'));
+        },15000);
+        peer.on('open',(peerId)=>{
+            clearTimeout(timeout);
+            console.log('Connected to PeerJS server with ID:',peerId);
+            resolve();
+        });
+        peer.on('error',err=>{
+            clearTimeout(timeout);
+            console.error('Peer error:',err);
+            if(err.type==='unavailable-id'){
+                reject(new Error('Code taken, try again'));
+            }else if(err.type==='network'){
+                reject(new Error('Network error - check your connection'));
+            }else if(err.type==='server-error'){
+                reject(new Error('Server error - try again later'));
+            }else{
+                reject(new Error(err.type+': '+(err.message||'Connection failed')));
+            }
+        });
+        peer.on('connection',conn=>{
+            console.log('Incoming connection from:',conn.peer);
+            if($('waiting-msg'))$('waiting-msg').textContent='Player connecting...';
+            handleConnection(conn);
+        });
+        peer.on('disconnected',()=>{
+            $('reconnecting').classList.add('show');
+            setTimeout(()=>peer&&peer.reconnect(),1000);
+        });
+        peer.on('close',()=>$('reconnecting').classList.remove('show'));
+    });
+}
+
+function handleConnection(conn){
+    conn.on('open',()=>{
+        if(!conns.includes(conn)){
+            conns.push(conn);
+        }
+        conn.on('data',data=>handleMessage(conn,data));
+        conn.on('close',()=>{
+            conns=conns.filter(c=>c!==conn);
+            if(isHost&&gameState){
+                const p=gameState.players.find(p=>p.id===conn.peer);
+                if(p)p.connected=false;
+                broadcastState();
+            }
+        });
+        if(isHost){
+            // If game is running, they'll send rejoin message
+            // Otherwise send lobby info
+            if(!gameState){
+                conn.send({type:'lobby',code:lobbyCode,players:getLobbyPlayers()});
+            }
+        }
+    });
+}
+
+function handleMessage(conn,data){
+    switch(data.type){
+        case'lobby':
+            lobbyCode=data.code;
+            updateLobbyUI(data.players);
+            break;
+        case'join':
+            if(isHost){
+                const color=COLORS[gameState?gameState.players.length:conns.length];
+                const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
+                if(!gameState){
+                    broadcastToAll({type:'player-joined',player:newPlayer});
+                    updateLobbyUI(getLobbyPlayers());
+                }else{
+                    gameState.players.push(newPlayer);
+                    broadcastState();
+                }
+            }
+            break;
+        case'rejoin':
+            if(isHost && gameState){
+                console.log('Player rejoining:', data.name);
+                // Find existing player and reconnect them
+                const existingPlayer = gameState.players.find(p => p.name === data.name);
+                if(existingPlayer){
+                    existingPlayer.id = conn.peer;
+                    existingPlayer.connected = true;
+                    // Make sure connection is in conns array
+                    if(!conns.includes(conn)){
+                        conns.push(conn);
+                    }
+                    conn.send({type:'state',state:gameState});
+                    broadcastState();
+                }else{
+                    // Player not found, add as new
+                    const color=COLORS[gameState.players.length % COLORS.length];
+                    const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
+                    gameState.players.push(newPlayer);
+                    if(!conns.includes(conn)){
+                        conns.push(conn);
+                    }
+                    conn.send({type:'state',state:gameState});
+                    broadcastState();
+                }
+            }
+            break;
+        case'player-joined':
+            updateLobbyUI([...getLobbyPlayers(),data.player]);
+            break;
+        case'start':
+            gameState=data.state;
+            showScreen('game-screen');
+            renderGame();
+            break;
+        case'state':
+            gameState=data.state;
+            // If we're receiving state, make sure game screen is showing
+            if(gameState && gameState.timeline){
+                showScreen('game-screen');
+            }
+            renderGame();
+            break;
+        case'move':
+            if(isHost)processMove(conn.peer,data.position);
+            break;
+        case'feedback':
+            showFeedback(data.correct,data.year,data.player,data.desc,data.cardName,data.position);
+            break;
+        case'showPlacement':
+            showPlacementHighlight(data.position, data.correct, data.cardName);
+            break;
+        case'scoreboard':
+            showScoreboard();
+            break;
+        case'gameover':
+            gameState=data.state;
+            showGameOver();
+            break;
+        case'restart':
+            gameState=data.state;
+            showScreen('game-screen');
+            renderGame();
+            break;
+        case'ping':
+            // Respond with pong to confirm connection
+            conn.send({type:'pong'});
+            break;
+        case'pong':
+            // Connection confirmed alive
+            break;
+    }
+}
+
+function broadcastToAll(msg){
+    conns.forEach(c=>{try{c.send(msg);}catch(e){}});
+}
+
+function broadcastState(){
+    broadcastToAll({type:'state',state:gameState});
+    renderGame();
+}
+
+function getLobbyPlayers(){
+    const players=[{id:myId,name:myName,color:COLORS[0],score:0,connected:true,isHost:true,mistakes:[]}];
+    conns.forEach((c,i)=>{
+        const existing=players.find(p=>p.id===c.peer);
+        if(!existing){
+            players.push({id:c.peer,name:'Player '+(i+2),color:COLORS[i+1],score:0,connected:true,mistakes:[]});
+        }
+    });
+    return players;
+}
+
+async function createGame(){
+    myName=$('player-name').value.trim()||'Host';
+    $('home-status').textContent='Loading...';
+    try{
+        await loadPeerJS();
+        $('home-status').textContent='Connecting to server...';
+    }catch(e){
+        $('home-status').textContent='Error: '+e.message;
+        return;
+    }
+    lobbyCode=genCode();
+    try{
+        await createPeer('chronicle-'+lobbyCode);
+        $('home-status').textContent='Connected!';
+        myId=peer.id;
+        isHost=true;
+        isDemo=false;
+        showScreen('lobby-screen');
+        $('lobby-code-display').textContent=lobbyCode;
+        $('waiting-msg').textContent='Your peer ID: '+myId+' - Waiting for players...';
+        const url=window.location.origin+window.location.pathname+'?join='+lobbyCode;
+        $('share-url').textContent=url;
+        updateLobbyUI([{id:myId,name:myName,color:COLORS[0],score:0,connected:true,isHost:true}]);
+    }catch(e){
+        $('home-status').textContent='Error: '+e.message;
+        if(e.message.includes('Code taken')){
+            setTimeout(createGame,500);
+        }
+    }
+}
+
+async function joinGame(){
+    myName=$('player-name').value.trim()||'Player';
+    const code=$('join-code').value.trim().toUpperCase();
+    if(code.length!==4){$('join-error').textContent='Enter 4-character code';$('join-error').style.display='block';return;}
+    $('join-error').style.display='none';
+    $('home-status').textContent='Connecting...';
+    try{
+        await loadPeerJS();
+    }catch(e){
+        $('join-error').textContent='Error: '+e.message;
+        $('join-error').style.display='block';
+        $('home-status').textContent='';
+        return;
+    }
+    try{
+        const config = {
+            host: '0.peerjs.com',
+            secure: true,
+            port: 443,
+            debug: 2,
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:global.stun.twilio.com:3478' },
+                    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+                    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+                    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+                ]
+            }
+        };
+        peer=new Peer(config);
+        $('home-status').textContent='Connecting to server...';
+        await new Promise((res,rej)=>{
+            const timeout=setTimeout(()=>rej(new Error('Server timeout')),15000);
+            peer.on('open',(id)=>{
+                clearTimeout(timeout);
+                $('home-status').textContent='Connected! ID: '+id.substring(0,8)+'...';
+                res();
+            });
+            peer.on('error',e=>{clearTimeout(timeout);rej(e);});
+        });
+        myId=peer.id;
+        isDemo=false;
+        $('home-status').textContent='Looking for host: chronicle-'+code+'...';
+        const conn=peer.connect('chronicle-'+code,{reliable:true});
+        const connTimeout=setTimeout(()=>{
+            $('join-error').textContent='Could not connect - host may be offline or code is wrong';
+            $('join-error').style.display='block';
+            $('home-status').textContent='';
+        },10000);
+        conn.on('open',()=>{
+            clearTimeout(connTimeout);
+            conns.push(conn);
+            hostConn = conn; // Store host connection for reconnection
+            conn.send({type:'join',name:myName});
+            conn.on('data',data=>handleMessage(conn,data));
+            conn.on('close',()=>{
+                conns=[];
+                // Try to reconnect instead of going home immediately
+                attemptReconnect(code);
+            });
+            lobbyCode=code;
+            showScreen('lobby-screen');
+            $('lobby-code-display').textContent=code;
+            $('start-game-btn').style.display='none';
+            $('qr-container').innerHTML='';
+            $('share-url').textContent='';
+            $('copy-btn').style.display='none';
+        });
+        conn.on('error',(err)=>{
+            clearTimeout(connTimeout);
+            console.error('Connection error:',err);
+            $('join-error').textContent='Could not connect to game';
+            $('join-error').style.display='block';
+            $('home-status').textContent='';
+        });
+    }catch(e){
+        $('join-error').textContent='Connection failed: '+e.message;
+        $('join-error').style.display='block';
+        $('home-status').textContent='';
+    }
+}
+
+async function attemptReconnect(code){
+    if(!code || isHost || isDemo) return;
+    
+    reconnectAttempts++;
+    console.log('Reconnect attempt', reconnectAttempts);
+    
+    if(reconnectAttempts > maxReconnectAttempts){
+        // Save state for refresh-based rejoin
+        sessionStorage.setItem('chronicle-rejoin-code', code);
+        sessionStorage.setItem('chronicle-rejoin-name', myName);
+        
+        // Show reconnect prompt
+        $('reconnecting').innerHTML = 'Connection lost. <button onclick="location.reload()" style="background:white;color:#8b0000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;margin-left:10px;cursor:pointer">Tap to Rejoin</button>';
+        $('reconnecting').classList.add('show');
+        return;
+    }
+    
+    $('reconnecting').textContent = 'Reconnecting... (' + reconnectAttempts + '/' + maxReconnectAttempts + ')';
+    $('reconnecting').classList.add('show');
+    
+    // Wait before retry
+    await new Promise(r => setTimeout(r, 1500));
+    
+    try{
+        // Destroy old peer completely
+        if(peer){
+            try{ peer.destroy(); }catch(e){}
+            peer = null;
+        }
+        
+        // Create fresh peer
+        peer = new Peer(null, {
+            debug: 0,
+            config: {
+                iceServers: [
+                    {urls:'stun:stun.l.google.com:19302'},
+                    {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
+                    {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'}
+                ]
+            }
+        });
+        
+        // Wait for peer to connect
+        await new Promise((res, rej) => {
+            const timeout = setTimeout(() => rej(new Error('peer timeout')), 5000);
+            peer.on('open', () => { clearTimeout(timeout); res(); });
+            peer.on('error', (e) => { clearTimeout(timeout); rej(e); });
+        });
+        
+        // Connect to host
+        const conn = peer.connect('chronicle-' + code, {reliable: true});
+        
+        await new Promise((res, rej) => {
+            const timeout = setTimeout(() => rej(new Error('conn timeout')), 5000);
+            conn.on('open', () => { clearTimeout(timeout); res(); });
+            conn.on('error', (e) => { clearTimeout(timeout); rej(e); });
+        });
+        
+        // Success!
+        reconnectAttempts = 0;
+        $('reconnecting').textContent = 'Reconnecting...';
+        $('reconnecting').classList.remove('show');
+        conns = [conn];
+        hostConn = conn;
+        
+        conn.send({type: 'rejoin', name: myName});
+        conn.on('data', data => handleMessage(conn, data));
+        conn.on('close', () => {
+            conns = [];
+            attemptReconnect(code);
+        });
+        
+    }catch(e){
+        console.log('Reconnect failed:', e.message);
+        attemptReconnect(code);
+    }
+}
+
+function updateLobbyUI(players){
+    const list=$('lobby-players');
+    list.innerHTML='';
+    players.forEach(p=>{
+        const div=document.createElement('div');
+        div.className='player-item'+(p.id===myId?' you':'');
+        div.innerHTML=`<div class="player-dot" style="background:${p.color}"></div>
+            <span class="player-name">${p.name}${p.id===myId?' (You)':''}</span>
+            ${p.isHost?'<span class="host-badge">Host</span>':''}`;
+        list.appendChild(div);
+    });
+    $('waiting-msg').style.display=players.length<2?'block':'none';
+    $('start-game-btn').style.display=(isHost&&players.length>=2)?'block':'none';
+}
+
+function startGame(){
+    const players=getLobbyPlayers();
+    players[0].name=myName;
+    const shuffled=shuffle(EVENTS);
+    gameState={
+        players,
+        timeline:[{e:shuffled[0].e,y:shuffled[0].y}],
+        deck:shuffled.slice(1),
+        currentCard:null,
+        currentPlayer:0
+    };
+    drawCard();
+    broadcastToAll({type:'start',state:gameState});
+    showScreen('game-screen');
+    renderGame();
+}
+
+function drawCard(){
+    if(gameState.deck.length===0){
+        endGame();
+        return;
+    }
+    gameState.currentCard=gameState.deck.pop();
+    // Preload images for upcoming cards
+    preloadNextImages();
+}
+
+// Preload images for the next few cards in the deck
+function preloadNextImages(){
+    if(!gameState || !gameState.deck) return;
+    const preloadCount = Math.min(5, gameState.deck.length);
+    for(let i = 0; i < preloadCount; i++){
+        const card = gameState.deck[gameState.deck.length - 1 - i];
+        if(card && eventImages[card.e]){
+            const img = new Image();
+            img.src = eventImages[card.e];
+        }
+    }
+    // Also preload current card
+    if(gameState.currentCard && eventImages[gameState.currentCard.e]){
+        const img = new Image();
+        img.src = eventImages[gameState.currentCard.e];
+    }
+}
+
+function renderGame(){
+    // Scroll to top to ensure turn banner is visible (especially in landscape)
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    
+    if(!gameState)return;
+    const myPlayerIndex=isDemo?gameState.currentPlayer:gameState.players.findIndex(p=>p.id===myId);
+    const isMyTurn=gameState.currentPlayer===myPlayerIndex||(isDemo);
+    const cp=gameState.players[gameState.currentPlayer];
+    
+    // Turn banner
+    if(isDemo){
+        $('turn-banner').textContent=cp.name+"'s Turn";
+        $('turn-banner').className='turn-banner my-turn';
+    }else{
+        $('turn-banner').textContent=isMyTurn?'Your Turn!':cp.name+"'s Turn";
+        $('turn-banner').className='turn-banner'+(isMyTurn?' my-turn':'');
+    }
+    
+    // Card
+    const cardEl=$('current-card');
+    cardEl.className='game-card thinking'+(isMyTurn?' my-turn drag-enabled':'');
+    cardEl.draggable=isMyTurn;
+    const cardName=gameState.currentCard?gameState.currentCard.e:'';
+    $('card-event').textContent=cardName;
+    $('card-year').textContent='????';
+    $('card-year').className='card-year hidden';
+    $('cards-left').textContent=gameState.deck.length+' cards left';
+    
+    // Timeline with single scrolling row
+    const tl=$('timeline');
+    tl.innerHTML='';
+    const sorted=[...gameState.timeline].sort((a,b)=>a.y-b.y);
+    
+    // Calculate scale class based on number of items
+    let sizeClass = '';
+    if(sorted.length >= 4 && sorted.length <= 5) sizeClass = 'tl-scale-90';
+    else if(sorted.length >= 6 && sorted.length <= 7) sizeClass = 'tl-scale-75';
+    else if(sorted.length >= 8) sizeClass = 'tl-scale-60';
+    
+    const rowDiv=document.createElement('div');
+    rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
+    
+    for(let i=0;i<=sorted.length;i++){
+        const dz=document.createElement('div');
+        dz.className='drop-zone'+(isMyTurn?'':' disabled');
+        dz.dataset.position=i;
+        const pos=i;
+        const handleTap=()=>{
+            if(isMyTurn||isDemo){
+                cardSelected=false;
+                const card=$('current-card');
+                if(card)card.classList.remove('selected');
+                makeMove(pos);
+            }
+        };
+        dz.onclick=handleTap;
+        dz.ontouchend=(e)=>{
+            e.preventDefault();
+            handleTap();
+        };
+        dz.ondragover=(e)=>{
+            if(!isMyTurn&&!isDemo)return;
+            e.preventDefault();
+            dz.classList.add('drag-over');
+        };
+        dz.ondragleave=()=>{
+            dz.classList.remove('drag-over');
+        };
+        dz.ondrop=(e)=>{
+            e.preventDefault();
+            dz.classList.remove('drag-over');
+            if(isMyTurn||isDemo)makeMove(pos);
+        };
+        rowDiv.appendChild(dz);
+        
+        if(i<sorted.length){
+            const cardDiv=document.createElement('div');
+            cardDiv.className='tl-item';
+            const placedClass=sorted[i].justPlaced?' card-placed':'';
+            cardDiv.innerHTML=`<div class="tl-card${placedClass}"><div class="ev">${sorted[i].e}</div><div class="yr">${fY(sorted[i].y)}</div></div>`;
+            rowDiv.appendChild(cardDiv);
+        }
+    }
+    tl.appendChild(rowDiv);
+    
+    // Dynamic scaling - start normal, scale down to fit up to 8 cards, then scroll
+    // Use double rAF to ensure layout is complete before measuring
+    requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+            const container = document.querySelector('.timeline-container');
+            const timeline = document.querySelector('.timeline');
+            if(container && timeline){
+                // Reset any previous scaling first
+                timeline.style.transform = 'none';
+                timeline.style.transformOrigin = '';
+                
+                // Force reflow to get accurate measurement
+                void timeline.offsetWidth;
+                
+                const containerWidth = container.clientWidth;
+                const timelineWidth = timeline.scrollWidth;
+                const cardCount = sorted.length;
+                
+                // Only scale if we have 4+ cards AND timeline overflows
+                if(cardCount >= 4 && timelineWidth > containerWidth){
+                    let scale;
+                    if(cardCount <= 8){
+                        // 4-8 cards: scale to fit ALL cards
+                        scale = containerWidth / timelineWidth * 0.95;
+                    } else {
+                        // 9+ cards: scale to fit 8 cards worth, then scroll
+                        scale = (containerWidth * cardCount) / (8 * timelineWidth);
+                    }
+                    // Don't scale below 0.4 (40%)
+                    scale = Math.max(0.4, Math.min(scale, 1));
+                    timeline.style.transform = `scale(${scale})`;
+                    timeline.style.transformOrigin = 'left center';
+                } else {
+                    timeline.style.transform = 'none';
+                }
+            }
+        });
+    });
+    
+    if(isDemo){
+        $('game-status').textContent='Drag card or tap a + slot to place it';
+    }else{
+        $('game-status').textContent=isMyTurn?'Drag card or tap a + slot to place it':'Waiting for '+cp.name+'...';
+    }
+    
+    // Setup card drag events
+    setupCardDrag(isMyTurn);
+    
+    // Auto-scroll to any justPlaced card
+    requestAnimationFrame(()=>{
+        const placedCard = document.querySelector('.tl-card.card-placed');
+        if(placedCard){
+            const container = document.querySelector('.timeline-container');
+            if(container){
+                const containerRect = container.getBoundingClientRect();
+                const cardRect = placedCard.getBoundingClientRect();
+                const targetScroll = container.scrollLeft + (cardRect.left - containerRect.left) - (containerRect.width / 2) + (cardRect.width / 2);
+                container.scrollTo({left: Math.max(0, targetScroll), behavior: 'smooth'});
+            }
+        }
+    });
+    
+    // Update mistakes tray
+    renderMistakes();
+}
+
+function makeMove(position){
+    if(isDemo||isHost){
+        processMove(isDemo?gameState.players[gameState.currentPlayer].id:myId,position);
+    }else{
+        conns[0].send({type:'move',position});
+    }
+}
+
+function processMove(playerId,position){
+    const expectedPlayer=gameState.players[gameState.currentPlayer];
+    if(!isDemo&&expectedPlayer.id!==playerId)return;
+    
+    const card=gameState.currentCard;
+    const sorted=[...gameState.timeline].sort((a,b)=>a.y-b.y);
+    const before=sorted[position-1];
+    const after=sorted[position];
+    let correct=true;
+    if(before&&card.y<before.y)correct=false;
+    if(after&&card.y>after.y)correct=false;
+    
+    const playerName=gameState.players[gameState.currentPlayer].name;
+    const cardDesc=card.d||'';
+    const cardName=card.e;
+    
+    if(correct){
+        gameState.timeline.push({e:card.e,y:card.y,justPlaced:true});
+    }else{
+        gameState.players[gameState.currentPlayer].score++;
+        gameState.players[gameState.currentPlayer].mistakes.push({e:card.e,y:card.y,d:card.d});
+    }
+    
+    // Broadcast state and attempted position so other players see where card was placed
+    if(!isDemo){
+        broadcastState();
+        broadcastToAll({type:'showPlacement',position:position,correct:correct,cardName:cardName});
+        // Delay the feedback message by 3 seconds so players can see the placement first
+        setTimeout(()=>{
+            broadcastToAll({type:'feedback',correct,year:card.y,player:playerName,desc:cardDesc,cardName:cardName,position:position});
+        },3000);
+    }
+    renderGame(); // Re-render to show the placed card highlighted
+    showPlacementHighlight(position, correct, cardName); // Show where card was placed
+    // Delay feedback popup by 3 seconds
+    setTimeout(()=>{
+        showFeedback(correct,card.y,playerName,cardDesc,cardName,position);
+    },3000);
+    
+    // Check if this completes a round (all players have gone once)
+    const nextPlayer = (gameState.currentPlayer + 1) % gameState.players.length;
+    const roundComplete = nextPlayer === 0;
+    
+    // Timing depends on whether we show scoreboard
+    const feedbackDuration = correct ? 6500 : 4500;
+    const afterFeedback = 3000 + feedbackDuration; // When feedback ends
+    
+    if(roundComplete){
+        // Show scoreboard after feedback ends
+        setTimeout(()=>{
+            showScoreboard();
+            if(!isDemo) broadcastToAll({type:'scoreboard'});
+        }, afterFeedback);
+        
+        // Next turn after scoreboard (feedback + 5s scoreboard)
+        const nextDelay = afterFeedback + 5000;
+        setTimeout(()=>{
+            gameState.timeline.forEach(t=>t.justPlaced=false);
+            gameState.currentPlayer = nextPlayer;
+            if(gameState.deck.length>0){
+                drawCard();
+                if(!isDemo)broadcastState();
+                renderGame();
+            }else{
+                endGame();
+            }
+        }, nextDelay);
+    } else {
+        // No scoreboard, just move to next player after feedback
+        const nextDelay = afterFeedback + 500; // Small buffer after feedback
+        setTimeout(()=>{
+            gameState.timeline.forEach(t=>t.justPlaced=false);
+            gameState.currentPlayer = nextPlayer;
+            if(gameState.deck.length>0){
+                drawCard();
+                if(!isDemo)broadcastState();
+                renderGame();
+            }else{
+                endGame();
+            }
+        }, nextDelay);
+    }
+}
+
+// Event images - loaded from external file or fetched live
+let eventImages = {};
+
+// Try to load pre-cached images
+try {
+  fetch('event-images.json')
+    .then(r => {
+      if(r.ok) return r.json();
+      return {};
+    })
+    .then(data => {
+      if(data && typeof data === 'object'){
+        eventImages = data;
+        console.log('Loaded ' + Object.keys(data).length + ' cached images');
+      }
+    })
+    .catch(e => console.log('No cached images found, will fetch live'));
+} catch(e) {
+  console.log('Image cache load failed');
+}
+
+async function fetchWikiImage(eventName){
+    // Check cache first
+    if(eventImages[eventName]){
+        return eventImages[eventName];
+    }
+    
+    try{
+        // Clean up event name for Wikipedia search
+        const searchTerm = eventName
+            .replace(/\s+(begins|ends|founded|built|completed|discovered|invented|released|launched|elected|killed|dies|assassinated|born|crowned|signed|ratified)$/i, '')
+            .replace(/['"]s?\s/g, ' ')
+            .trim();
+        
+        // Try Wikipedia API
+        const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(searchTerm)}`);
+        if(response.ok){
+            const data = await response.json();
+            // Only use if it's a standard article (not disambiguation)
+            if(data.type === 'standard' || data.type === 'summary'){
+                if(data.thumbnail && data.thumbnail.source){
+                    return data.thumbnail.source;
+                }
+                if(data.originalimage && data.originalimage.source){
+                    return data.originalimage.source;
+                }
+            }
+        }
+        
+        // Fallback: try with full event name
+        const response2 = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(eventName)}`);
+        if(response2.ok){
+            const data2 = await response2.json();
+            if(data2.type === 'standard' || data2.type === 'summary'){
+                if(data2.thumbnail && data2.thumbnail.source){
+                    return data2.thumbnail.source;
+                }
+            }
+        }
+    }catch(e){
+        console.log('Wiki image fetch failed:', e);
+    }
+    return null;
+}
+
+function showFeedback(correct,year,player,desc,cardName,position){
+    const feedbackBox = $('feedback-box');
+    feedbackBox.className='feedback-box '+(correct?'success':'error');
+    // Reset background to CSS default
+    feedbackBox.style.backgroundImage = '';
+    
+    $('feedback-text').textContent=correct?'Correct!':'Wrong!';
+    $('feedback-year').textContent=fY(year);
+    $('feedback-player').textContent=player+(cardName?' placed "'+cardName+'"':'');
+    
+    // Show description only on correct answers
+    const descEl=$('feedback-desc');
+    if(correct&&desc){
+        descEl.textContent=desc;
+        descEl.classList.add('show');
+    }else{
+        descEl.classList.remove('show');
+    }
+    
+    // Trigger fireworks on correct answer
+    if(correct){
+        createFireworks();
+    }
+    
+    // Fetch Wikipedia image for background
+    if(cardName){
+        fetchWikiImage(cardName).then(imgUrl => {
+            if(imgUrl){
+                // Preload image before showing
+                const img = new Image();
+                img.onload = () => {
+                    // Only apply if overlay is still showing
+                    if($('feedback-overlay').classList.contains('show')){
+                        feedbackBox.style.backgroundImage = `linear-gradient(rgba(244,228,193,0.85), rgba(232,212,168,0.85)), url("${imgUrl}")`;
+                    }
+                };
+                img.src = imgUrl;
+            }
+        });
+    }
+    
+    $('feedback-overlay').classList.add('show');
+    
+    // Longer duration for correct (6.5s to read description) vs wrong (4.5s)
+    const duration=correct?6500:4500;
+    setTimeout(()=>{
+        $('feedback-overlay').classList.remove('show');
+        // Reset background after hiding
+        feedbackBox.style.backgroundImage = '';
+        feedbackBox.style.backgroundSize = '';
+        feedbackBox.style.backgroundPosition = '';
+    },duration);
+}
+
+function createFireworks(){
+    const colors = ['#ff0', '#f0f', '#0ff', '#0f0', '#f00', '#00f', '#ff6600', '#fff'];
+    const container = $('feedback-overlay');
+    
+    // Create multiple bursts
+    for(let burst = 0; burst < 3; burst++){
+        setTimeout(() => {
+            const centerX = 20 + Math.random() * 60; // % from left
+            const centerY = 20 + Math.random() * 40; // % from top
+            
+            // Create particles for this burst
+            for(let i = 0; i < 20; i++){
+                const particle = document.createElement('div');
+                particle.className = 'firework-particle';
+                particle.style.left = centerX + '%';
+                particle.style.top = centerY + '%';
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random direction
+                const angle = (Math.PI * 2 * i) / 20 + (Math.random() - 0.5) * 0.5;
+                const velocity = 50 + Math.random() * 80;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                
+                container.appendChild(particle);
+                
+                // Remove particle after animation
+                setTimeout(() => particle.remove(), 1500);
+            }
+        }, burst * 300);
+    }
+}
+
+function showScoreboard(){
+    if(!gameState || !gameState.players) return;
+    
+    const list = $('scoreboard-list');
+    list.innerHTML = '';
+    
+    // Sort players by score (lower is better - fewer mistakes)
+    const sorted = [...gameState.players].sort((a,b) => a.score - b.score);
+    
+    sorted.forEach((player, index) => {
+        const li = document.createElement('li');
+        li.className = 'scoreboard-item';
+        li.innerHTML = `
+            <span class="scoreboard-name" style="color:${player.color}">${index + 1}. ${player.name}</span>
+            <span class="scoreboard-score">${player.score} mistake${player.score !== 1 ? 's' : ''}</span>
+        `;
+        list.appendChild(li);
+    });
+    
+    $('scoreboard-overlay').classList.add('show');
+    
+    // Hide after 5 seconds
+    setTimeout(() => {
+        $('scoreboard-overlay').classList.remove('show');
+    }, 5000);
+}
+
+function endGame(){
+    if(!isDemo){
+        broadcastToAll({type:'gameover',state:gameState});
+    }
+    showGameOver();
+}
+
+function showGameOver(){
+    showScreen('gameover-screen');
+    $('mistakes-tray').classList.remove('visible');
+    const sorted=[...gameState.players].sort((a,b)=>a.score-b.score);
+    const winners=sorted.filter(p=>p.score===sorted[0].score);
+    $('winner-text').textContent=winners.length>1?'Tie: '+winners.map(w=>w.name).join(' & '):winners[0].name+' Wins!';
+    const fs=$('final-scores');
+    fs.innerHTML='';
+    sorted.forEach((p,i)=>{
+        const div=document.createElement('div');
+        div.className='player-item'+(p.score===sorted[0].score?' current-turn':'');
+        div.innerHTML=`<div class="player-dot" style="background:${p.color}"></div>
+            <span class="player-name">#${i+1} ${p.name}</span>
+            <span class="player-score">${p.score} pts</span>`;
+        fs.appendChild(div);
+    });
+}
+
+function playAgain(){
+    const shuffled=shuffle(EVENTS);
+    gameState.timeline=[{e:shuffled[0].e,y:shuffled[0].y}];
+    gameState.deck=shuffled.slice(1);
+    gameState.currentPlayer=0;
+    gameState.players.forEach(p=>{p.score=0;p.mistakes=[];});
+    drawCard();
+    if(!isDemo){
+        broadcastToAll({type:'restart',state:gameState});
+    }
+    showScreen('game-screen');
+    renderGame();
+}
+
+function leaveLobby(){goHome();}
+
+function goHome(){
+    if(peer){try{peer.destroy();}catch(e){}}
+    peer=null;conns=[];gameState=null;isHost=false;isDemo=false;
+    hostConn=null;reconnectAttempts=0;connectionCheckPending=false;
+    // Clear any pending rejoin
+    sessionStorage.removeItem('chronicle-rejoin-code');
+    sessionStorage.removeItem('chronicle-rejoin-name');
+    showScreen('home-screen');
+    $('home-status').textContent='';
+    $('qr-container').innerHTML='';
+    $('mistakes-tray').classList.remove('visible','expanded');
+    $('reconnecting').textContent='Reconnecting...';
+    $('reconnecting').classList.remove('show');
+    window.history.replaceState({},document.title,window.location.pathname);
+}
+
+function copyLink(){
+    const url=window.location.origin+window.location.pathname+'?join='+lobbyCode;
+    navigator.clipboard.writeText(url).then(()=>{
+        $('copy-btn').textContent='Copied!';
+        setTimeout(()=>$('copy-btn').textContent='Copy Link',2000);
+    }).catch(()=>{
+        prompt('Copy this link:',url);
+    });
+}
+
+// Mistakes tray functions
+function getMyMistakes(){
+    if(!gameState)return [];
+    if(isDemo){
+        // In demo mode, show current player's mistakes
+        return gameState.players[gameState.currentPlayer].mistakes||[];
+    }else{
+        const myPlayer=gameState.players.find(p=>p.id===myId);
+        return myPlayer?myPlayer.mistakes||[]:[];
+    }
+}
+
+function renderMistakes(){
+    const mistakes=getMyMistakes();
+    const tray=$('mistakes-tray');
+    const icons=$('mistakes-icons');
+    const count=$('mistakes-count');
+    
+    // Show tray during game
+    tray.classList.add('visible');
+    count.textContent=mistakes.length;
+    
+    icons.innerHTML='';
+    
+    if(mistakes.length===0){
+        return;
+    }
+    
+    mistakes.forEach((m,i)=>{
+        const icon=document.createElement('div');
+        icon.className='mistake-icon';
+        icon.textContent=i+1;
+        icon.onclick=(e)=>{
+            e.stopPropagation();
+            showMistakeDetail(m);
+        };
+        icons.appendChild(icon);
+    });
+}
+
+function toggleMistakesTray(){
+    const tray=$('mistakes-tray');
+    tray.classList.toggle('expanded');
+    if(!tray.classList.contains('expanded')){
+        $('mistakes-detail').classList.remove('show');
+    }
+}
+
+function showMistakeDetail(mistake){
+    $('detail-event').textContent=mistake.e;
+    $('detail-year').textContent=fY(mistake.y);
+    
+    // Add description if available
+    let detailHtml=fY(mistake.y);
+    if(mistake.d){
+        detailHtml+='<div style="font-size:.9rem;color:var(--ink-light);margin-top:10px;font-family:Crimson Text,serif;">'+mistake.d+'</div>';
+    }
+    $('detail-year').innerHTML=detailHtml;
+    
+    $('mistakes-detail').classList.add('show');
+    $('mistakes-tray').classList.add('expanded');
+}
+
+function closeMistakeDetail(){
+    $('mistakes-detail').classList.remove('show');
+}
+
+// Drag and drop for card (desktop and mobile)
+let isDragging=false;
+let draggedCard=null;
+let cardSelected=false;
+
+// Show where a card was placed (for all players to see)
+function showPlacementHighlight(position, correct, cardName){
+    // Use double requestAnimationFrame to ensure DOM has painted
+    requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+            let targetElement = null;
+            
+            if(correct && cardName){
+                // For correct placements, find the newly placed card by name
+                document.querySelectorAll('.tl-card').forEach(card=>{
+                    const evEl = card.querySelector('.ev');
+                    if(evEl && evEl.textContent.trim() === cardName.trim()){
+                        card.classList.add('card-placed');
+                        targetElement = card;
+                    }
+                });
+            }
+            
+            if(!correct){
+                // For wrong placements, highlight the drop zone at position
+                document.querySelectorAll('.drop-zone').forEach(dz=>{
+                    dz.classList.remove('placement-highlight','placement-correct','placement-wrong');
+                    if(parseInt(dz.dataset.position)===position){
+                        dz.classList.add('placement-highlight');
+                        dz.classList.add('placement-wrong');
+                        targetElement = dz;
+                    }
+                });
+            }
+            
+            // Smooth scroll to the target element
+            if(targetElement){
+                const container = document.querySelector('.timeline-container');
+                if(container && container.scrollWidth > container.clientWidth){
+                    // Only scroll if there's overflow
+                    const containerRect = container.getBoundingClientRect();
+                    const targetRect = targetElement.getBoundingClientRect();
+                    const scrollTarget = container.scrollLeft + (targetRect.left - containerRect.left) - (containerRect.width / 2) + (targetRect.width / 2);
+                    
+                    // Clamp scroll target to valid range
+                    const maxScroll = container.scrollWidth - container.clientWidth;
+                    const clampedTarget = Math.max(0, Math.min(scrollTarget, maxScroll));
+                    
+                    // Animate scroll slowly over 800ms
+                    const startScroll = container.scrollLeft;
+                    const distance = clampedTarget - startScroll;
+                    
+                    if(Math.abs(distance) > 5){ // Only animate if there's meaningful distance
+                        const duration = 800;
+                        let startTime = null;
+                        
+                        function animateScroll(currentTime){
+                            if(!startTime) startTime = currentTime;
+                            const elapsed = currentTime - startTime;
+                            const progress = Math.min(elapsed / duration, 1);
+                            const easeOut = 1 - Math.pow(1 - progress, 3);
+                            container.scrollLeft = startScroll + (distance * easeOut);
+                            if(progress < 1){
+                                requestAnimationFrame(animateScroll);
+                            }
+                        }
+                        requestAnimationFrame(animateScroll);
+                    }
+                }
+            }
+            
+            // Clear highlight after feedback closes
+            setTimeout(()=>{
+                document.querySelectorAll('.drop-zone').forEach(dz=>{
+                    dz.classList.remove('placement-highlight','placement-correct','placement-wrong');
+                });
+            }, correct?5000:3000);
+        });
+    });
+}
+
+function setupCardDrag(enabled){
+    const card=$('current-card');
+    
+    // Remove old listeners by cloning
+    const newCard=card.cloneNode(true);
+    card.parentNode.replaceChild(newCard,card);
+    
+    if(!enabled){
+        cardSelected=false;
+        return;
+    }
+    
+    // Desktop drag
+    newCard.ondragstart=(e)=>{
+        isDragging=true;
+        draggedCard=newCard;
+        newCard.classList.add('dragging');
+        e.dataTransfer.effectAllowed='move';
+        e.dataTransfer.setData('text/plain','card');
+    };
+    newCard.ondragend=()=>{
+        isDragging=false;
+        draggedCard=null;
+        newCard.classList.remove('dragging');
+        document.querySelectorAll('.drop-zone').forEach(dz=>dz.classList.remove('drag-over'));
+    };
+    
+    // Tap to select card (mobile fallback)
+    newCard.onclick=()=>{
+        if(!enabled)return;
+        cardSelected=!cardSelected;
+        if(cardSelected){
+            newCard.classList.add('selected');
+            $('game-status').textContent='Now tap where you want to place it';
+        }else{
+            newCard.classList.remove('selected');
+            $('game-status').textContent='Tap the card, then tap where to place it';
+        }
+    };
+    
+    // Touch drag for mobile
+    let touchCurrentZone=null;
+    let touchStartX=0, touchStartY=0;
+    let cardOriginalStyle='';
+    
+    newCard.addEventListener('touchstart',(e)=>{
+        isDragging=true;
+        newCard.classList.add('dragging');
+        const touch=e.touches[0];
+        touchStartX=touch.clientX;
+        touchStartY=touch.clientY;
+        cardOriginalStyle=newCard.style.cssText;
+        newCard.style.position='fixed';
+        newCard.style.zIndex='9999';
+        newCard.style.left=(touch.clientX-100)+'px';
+        newCard.style.top=(touch.clientY-50)+'px';
+        newCard.style.pointerEvents='none';
+    },{passive:true});
+    
+    newCard.addEventListener('touchmove',(e)=>{
+        if(!isDragging)return;
+        e.preventDefault();
+        const touch=e.touches[0];
+        
+        // Move card with finger
+        newCard.style.left=(touch.clientX-100)+'px';
+        newCard.style.top=(touch.clientY-50)+'px';
+        
+        const element=document.elementFromPoint(touch.clientX,touch.clientY);
+        
+        // Clear previous highlights
+        document.querySelectorAll('.drop-zone').forEach(dz=>dz.classList.remove('drag-over'));
+        
+        // Highlight current drop zone
+        if(element&&element.classList.contains('drop-zone')){
+            element.classList.add('drag-over');
+            touchCurrentZone=element;
+        }else{
+            touchCurrentZone=null;
+        }
+    },{passive:false});
+    
+    newCard.addEventListener('touchend',(e)=>{
+        if(!isDragging)return;
+        isDragging=false;
+        newCard.classList.remove('dragging');
+        newCard.style.cssText=cardOriginalStyle; // Restore original position
+        newCard.style.pointerEvents='';
+        document.querySelectorAll('.drop-zone').forEach(dz=>dz.classList.remove('drag-over'));
+        
+        if(touchCurrentZone){
+            const pos=parseInt(touchCurrentZone.dataset.position);
+            cardSelected=false;
+            newCard.classList.remove('selected');
+            makeMove(pos);
+        }
+        touchCurrentZone=null;
+    },{passive:true});
+    
+    // Also handle touchcancel
+    newCard.addEventListener('touchcancel',(e)=>{
+        isDragging=false;
+        newCard.classList.remove('dragging');
+        newCard.style.cssText=cardOriginalStyle;
+        newCard.style.pointerEvents='';
+        document.querySelectorAll('.drop-zone').forEach(dz=>dz.classList.remove('drag-over'));
+        touchCurrentZone=null;
+    },{passive:true});
+}
+
+// Initialize when DOM ready
+if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',init);
+}else{
+    init();
+}
+
+// Register Service Worker for PWA
+if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg=>{
+                console.log('Service Worker registered:', reg.scope);
+                // Check for updates
+                reg.addEventListener('updatefound',()=>{
+                    const newWorker=reg.installing;
+                    newWorker.addEventListener('statechange',()=>{
+                        if(newWorker.state==='installed' && navigator.serviceWorker.controller){
+                            console.log('New version available! Refresh to update.');
+                        }
+                    });
+                });
+            })
+            .catch(err=>console.log('Service Worker registration failed:', err));
+    });
+}
+    </script>
+</body>
+</html>
