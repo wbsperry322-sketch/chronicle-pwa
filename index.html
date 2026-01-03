@@ -30,7 +30,7 @@
         #game-screen.active{display:flex;flex-direction:column;padding-bottom:60px}
         #game-screen .container{max-width:100%;padding:10px}
         .game-center{flex:1;display:flex;align-items:center;justify-content:center;overflow-x:auto;padding:10px 0;width:100%}
-        .game-bottom{padding:0 15px;position:fixed;bottom:50px;left:20px;right:auto;display:flex;flex-direction:column;align-items:center}
+        .game-bottom{padding:0 15px;position:fixed;bottom:70px;left:0;right:0;display:flex;flex-direction:column;align-items:center}
         @media(max-height:500px) and (orientation:landscape){
             /* Fix white spaces */
             html{background:#1a0f0a !important;overflow:visible !important}
@@ -56,7 +56,7 @@
             #game-screen .timeline{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark)) !important;border-radius:8px !important;padding:5px !important}
             #game-screen .timeline-row{padding:2px 3px !important}
             /* Current card at top right */
-            #game-screen .game-bottom{position:fixed !important;top:auto !important;right:auto !important;left:20px !important;bottom:40px !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
+            #game-screen .game-bottom{position:fixed !important;top:auto !important;right:auto !important;left:15px !important;bottom:30px !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
             #game-screen .game-bottom .game-card{max-width:160px !important;padding:10px 12px !important}
             #game-screen .game-bottom .game-card.thinking{animation:thinking-glow-gold 2s ease-in-out infinite !important}
             #game-screen .game-bottom .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite !important}
