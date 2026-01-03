@@ -1178,7 +1178,7 @@ function renderGame(){
     else if(sorted.length >= 8) sizeClass = 'tl-scale-60';
     
     const rowDiv=document.createElement('div');
-    rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
+    rowDiv.className='timeline-row';const timelineBar=document.createElement('div');timelineBar.style.cssText='position:absolute;top:50%;left:10px;right:10px;height:24px;background:linear-gradient(90deg,#9a7b3a,#c4a44d,#9a7b3a);transform:translateY(-50%);border-radius:4px;z-index:0';rowDiv.appendChild(timelineBar);rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
     
     for(let i=0;i<=sorted.length;i++){
         const dz=document.createElement('div');
