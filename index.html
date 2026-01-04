@@ -1,4 +1,4 @@
-<!-- Chronicle v75 -->
+<!-- Chronicle v76 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -2611,12 +2611,16 @@ function setupCardDrag(enabled){
     const newCard=card.cloneNode(true);
     card.parentNode.replaceChild(newCard,card);
     
-    // Always allow tap to show blurb
+    // Always allow click/tap to show blurb
     newCard.onclick=()=>{
         showCardBlurb();
     };
 
     if(!enabled){
+        // For mobile when not your turn, add simple touch handler
+        newCard.addEventListener('touchend',()=>{
+            showCardBlurb();
+        },{passive:true});
         cardSelected=false;
         return;
     }
