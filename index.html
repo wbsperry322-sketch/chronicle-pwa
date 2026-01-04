@@ -1,4 +1,4 @@
-<!-- Chronicle v6.1 -->
+<!-- Chronicle v6.2 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -2056,17 +2056,19 @@ function renderGame(){
                 const timelineWidth = timeline.scrollWidth;
                 const cardCount = sorted.length;
                 
-                // Only scale if we have 4+ cards AND timeline overflows
-                if(cardCount >= 4 && timelineWidth > containerWidth){
-                    let scale;
-                    if(cardCount <= 8){
-                        // 4-8 cards: scale to fit ALL cards
-                        scale = containerWidth / timelineWidth * 0.95;
-                    } else {
-                        // 9+ cards: scale to fit 8 cards worth, then scroll
-                        scale = (containerWidth * cardCount) / (8 * timelineWidth);
-                    }
-                    // Don't scale below 0.4 (40%)
+                // Scale to fit up to 7 cards, then scroll
+                if(cardCount <= 7 && timelineWidth > containerWidth){
+                    // 1-7 cards: scale to fit ALL cards
+                    let scale = containerWidth / timelineWidth * 0.95;
+                    scale = Math.max(0.4, Math.min(scale, 1));
+                    timeline.style.transform = `scale(${scale})`;
+                    timeline.style.transformOrigin = 'left center';
+                } else if(cardCount > 7){
+                    // 8+ cards: use fixed scale based on fitting 7 cards, allow scroll
+                    // Calculate what scale would fit 7 cards
+                    const avgCardWidth = timelineWidth / cardCount;
+                    const sevenCardsWidth = avgCardWidth * 7;
+                    let scale = containerWidth / sevenCardsWidth * 0.95;
                     scale = Math.max(0.4, Math.min(scale, 1));
                     timeline.style.transform = `scale(${scale})`;
                     timeline.style.transformOrigin = 'left center';
@@ -2747,5 +2749,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.1</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.2</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
