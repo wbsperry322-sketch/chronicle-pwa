@@ -1,4 +1,4 @@
-<!-- Chronicle v4.5 -->
+<!-- Chronicle v4.7 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -262,9 +262,7 @@
         .mistakes-detail .event-year{font-family:Georgia,'Times New Roman',serif;font-size:1.3rem;font-weight:700;color:var(--error)}
         .mistakes-detail .close-btn{background:var(--ink);color:var(--parchment);border:none;padding:8px 20px;border-radius:6px;font-family:Georgia,'Times New Roman',serif;font-size:.8rem;cursor:pointer;margin-top:10px}
         .error-msg{color:var(--error);text-align:center;padding:10px;font-weight:600}
-        .reconnecting{position:fixed;top:0;left:0;right:0;background:var(--accent);color:#fff;text-align:center;padding:12px 20px;font-size:.95rem;z-index:200;display:none;font-family:Georgia,'Times New Roman',serif}
-        .reconnecting.show{display:block}
-        .demo-controls{margin-top:15px;padding-top:15px;border-top:2px dashed var(--gold)}
+                .demo-controls{margin-top:15px;padding-top:15px;border-top:2px dashed var(--gold)}
         .demo-label{font-family:Georgia,'Times New Roman',serif;font-size:.9rem;color:var(--ink-light);text-align:center;margin-bottom:10px}
         .player-count-row{display:flex;align-items:center;gap:10px;margin:10px 0}
         .player-count-row label{flex:1;font-family:Georgia,'Times New Roman',serif}
@@ -279,14 +277,13 @@
         .game-card{cursor:pointer}
         @media(max-width:400px){h1{font-size:1.6rem}.lobby-code{font-size:2rem}.card-event{font-size:1.1rem}.btn{padding:12px 20px;font-size:.9rem}}
         /* Hide any external loading indicators from CDNs */
-        body>*:not(.container):not(.reconnecting):not(.mistakes-tray):not(.feedback-overlay):not(.scoreboard-overlay):not(.card-blurb-overlay):not(#version-tag):not(#bg-cover):not(#game-bg):not(script):not(style){display:none!important}
+        body>*:not(.container):not(.mistakes-tray):not(.feedback-overlay):not(.scoreboard-overlay):not(.card-blurb-overlay):not(#version-tag):not(#bg-cover):not(#game-bg):not(script):not(style){display:none!important}
     </style>
 </head>
 <body>
     <div id="bg-cover"><img src="library.jpg" alt=""></div>
     <div id="game-bg"><img src="background.jpg" alt=""></div>
-    <div class="reconnecting" id="reconnecting">Reconnecting...</div>
-    
+        
     <div class="container">
         <!-- HOME SCREEN -->
         <div class="screen active" id="home-screen">
@@ -652,7 +649,7 @@ const EVENTS=[{e:"Great Pyramid of Giza built",y:-2560,d:"The oldest of the Seve
 {e:"Woolf's To the Lighthouse",y:1927,d:"Stream of consciousness novel about time and loss."},
 {e:"Faulkner's Sound and Fury",y:1929,d:"Experimental novel of Southern family decline."},
 {e:"Steinbeck's Grapes of Wrath",y:1939,d:"Dust Bowl migrants' struggle during Depression."},
-{e:"Orwell's 1984",y:1949,d:"Dystopian warning about totalitarianism and surveillance."},
+{e:"Orwell's Nineteen Eighty-Four",y:1949,d:"Dystopian warning about totalitarianism and surveillance."},
 {e:"Beckett's Waiting for Godot",y:1953,d:"Absurdist play where nothing happens, twice."},
 {e:"Nabokov's Lolita",y:1955,d:"Controversial novel narrated by a predator."},
 {e:"Kerouac's On the Road",y:1957,d:"Beat Generation novel of cross-country travel."},
@@ -660,7 +657,7 @@ const EVENTS=[{e:"Great Pyramid of Giza built",y:-2560,d:"The oldest of the Seve
 {e:"Lee's To Kill a Mockingbird",y:1960,d:"Novel about racial injustice in the American South."},
 {e:"Catch-22 published",y:1961,d:"Satirical war novel gave us the famous paradox."},
 {e:"Solzhenitsyn's One Day",y:1962,d:"Exposed Soviet gulag system to the world."},
-{e:"García Márquez's 100 Years",y:1967,d:"Magical realism masterpiece about Colombian family."},
+{e:"García Márquez's Solitude",y:1967,d:"Magical realism masterpiece about Colombian family."},
 {e:"Morrison's Beloved",y:1987,d:"Nobel winner's novel about slavery's legacy."},
 
 {e:"Gregorian chant codified",y:600,d:"Pope Gregory organized Catholic liturgical music."},
@@ -1127,7 +1124,7 @@ const EVENTS=[{e:"Great Pyramid of Giza built",y:-2560,d:"The oldest of the Seve
 {e:"Iron Curtain speech",y:1946,d:"Churchill warned of division."},
 {e:"Indian partition",y:1947,d:"Independence and violence."},
 {e:"Berlin Blockade",y:1948,d:"Cold War crisis."},
-{e:"1984 published",y:1949,d:"Orwell's dystopia."},
+{e:"Orwell's dystopia published",y:1949,d:"Warning about totalitarianism."},
 {e:"Color TV introduced",y:1951,d:"New technology."},
 {e:"European Economic Community",y:1957,d:"EU predecessor."},
 {e:"U-2 incident",y:1960,d:"Spy plane shot down."},
@@ -1370,7 +1367,7 @@ const shuffle=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floo
 const genCode=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='';for(let i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r;};
 
 let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,gameState=null,playerNames={};
-let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3;
+let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3,leavingGame=false;
 
 // Check for pending rejoin on page load
 function checkPendingRejoin(){
@@ -1576,10 +1573,9 @@ function createPeer(id){
             handleConnection(conn);
         });
         peer.on('disconnected',()=>{
-            $('reconnecting').classList.add('show');
             setTimeout(()=>peer&&peer.reconnect(),1000);
         });
-        peer.on('close',()=>$('reconnecting').classList.remove('show'));
+        peer.on('close',()=>{});
     });
 }
 
@@ -1835,7 +1831,7 @@ async function joinGame(){
 }
 
 async function attemptReconnect(code){
-    if(!code || isHost || isDemo) return;
+    if(!code || isHost || isDemo || leavingGame) return;
     
     reconnectAttempts++;
     console.log('Reconnect attempt', reconnectAttempts);
@@ -1844,15 +1840,8 @@ async function attemptReconnect(code){
         // Save state for refresh-based rejoin
         sessionStorage.setItem('chronicle-rejoin-code', code);
         sessionStorage.setItem('chronicle-rejoin-name', myName);
-        
-        // Show reconnect prompt
-        $('reconnecting').innerHTML = 'Connection lost. <button onclick="location.reload()" style="background:white;color:#8b0000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;margin-left:10px;cursor:pointer">Tap to Rejoin</button>';
-        $('reconnecting').classList.add('show');
         return;
     }
-    
-    $('reconnecting').textContent = 'Reconnecting... (' + reconnectAttempts + '/' + maxReconnectAttempts + ')';
-    $('reconnecting').classList.add('show');
     
     // Wait before retry
     await new Promise(r => setTimeout(r, 1500));
@@ -1894,8 +1883,6 @@ async function attemptReconnect(code){
         
         // Success!
         reconnectAttempts = 0;
-        $('reconnecting').textContent = 'Reconnecting...';
-        $('reconnecting').classList.remove('show');
         conns = [conn];
         hostConn = conn;
         
@@ -2440,11 +2427,11 @@ function playAgain(){
 
 function leaveLobby(){goHome();}
 
-function leaveGame(){document.getElementById('leave-game-btn').style.display='none';goHome();}
+function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';goHome();}
 function goHome(){
     if(peer){try{peer.destroy();}catch(e){}}
     peer=null;conns=[];gameState=null;isHost=false;isDemo=false;
-    hostConn=null;reconnectAttempts=0;connectionCheckPending=false;
+    hostConn=null;reconnectAttempts=0;connectionCheckPending=false;leavingGame=false;
     // Clear any pending rejoin
     sessionStorage.removeItem('chronicle-rejoin-code');
     sessionStorage.removeItem('chronicle-rejoin-name');
@@ -2452,8 +2439,6 @@ function goHome(){
     $('home-status').textContent='';
     $('qr-container').innerHTML='';
     $('mistakes-tray').classList.remove('visible','expanded');
-    $('reconnecting').textContent='Reconnecting...';
-    $('reconnecting').classList.remove('show');
     window.history.replaceState({},document.title,window.location.pathname);
 }
 
@@ -2759,6 +2744,11 @@ if(document.readyState==='loading'){
 
 // Register Service Worker for PWA
 if('serviceWorker' in navigator){
+    // Auto-reload when new service worker takes control
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+        console.log('New service worker activated, reloading...');
+        window.location.reload();
+    });
     window.addEventListener('load',()=>{
         navigator.serviceWorker.register('./sw.js')
             .then(reg=>{
@@ -2777,5 +2767,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.7</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
