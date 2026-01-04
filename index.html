@@ -1,4 +1,4 @@
-<!-- Chronicle v3.9 -->
+<!-- Chronicle v4.0 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -62,8 +62,8 @@
             #game-screen .drop-zone{width:50px !important;height:87px !important;border-radius:8px !important;margin:0 4px !important}
             #game-screen .drop-zone::after{font-size:1rem !important}
             #game-screen .timeline-row::before{height:20px !important}
-            /* Current card at top right - 20% smaller */
-            #game-screen .game-bottom{position:fixed !important;top:25px !important;right:25px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
+            /* Current card below timeline */
+            #game-screen .game-bottom{position:fixed !important;bottom:10px !important;left:0 !important;right:0 !important;top:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important;justify-content:center !important}
             #game-screen .game-bottom .game-card{max-width:160px !important;padding:11px 14px !important}
             #game-screen .game-bottom .game-card.thinking{animation:thinking-glow-gold 2s ease-in-out infinite !important}
             #game-screen .game-bottom .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite !important}
@@ -2760,5 +2760,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v3.9</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.0</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
