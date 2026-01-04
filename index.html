@@ -254,6 +254,14 @@
         .player-count-row{display:flex;align-items:center;gap:10px;margin:10px 0}
         .player-count-row label{flex:1;font-family:Georgia,'Times New Roman',serif}
         .player-count-row input{width:80px;text-align:center}
+        .card-blurb-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+        .card-blurb-overlay.show{opacity:1;visibility:visible}
+        .card-blurb-box{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border:4px solid var(--gold);border-radius:16px;padding:24px;max-width:350px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5);transform:scale(.9);transition:transform .2s}
+        .card-blurb-overlay.show .card-blurb-box{transform:scale(1)}
+        .card-blurb-title{font-family:'Cinzel',Georgia,serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:16px;line-height:1.3}
+        .card-blurb-desc{font-family:Georgia,'Times New Roman',serif;font-size:1rem;color:var(--ink);line-height:1.6;margin-bottom:16px}
+        .card-blurb-hint{font-family:Georgia,'Times New Roman',serif;font-size:.85rem;color:var(--ink-light);font-style:italic}
+        .game-card{cursor:pointer}
         @media(max-width:400px){h1{font-size:1.6rem}.lobby-code{font-size:2rem}.card-event{font-size:1.1rem}.btn{padding:12px 20px;font-size:.9rem}}
         /* Hide any external loading indicators from CDNs */
         body>*:not(.container):not(.reconnecting):not(.mistakes-tray):not(.feedback-overlay):not(.scoreboard-overlay):not(#version-tag):not(#bg-cover):not(#game-bg):not(script):not(style){display:none!important}
@@ -339,6 +347,15 @@
                 <button class="btn btn-primary" id="play-again-btn">Play Again</button>
                 <button class="btn btn-secondary" id="home-btn">Back to Menu</button>
             </div>
+        </div>
+    </div>
+
+    <!-- CARD BLURB OVERLAY -->
+    <div class="card-blurb-overlay" id="card-blurb-overlay" onclick="hideCardBlurb()">
+        <div class="card-blurb-box" onclick="event.stopPropagation()">
+            <div class="card-blurb-title" id="blurb-title"></div>
+            <div class="card-blurb-desc" id="blurb-desc"></div>
+            <div class="card-blurb-hint">Tap anywhere to close</div>
         </div>
     </div>
 
@@ -1391,6 +1408,7 @@ function init(){
     $('home-btn').onclick=goHome;
     $('copy-btn').onclick=copyLink;
     $('join-code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase();});
+    $('current-card').onclick=showCardBlurb;
     
     // Handle orientation change - scroll to top and re-render
     window.addEventListener('orientationchange', ()=>{
@@ -2490,6 +2508,19 @@ function showMistakeDetail(mistake){
 
 function closeMistakeDetail(){
     $('mistakes-detail').classList.remove('show');
+}
+
+// Card blurb overlay
+function showCardBlurb(){
+    if(!gameState||!gameState.currentCard)return;
+    const card=gameState.currentCard;
+    $('blurb-title').textContent=card.e;
+    $('blurb-desc').textContent=card.d||'No description available.';
+    $('card-blurb-overlay').classList.add('show');
+}
+
+function hideCardBlurb(){
+    $('card-blurb-overlay').classList.remove('show');
 }
 
 // Drag and drop for card (desktop and mobile)
