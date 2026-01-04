@@ -1,4 +1,4 @@
-<!-- Chronicle v102 -->
+<!-- Chronicle v103 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -27,10 +27,10 @@
         #home-screen .card-box,#lobby-screen .card-box,#gameover-screen .card-box{max-width:500px;margin-left:auto;margin-right:auto}
         .screen{display:none;flex-direction:column;min-height:100vh}
         .screen.active{display:flex}
-        #game-screen.active{display:flex;flex-direction:column;padding-bottom:60px}
+        #game-screen.active{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;padding:0}
         #game-screen .container{max-width:100%;padding:10px}
-        .game-center{flex:1;display:flex;align-items:center;justify-content:center;overflow-x:auto;padding:10px 0;width:100%}
-        .game-bottom{padding:0 15px;position:fixed;bottom:70px;left:0;right:0;display:flex;flex-direction:column;align-items:center}
+        .game-center{display:flex;align-items:center;justify-content:center;overflow-x:auto;padding:10px 0;width:100%}
+        .game-bottom{padding:0 15px;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
         @media(max-height:500px) and (orientation:landscape){
             /* Fix white spaces */
             html{background:#1a0f0a !important;overflow:visible !important}
@@ -146,7 +146,7 @@
         .turn-banner.my-turn::after{background:linear-gradient(-135deg,var(--success) 50%,transparent 50%)}
         .timeline-container{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border-radius:12px;padding:15px;box-shadow:0 4px 20px rgba(0,0,0,.4);margin:0 15px;overflow-x:auto;-webkit-overflow-scrolling:touch}
         .timeline{min-width:max-content}
-        .timeline-row{display:flex;align-items:center;position:relative;padding:5px 10px}
+        .timeline-row{display:flex;align-items:center;position:relative;padding:5px 10px;min-height:120px}
         .timeline-row::before{display:none}
         .tl-item{position:relative;z-index:1;flex-shrink:0}
         .tl-card{
@@ -1990,7 +1990,7 @@ function renderGame(){
     else if(sorted.length >= 8) sizeClass = 'tl-scale-60';
     
     const rowDiv=document.createElement('div');
-    rowDiv.className='timeline-row';const timelineBar=document.createElement('div');timelineBar.style.cssText='position:absolute;top:50%;left:10px;right:10px;height:40px;background:linear-gradient(90deg,#9a7b3a,#c4a44d,#9a7b3a);transform:translateY(-50%);border-radius:4px;z-index:0';rowDiv.appendChild(timelineBar);rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
+    rowDiv.className='timeline-row';const timelineBar=document.createElement('div');timelineBar.style.cssText='position:absolute;top:50%;left:5px;right:5px;height:100px;background:linear-gradient(90deg,#8a6b2a,#d4b45d,#c4a44d,#d4b45d,#8a6b2a);transform:translateY(-50%);border-radius:10px;z-index:0;box-shadow:0 3px 12px rgba(0,0,0,0.4)';rowDiv.appendChild(timelineBar);rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
     
     for(let i=0;i<=sorted.length;i++){
         const dz=document.createElement('div');
