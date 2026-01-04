@@ -1,4 +1,4 @@
-<!-- Chronicle v4.3 -->
+<!-- Chronicle v4.4 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -1402,7 +1402,15 @@ function init(){
     const joinCode=urlParams.get('join');
     if(joinCode){
         $('join-code').value=joinCode.toUpperCase();
-        $('join-box').style.display='block';
+        // Show a simple name prompt and auto-join
+        const name = prompt('Enter your name to join the game:');
+        if(name && name.trim()){
+            $('player-name').value = name.trim();
+            joinGame();
+        } else {
+            // User cancelled, show normal join box
+            $('join-box').style.display='block';
+        }
     }
     $('create-btn').onclick=createGame;
     $('join-btn').onclick=()=>{$('join-box').style.display=$('join-box').style.display==='none'?'block':'none';};
@@ -2759,5 +2767,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.3</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.4</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
