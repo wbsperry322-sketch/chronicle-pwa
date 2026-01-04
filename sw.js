@@ -1,5 +1,5 @@
-// Chronicle PWA Service Worker v6.2
-const CACHE_NAME = 'chronicle-v6.2';
+// Chronicle PWA Service Worker v5.5
+const CACHE_NAME = 'chronicle-v5.5';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icon-192.png',

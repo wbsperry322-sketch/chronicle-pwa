@@ -1,4 +1,4 @@
-<!-- Chronicle v6.2 -->
+<!-- Chronicle v5.5 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -29,7 +29,7 @@
         .screen.active{display:flex}
         #game-screen.active{display:flex;flex-direction:column;padding:0 !important;margin:0 !important}
         #game-screen .container{max-width:100%;padding:0}
-        .game-center{display:flex;align-items:center;justify-content:center;padding:15px;flex:1}
+        .game-center{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;padding:0}
         .game-bottom{padding:0 15px;position:fixed;bottom:30px;left:0;right:0;display:flex;flex-direction:column;align-items:center}
         .debug-grid{display:none}
         @media(max-height:500px) and (orientation:landscape){
@@ -52,8 +52,8 @@
             #game-screen .turn-banner{position:fixed !important;top:5px !important;left:50% !important;transform:translateX(-50%) !important;font-size:0.7rem !important;padding:6px 20px !important;margin:0 !important;z-index:100 !important}
             #game-screen .turn-banner::before,#game-screen .turn-banner::after{display:none !important}
             /* Timeline centered */
-            #game-screen .game-center{display:flex !important;align-items:center !important;justify-content:center !important;padding:5px !important;flex:1 !important}
-            #game-screen .timeline-container{padding:3px !important;margin:0 auto !important;max-height:calc(100vh - 70px) !important;max-width:calc(100vw - 200px) !important;overflow-x:auto !important;overflow-y:hidden !important;background:linear-gradient(145deg,var(--parchment),var(--parchment-dark)) !important;border-radius:8px !important;-webkit-overflow-scrolling:touch !important}
+            #game-screen .game-center{position:fixed !important;top:50% !important;left:50% !important;transform:translate(-50%,-50%) !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 5px !important;width:auto !important;height:auto !important;margin:0 !important}
+            #game-screen .timeline-container{padding:3px !important;margin:0 auto !important;max-height:calc(100vh - 70px) !important;overflow-x:auto !important;overflow-y:hidden !important;background:transparent !important;box-shadow:none !important;border:none !important;-webkit-overflow-scrolling:touch !important;display:flex !important;justify-content:center !important}
             #game-screen .timeline{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark)) !important;border-radius:8px !important;padding:4px !important}
             #game-screen .timeline-row{padding:2px 3px !important}
             #game-screen .tl-card{min-width:138px !important;max-width:160px !important;padding:11px 14px !important;border-radius:9px !important}
@@ -159,7 +159,7 @@
         }
         .turn-banner.my-turn::before{background:linear-gradient(135deg,var(--success) 50%,transparent 50%)}
         .turn-banner.my-turn::after{background:linear-gradient(-135deg,var(--success) 50%,transparent 50%)}
-        .timeline-container{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border-radius:12px;padding:15px;box-shadow:0 4px 20px rgba(0,0,0,.4);margin:0 15px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+        .timeline-container{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border-radius:16px;padding:20px;box-shadow:0 5px 26px rgba(0,0,0,.4);overflow-x:auto;-webkit-overflow-scrolling:touch}
         .timeline{min-width:max-content}
         .timeline-row{display:flex;align-items:center;position:relative;padding:7px 13px}
         .timeline-row::before{display:none}
@@ -281,7 +281,7 @@
     </style>
 </head>
 <body>
-    <div id="bg-cover"><img src="library.jpg" alt=""></div>
+    <div id="bg-cover"><img src="icon-512.png" alt=""></div>
     <div id="game-bg"><img src="background.jpg" alt=""></div>
 
     <div class="container">
@@ -649,6 +649,7 @@ const EVENTS=[{e:"Great Pyramid of Giza built",y:-2560,d:"The oldest of the Seve
 {e:"Woolf's To the Lighthouse",y:1927,d:"Stream of consciousness novel about time and loss."},
 {e:"Faulkner's Sound and Fury",y:1929,d:"Experimental novel of Southern family decline."},
 {e:"Steinbeck's Grapes of Wrath",y:1939,d:"Dust Bowl migrants' struggle during Depression."},
+{e:"Orwell's 1984",y:1949,d:"Dystopian warning about totalitarianism and surveillance."},
 {e:"Beckett's Waiting for Godot",y:1953,d:"Absurdist play where nothing happens, twice."},
 {e:"Nabokov's Lolita",y:1955,d:"Controversial novel narrated by a predator."},
 {e:"Kerouac's On the Road",y:1957,d:"Beat Generation novel of cross-country travel."},
@@ -656,6 +657,7 @@ const EVENTS=[{e:"Great Pyramid of Giza built",y:-2560,d:"The oldest of the Seve
 {e:"Lee's To Kill a Mockingbird",y:1960,d:"Novel about racial injustice in the American South."},
 {e:"Catch-22 published",y:1961,d:"Satirical war novel gave us the famous paradox."},
 {e:"Solzhenitsyn's One Day",y:1962,d:"Exposed Soviet gulag system to the world."},
+{e:"García Márquez's 100 Years",y:1967,d:"Magical realism masterpiece about Colombian family."},
 {e:"Morrison's Beloved",y:1987,d:"Nobel winner's novel about slavery's legacy."},
 
 {e:"Gregorian chant codified",y:600,d:"Pope Gregory organized Catholic liturgical music."},
@@ -1122,6 +1124,7 @@ const EVENTS=[{e:"Great Pyramid of Giza built",y:-2560,d:"The oldest of the Seve
 {e:"Iron Curtain speech",y:1946,d:"Churchill warned of division."},
 {e:"Indian partition",y:1947,d:"Independence and violence."},
 {e:"Berlin Blockade",y:1948,d:"Cold War crisis."},
+{e:"1984 published",y:1949,d:"Orwell's dystopia."},
 {e:"Color TV introduced",y:1951,d:"New technology."},
 {e:"European Economic Community",y:1957,d:"EU predecessor."},
 {e:"U-2 incident",y:1960,d:"Spy plane shot down."},
@@ -2056,19 +2059,17 @@ function renderGame(){
                 const timelineWidth = timeline.scrollWidth;
                 const cardCount = sorted.length;
                 
-                // Scale to fit up to 7 cards, then scroll
-                if(cardCount <= 7 && timelineWidth > containerWidth){
-                    // 1-7 cards: scale to fit ALL cards
-                    let scale = containerWidth / timelineWidth * 0.95;
-                    scale = Math.max(0.4, Math.min(scale, 1));
-                    timeline.style.transform = `scale(${scale})`;
-                    timeline.style.transformOrigin = 'left center';
-                } else if(cardCount > 7){
-                    // 8+ cards: use fixed scale based on fitting 7 cards, allow scroll
-                    // Calculate what scale would fit 7 cards
-                    const avgCardWidth = timelineWidth / cardCount;
-                    const sevenCardsWidth = avgCardWidth * 7;
-                    let scale = containerWidth / sevenCardsWidth * 0.95;
+                // Only scale if we have 4+ cards AND timeline overflows
+                if(cardCount >= 4 && timelineWidth > containerWidth){
+                    let scale;
+                    if(cardCount <= 8){
+                        // 4-8 cards: scale to fit ALL cards
+                        scale = containerWidth / timelineWidth * 0.95;
+                    } else {
+                        // 9+ cards: scale to fit 8 cards worth, then scroll
+                        scale = (containerWidth * cardCount) / (8 * timelineWidth);
+                    }
+                    // Don't scale below 0.4 (40%)
                     scale = Math.max(0.4, Math.min(scale, 1));
                     timeline.style.transform = `scale(${scale})`;
                     timeline.style.transformOrigin = 'left center';
@@ -2749,5 +2750,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.2</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
