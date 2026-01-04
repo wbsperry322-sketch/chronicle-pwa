@@ -1,4 +1,4 @@
-<!-- Chronicle v98 -->
+<!-- Chronicle v99 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -326,7 +326,14 @@
         <!-- GAME SCREEN -->
         <div class="screen" id="game-screen">
             <button id="leave-game-btn" onclick="leaveGame()" style="position:fixed;top:10px;left:10px;z-index:200;background:var(--error);color:#fff;border:2px solid var(--gold);border-radius:8px;padding:8px 16px;font-family:Georgia,serif;font-size:0.85rem;cursor:pointer;display:none;">Leave</button>
-    <div class="turn-banner" id="turn-banner">Waiting...</div>
+            <div class="turn-banner" id="turn-banner">Waiting...</div>
+            <div class="game-content-wrapper">
+                <div class="game-center">
+                    <div class="timeline-container">
+                        <div class="timeline" id="timeline"></div>
+                    </div>
+                </div>
+            </div>
             <div class="game-bottom">
                 <div class="game-card" id="current-card" draggable="true">
                     <div class="card-event" id="card-event">Loading...</div>
@@ -1977,14 +1984,119 @@ function renderGame(){
     $('card-year').className='card-year hidden';
     $('cards-left').textContent=gameState.deck.length+' cards left';
 
+    // Timeline with single scrolling row
+    const tl=$('timeline');
+    tl.innerHTML='';
+    const sorted=[...gameState.timeline].sort((a,b)=>a.y-b.y);
+
+    // Calculate scale class based on number of items
+    let sizeClass = '';
+    if(sorted.length >= 4 && sorted.length <= 5) sizeClass = 'tl-scale-90';
+    else if(sorted.length >= 6 && sorted.length <= 7) sizeClass = 'tl-scale-75';
+    else if(sorted.length >= 8) sizeClass = 'tl-scale-60';
+
+    const rowDiv=document.createElement('div');
+    rowDiv.className='timeline-row';
+    const timelineBar=document.createElement('div');
+    timelineBar.className='timeline-bar';
+    timelineBar.style.cssText='position:absolute;top:50%;left:5px;right:5px;height:100px;background:linear-gradient(90deg,#8a6b2a,#d4b45d,#c4a44d,#d4b45d,#8a6b2a);transform:translateY(-50%);border-radius:10px;z-index:0;box-shadow:0 3px 10px rgba(0,0,0,0.4)';
+    rowDiv.appendChild(timelineBar);
+    rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
+
+    for(let i=0;i<=sorted.length;i++){
+        const dz=document.createElement('div');
+        dz.className='drop-zone'+(isMyTurn?'':' disabled');
+        dz.dataset.position=i;
+        const pos=i;
+        const handleTap=()=>{
+            if(isMyTurn||isDemo){
+                cardSelected=false;
+                const card=$('current-card');
+                if(card)card.classList.remove('selected');
+                makeMove(pos);
+            }
+        };
+        dz.onclick=handleTap;
+        dz.ontouchend=(e)=>{
+            e.preventDefault();
+            handleTap();
+        };
+        dz.ondragover=(e)=>{
+            if(!isMyTurn&&!isDemo)return;
+            e.preventDefault();
+            dz.classList.add('drag-over');
+        };
+        dz.ondragleave=()=>{
+            dz.classList.remove('drag-over');
+        };
+        dz.ondrop=(e)=>{
+            e.preventDefault();
+            dz.classList.remove('drag-over');
+            if(isMyTurn||isDemo)makeMove(pos);
+        };
+        rowDiv.appendChild(dz);
+
+        if(i<sorted.length){
+            const cardDiv=document.createElement('div');
+            cardDiv.className='tl-item';
+            const placedClass=sorted[i].justPlaced?' card-placed':'';
+            cardDiv.innerHTML=`<div class="tl-card${placedClass}"><div class="ev">${sorted[i].e}</div><div class="yr">${fY(sorted[i].y)}</div></div>`;
+            rowDiv.appendChild(cardDiv);
+        }
+    }
+    tl.appendChild(rowDiv);
+
+    // Dynamic scaling
+    requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+            const container = document.querySelector('.timeline-container');
+            const timeline = document.querySelector('.timeline');
+            if(container && timeline){
+                timeline.style.transform = 'none';
+                timeline.style.transformOrigin = '';
+                void timeline.offsetWidth;
+                const containerWidth = container.clientWidth;
+                const timelineWidth = timeline.scrollWidth;
+                const cardCount = sorted.length;
+                if(cardCount >= 4 && timelineWidth > containerWidth){
+                    let scale;
+                    if(cardCount <= 8){
+                        scale = containerWidth / timelineWidth * 0.95;
+                    } else {
+                        scale = (containerWidth * cardCount) / (8 * timelineWidth);
+                    }
+                    scale = Math.max(0.4, Math.min(scale, 1));
+                    timeline.style.transform = `scale(${scale})`;
+                    timeline.style.transformOrigin = 'left center';
+                } else {
+                    timeline.style.transform = 'none';
+                }
+            }
+        });
+    });
+
     if(isDemo){
-        $('game-status').textContent='Place the card in the correct position';
+        $('game-status').textContent='Drag card or tap a + slot to place it';
     }else{
-        $('game-status').textContent=isMyTurn?'Place the card in the correct position':'Waiting for '+cp.name+'...';
+        $('game-status').textContent=isMyTurn?'Drag card or tap a + slot to place it':'Waiting for '+cp.name+'...';
     }
 
     // Setup card drag events
     setupCardDrag(isMyTurn);
+
+    // Auto-scroll to any justPlaced card
+    requestAnimationFrame(()=>{
+        const placedCard = document.querySelector('.tl-card.card-placed');
+        if(placedCard){
+            const container = document.querySelector('.timeline-container');
+            if(container){
+                const containerRect = container.getBoundingClientRect();
+                const cardRect = placedCard.getBoundingClientRect();
+                const targetScroll = container.scrollLeft + (cardRect.left - containerRect.left) - (containerRect.width / 2) + (cardRect.width / 2);
+                container.scrollTo({left: Math.max(0, targetScroll), behavior: 'smooth'});
+            }
+        }
+    });
 
     // Update mistakes tray
     renderMistakes();
