@@ -1,4 +1,4 @@
-<!-- Chronicle v6.5 -->
+<!-- Chronicle v6.6 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -1517,7 +1517,11 @@ function init(){
         if(document.visibilityState === 'visible'){
             // Re-request wake lock when app becomes visible
             if(gameState && !isDemo) requestWakeLock();
-            if(!isHost && !isDemo && lobbyCode){
+            if(isHost && peer){
+                // Host: check if peer connection is still alive
+                console.log('Host visible - checking peer status...');
+                checkHostPeerConnection();
+            }else if(!isHost && !isDemo && lobbyCode){
                 console.log('Tab visible - checking connection...');
                 checkConnectionHealth();
             }
@@ -1526,13 +1530,64 @@ function init(){
     
     // Also check on page focus (backup for Safari)
     window.addEventListener('focus', ()=>{
-        if(!isHost && !isDemo && lobbyCode){
+        if(isHost && peer){
+            setTimeout(checkHostPeerConnection, 500);
+        } else if(!isHost && !isDemo && lobbyCode){
             setTimeout(checkConnectionHealth, 500);
         }
     });
 }
 
 let connectionCheckPending = false;
+let hostReconnectInProgress = false;
+
+function checkHostPeerConnection(){
+    if(hostReconnectInProgress || !isHost || !peer) return;
+
+    // Check if peer is still connected to the PeerJS server
+    if(peer.disconnected || peer.destroyed){
+        console.log('Host peer disconnected, attempting to reconnect...');
+        hostReconnectInProgress = true;
+
+        if(peer.destroyed){
+            // Need to create a new peer with the same ID
+            const oldId = lobbyCode;
+            peer = null;
+            createPeer(oldId).then(()=>{
+                console.log('Host peer recreated successfully');
+                hostReconnectInProgress = false;
+            }).catch(err=>{
+                console.error('Failed to recreate host peer:', err);
+                hostReconnectInProgress = false;
+                alert('Connection lost. Please refresh and host a new game.');
+            });
+        } else {
+            // Just disconnected, try to reconnect
+            try {
+                peer.reconnect();
+                setTimeout(()=>{
+                    hostReconnectInProgress = false;
+                    if(peer.open){
+                        console.log('Host peer reconnected successfully');
+                    }
+                }, 3000);
+            } catch(e){
+                console.error('Reconnect failed:', e);
+                hostReconnectInProgress = false;
+            }
+        }
+    } else if(!peer.open){
+        // Peer exists but not open yet, wait and retry
+        console.log('Host peer not open, waiting...');
+        setTimeout(()=>{
+            if(peer && !peer.open && !peer.disconnected){
+                peer.reconnect();
+            }
+        }, 1000);
+    } else {
+        console.log('Host peer connection is healthy');
+    }
+}
 
 function checkConnectionHealth(){
     if(connectionCheckPending || isHost || isDemo || !lobbyCode) return;
@@ -2956,5 +3011,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
