@@ -147,7 +147,7 @@
         .timeline-container{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border-radius:12px;padding:15px;box-shadow:0 4px 20px rgba(0,0,0,.4);margin:0 15px;overflow-x:auto;-webkit-overflow-scrolling:touch}
         .timeline{min-width:max-content}
         .timeline-row{display:flex;align-items:center;position:relative;padding:5px 10px}
-        .timeline-row::before{content:'';position:absolute;top:50%;left:10px;right:10px;height:24px !important;background:linear-gradient(90deg,var(--gold-dark),var(--gold),var(--gold-dark));transform:translateY(-50%);border-radius:4px}
+        .timeline-row::before{display:none}
         .tl-item{position:relative;z-index:1;flex-shrink:0}
         .tl-card{
             background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));
@@ -1178,7 +1178,7 @@ function renderGame(){
     else if(sorted.length >= 8) sizeClass = 'tl-scale-60';
     
     const rowDiv=document.createElement('div');
-    rowDiv.className='timeline-row';const timelineBar=document.createElement('div');timelineBar.style.cssText='position:absolute;top:50%;left:10px;right:10px;height:24px;background:linear-gradient(90deg,#9a7b3a,#c4a44d,#9a7b3a);transform:translateY(-50%);border-radius:4px;z-index:0';rowDiv.appendChild(timelineBar);rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
+    rowDiv.className='timeline-row';const timelineBar=document.createElement('div');timelineBar.style.cssText='position:absolute;top:50%;left:10px;right:10px;height:40px;background:linear-gradient(90deg,#9a7b3a,#c4a44d,#9a7b3a);transform:translateY(-50%);border-radius:4px;z-index:0';rowDiv.appendChild(timelineBar);rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
     
     for(let i=0;i<=sorted.length;i++){
         const dz=document.createElement('div');
@@ -1916,5 +1916,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:5px;left:5px;font-size:10px;color:rgba(255,255,255,0.5);z-index:9999;display:none;">v1.0.1</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:")document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:5px;left:5px;font-size:10px;color:rgba(255,255,255,0.5);z-index:9999;display:block;">v1.0.2</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:")document.getElementById("version-tag").style.display="block";</script></body>
 </html>
