@@ -1,4 +1,4 @@
-<!-- Chronicle v4.5 -->
+<!-- Chronicle v4.6 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -1618,7 +1618,14 @@ function handleMessage(conn,data){
                 const color=COLORS[gameState?gameState.players.length:conns.length];
                 playerNames[conn.peer]=data.name;const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
                 if(!gameState){
-                    broadcastToAll({type:'player-joined',player:newPlayer});
+                    // Broadcast to OTHER players (not the one who just joined)
+                    conns.forEach(c=>{
+                        if(c.peer !== conn.peer){
+                            try{c.send({type:'player-joined',player:newPlayer});}catch(e){}
+                        }
+                    });
+                    // Send full player list to the new player
+                    conn.send({type:'lobby',code:lobbyCode,players:getLobbyPlayers()});
                     updateLobbyUI(getLobbyPlayers());
                 }else{
                     gameState.players.push(newPlayer);
@@ -1654,7 +1661,14 @@ function handleMessage(conn,data){
             }
             break;
         case'player-joined':
-            updateLobbyUI([...getLobbyPlayers(),data.player]);
+            // Add new player to current display (received by other clients, not the joining player)
+            const lobbyList = $('lobby-players');
+            const div = document.createElement('div');
+            div.className = 'player-item';
+            div.innerHTML = `<div class="player-dot" style="background:${data.player.color}"></div>
+                <span class="player-name">${data.player.name}</span>`;
+            lobbyList.appendChild(div);
+            $('waiting-msg').style.display = 'none';
             break;
         case'start':
             gameState=data.state;
@@ -2777,5 +2791,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
