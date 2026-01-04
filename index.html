@@ -1,4 +1,4 @@
-<!-- Chronicle v6.3 -->
+<!-- Chronicle v6.4 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -417,7 +417,11 @@
         </div>
     </div>
 
-    
+    <!-- RECONNECTING BANNER -->
+    <div id="reconnect-banner" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.9);color:#fff;padding:20px 40px;border-radius:12px;border:2px solid var(--gold);z-index:500;text-align:center;font-family:Georgia,serif;">
+        <div style="font-size:1.2rem;margin-bottom:10px;">Reconnecting...</div>
+        <div id="reconnect-status" style="font-size:0.9rem;color:#aaa;">Attempt 1 of 3</div>
+    </div>
 
     <script>
 // Load PeerJS on demand
@@ -1380,7 +1384,7 @@ const shuffle=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floo
 const genCode=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='';for(let i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r;};
 
 let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,gameState=null,playerNames={};
-let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3,leavingGame=false;
+let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=5,leavingGame=false;
 let lobbyPlayers=[];  // Store lobby players for non-hosts
 let disconnectTimers={};  // Track disconnect timeouts for kicking players
 let keepAliveInterval=null;  // Keep connection alive when backgrounded
@@ -1972,29 +1976,53 @@ async function joinGame(){
     }
 }
 
+let isReconnecting = false;
+
+function showReconnectBanner(attempt){
+    const banner = $('reconnect-banner');
+    const status = $('reconnect-status');
+    if(banner){
+        banner.style.display = 'block';
+        status.textContent = 'Attempt ' + attempt + ' of ' + maxReconnectAttempts;
+    }
+}
+
+function hideReconnectBanner(){
+    const banner = $('reconnect-banner');
+    if(banner) banner.style.display = 'none';
+}
+
 async function attemptReconnect(code){
-    if(!code || isHost || isDemo || leavingGame) return;
-    
+    if(!code || isHost || isDemo || leavingGame || isReconnecting) return;
+
+    isReconnecting = true;
     reconnectAttempts++;
     console.log('Reconnect attempt', reconnectAttempts);
-    
+    showReconnectBanner(reconnectAttempts);
+
     if(reconnectAttempts > maxReconnectAttempts){
+        hideReconnectBanner();
+        isReconnecting = false;
         // Save state for refresh-based rejoin
         sessionStorage.setItem('chronicle-rejoin-code', code);
         sessionStorage.setItem('chronicle-rejoin-name', myName);
+        // Show message to user
+        alert('Connection lost. Please refresh to rejoin.');
+        goHome();
         return;
     }
-    
+
     // Wait before retry
-    await new Promise(r => setTimeout(r, 1500));
-    
+    await new Promise(r => setTimeout(r, 2000));
+
     try{
         // Destroy old peer completely
         if(peer){
             try{ peer.destroy(); }catch(e){}
             peer = null;
         }
-        
+        conns = [];
+
         // Create fresh peer with fallback servers
         const iceServers = [
             {urls:'stun:stun.l.google.com:19302'},
@@ -2016,7 +2044,7 @@ async function attemptReconnect(code){
                 }
                 peer = new Peer(null, servers[serverIndex]);
                 const timeout = setTimeout(() => {
-                    peer.destroy();
+                    try{ peer.destroy(); }catch(e){}
                     serverIndex++;
                     tryServer();
                 }, 5000);
@@ -2024,7 +2052,7 @@ async function attemptReconnect(code){
                 peer.on('error', (e) => {
                     clearTimeout(timeout);
                     if (e.type === 'server-error' || e.type === 'network') {
-                        peer.destroy();
+                        try{ peer.destroy(); }catch(e){}
                         serverIndex++;
                         tryServer();
                     } else {
@@ -2034,30 +2062,37 @@ async function attemptReconnect(code){
             };
             tryServer();
         });
-        
+
         // Connect to host
         const conn = peer.connect('chronicle-' + code, {reliable: true});
-        
+
         await new Promise((res, rej) => {
-            const timeout = setTimeout(() => rej(new Error('conn timeout')), 5000);
+            const timeout = setTimeout(() => rej(new Error('conn timeout')), 8000);
             conn.on('open', () => { clearTimeout(timeout); res(); });
             conn.on('error', (e) => { clearTimeout(timeout); rej(e); });
         });
-        
+
         // Success!
+        console.log('Reconnected successfully!');
+        hideReconnectBanner();
         reconnectAttempts = 0;
+        isReconnecting = false;
         conns = [conn];
         hostConn = conn;
-        
+
         conn.send({type: 'rejoin', name: myName});
         conn.on('data', data => handleMessage(conn, data));
         conn.on('close', () => {
             conns = [];
-            attemptReconnect(code);
+            if(!leavingGame){
+                isReconnecting = false;
+                attemptReconnect(code);
+            }
         });
-        
+
     }catch(e){
         console.log('Reconnect failed:', e.message);
+        isReconnecting = false;
         attemptReconnect(code);
     }
 }
@@ -2568,8 +2603,10 @@ function goHome(){
     Object.values(disconnectTimers).forEach(t=>clearTimeout(t));
     disconnectTimers={};
     stopKeepAlive();
+    hideReconnectBanner();
     peer=null;conns=[];gameState=null;isHost=false;isDemo=false;
     hostConn=null;reconnectAttempts=0;connectionCheckPending=false;leavingGame=false;lobbyPlayers=[];
+    isReconnecting=false;
     // Clear any pending rejoin
     sessionStorage.removeItem('chronicle-rejoin-code');
     sessionStorage.removeItem('chronicle-rejoin-name');
@@ -2912,5 +2949,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.3</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.4</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
