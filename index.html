@@ -264,7 +264,7 @@
         .game-card{cursor:pointer}
         @media(max-width:400px){h1{font-size:1.6rem}.lobby-code{font-size:2rem}.card-event{font-size:1.1rem}.btn{padding:12px 20px;font-size:.9rem}}
         /* Hide any external loading indicators from CDNs */
-        body>*:not(.container):not(.reconnecting):not(.mistakes-tray):not(.feedback-overlay):not(.scoreboard-overlay):not(#version-tag):not(#bg-cover):not(#game-bg):not(script):not(style){display:none!important}
+        body>*:not(.container):not(.reconnecting):not(.mistakes-tray):not(.feedback-overlay):not(.scoreboard-overlay):not(.card-blurb-overlay):not(#version-tag):not(#bg-cover):not(#game-bg):not(script):not(style){display:none!important}
     </style>
 </head>
 <body>
@@ -2512,16 +2512,11 @@ function closeMistakeDetail(){
 
 // Card blurb overlay
 function showCardBlurb(){
-    console.log('showCardBlurb called', gameState, gameState?.currentCard);
-    if(!gameState||!gameState.currentCard){
-        console.log('No gameState or currentCard');
-        return;
-    }
+    if(!gameState||!gameState.currentCard)return;
     const card=gameState.currentCard;
     $('blurb-title').textContent=card.e;
     $('blurb-desc').textContent=card.d||'No description available.';
     $('card-blurb-overlay').classList.add('show');
-    console.log('Blurb shown');
 }
 
 function hideCardBlurb(){
