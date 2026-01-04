@@ -1,4 +1,4 @@
-<!-- Chronicle v6.7 -->
+<!-- Chronicle v4.5 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -62,19 +62,6 @@
             #game-screen .drop-zone{width:55px !important;height:96px !important;border-radius:9px !important;margin:0 4px !important}
             #game-screen .drop-zone::after{font-size:1.1rem !important}
             #game-screen .timeline-row::before{height:22px !important}
-            /* Landscape scale classes */
-            #game-screen .timeline-row.tl-scale-90 .tl-card{min-width:118px !important;max-width:140px !important;padding:9px 11px !important}
-            #game-screen .timeline-row.tl-scale-90 .tl-card .ev{font-size:0.75rem !important}
-            #game-screen .timeline-row.tl-scale-90 .tl-card .yr{font-size:0.95rem !important}
-            #game-screen .timeline-row.tl-scale-90 .drop-zone{width:45px !important;height:80px !important}
-            #game-screen .timeline-row.tl-scale-75 .tl-card{min-width:100px !important;max-width:120px !important;padding:7px 9px !important}
-            #game-screen .timeline-row.tl-scale-75 .tl-card .ev{font-size:0.65rem !important}
-            #game-screen .timeline-row.tl-scale-75 .tl-card .yr{font-size:0.85rem !important}
-            #game-screen .timeline-row.tl-scale-75 .drop-zone{width:38px !important;height:70px !important}
-            #game-screen .timeline-row.tl-scale-60 .tl-card{min-width:85px !important;max-width:105px !important;padding:6px 7px !important}
-            #game-screen .timeline-row.tl-scale-60 .tl-card .ev{font-size:0.58rem !important}
-            #game-screen .timeline-row.tl-scale-60 .tl-card .yr{font-size:0.75rem !important}
-            #game-screen .timeline-row.tl-scale-60 .drop-zone{width:32px !important;height:62px !important;margin:0 2px !important}
             /* Current card at top right */
             #game-screen .game-bottom{position:fixed !important;top:25px !important;right:25px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
             #game-screen .game-bottom .game-card{max-width:144px !important;padding:10px 13px !important}
@@ -83,10 +70,10 @@
             #game-screen .game-bottom .card-event{font-size:0.58rem !important}
             #game-screen .game-bottom .cards-left,#game-screen .game-bottom .status-text{display:none !important}
             /* Mistakes tray - always show in landscape */
-            .mistakes-tray,.mistakes-tray.visible{display:flex !important;transform:translateY(calc(100% - 55px)) !important;flex-direction:column !important}
+            .mistakes-tray,.mistakes-tray.visible{display:flex !important;transform:translateY(calc(100% - 30px)) !important;flex-direction:column !important}
             .mistakes-tray.visible.expanded{transform:translateY(0) !important}
-            .mistakes-tray .tray-header,.mistakes-tray .mistakes-header{height:55px !important;padding:8px 15px !important}
-            .mistakes-tray h3{font-size:1rem !important}
+            .mistakes-tray .tray-header,.mistakes-tray .mistakes-header{height:45px !important;padding:5px 15px !important}
+            .mistakes-tray h3{font-size:.9rem !important}
             .mistakes-tray .mistakes-toggle{font-size:1rem !important;padding:4px 8px !important;width:28px !important;height:28px !important}
             /* Cards use original size - JS handles scaling */
         }
@@ -196,19 +183,19 @@
         .tl-card .ev{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:7px;line-height:1.2}
         .tl-card .yr{font-family:Georgia,'Times New Roman',serif;font-size:1.3rem;font-weight:700;color:var(--accent)}
         .drop-zone{width:62px;height:109px;border:3px dashed var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(196,164,77,.1);margin:0 5px;transition:all .2s;cursor:pointer}
-        /* Scaling classes for timeline - scale DOWN to fit more cards */
-        .timeline-row.tl-scale-90 .tl-card{min-width:140px;max-width:165px;padding:11px 14px}
-        .timeline-row.tl-scale-90 .tl-card .ev{font-size:0.9rem}
-        .timeline-row.tl-scale-90 .tl-card .yr{font-size:1.15rem}
-        .timeline-row.tl-scale-90 .drop-zone{width:55px;height:98px}
-        .timeline-row.tl-scale-75 .tl-card{min-width:120px;max-width:145px;padding:9px 11px}
-        .timeline-row.tl-scale-75 .tl-card .ev{font-size:0.8rem}
-        .timeline-row.tl-scale-75 .tl-card .yr{font-size:1rem}
-        .timeline-row.tl-scale-75 .drop-zone{width:48px;height:88px}
-        .timeline-row.tl-scale-60 .tl-card{min-width:100px;max-width:125px;padding:7px 9px}
-        .timeline-row.tl-scale-60 .tl-card .ev{font-size:0.7rem}
-        .timeline-row.tl-scale-60 .tl-card .yr{font-size:0.9rem}
-        .timeline-row.tl-scale-60 .drop-zone{width:40px;height:78px;margin:0 3px}
+        /* Scaling classes for timeline to fit 10 items */
+        .timeline-row.tl-scale-90 .tl-card{min-width:200px;max-width:240px;padding:16px 20px}
+        .timeline-row.tl-scale-90 .tl-card .ev{font-size:1.3rem}
+        .timeline-row.tl-scale-90 .tl-card .yr{font-size:1.8rem}
+        .timeline-row.tl-scale-90 .drop-zone{width:76px;height:144px}
+        .timeline-row.tl-scale-75 .tl-card{min-width:170px;max-width:200px;padding:12px 16px}
+        .timeline-row.tl-scale-75 .tl-card .ev{font-size:1.1rem}
+        .timeline-row.tl-scale-75 .tl-card .yr{font-size:1.6rem}
+        .timeline-row.tl-scale-75 .drop-zone{width:64px;height:120px}
+        .timeline-row.tl-scale-60 .tl-card{min-width:140px;max-width:170px;padding:10px 12px}
+        .timeline-row.tl-scale-60 .tl-card .ev{font-size:1rem}
+        .timeline-row.tl-scale-60 .tl-card .yr{font-size:1.4rem}
+        .timeline-row.tl-scale-60 .drop-zone{width:52px;height:108px;margin:0 4px}
         .drop-zone::after{content:'+';font-size:1.3rem;color:var(--gold);transition:transform .2s}
         .drop-zone:active,.drop-zone.selected{background:rgba(196,164,77,.4);transform:scale(1.1)}
         .drop-zone.drag-over{background:rgba(45,90,39,.3);border-color:var(--success);transform:scale(1.15)}
@@ -259,10 +246,10 @@
         .status-text{text-align:center;color:var(--ink-light);font-style:italic;padding:10px}
         .cards-left{font-size:.9rem;color:var(--ink-light);text-align:center;margin-top:10px}
         .mistakes-tray{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(0deg,rgba(26,15,10,.98),rgba(26,15,10,.9));padding:8px 15px;z-index:50;transform:translateY(100%);transition:transform .3s ease;display:none}
-        .mistakes-tray.visible{display:block;transform:translateY(calc(100% - 55px))}
+        .mistakes-tray.visible{display:block;transform:translateY(calc(100% - 20px))}
         .mistakes-tray.visible.expanded{transform:translateY(0)}
-        .mistakes-header{display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;padding:8px;color:var(--parchment);height:55px;box-sizing:border-box}
-        .mistakes-header h3{font-family:Georgia,'Times New Roman',serif;font-size:1rem;color:var(--gold);text-align:center}
+        .mistakes-header{display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;padding:3px;color:var(--parchment)}
+        .mistakes-header h3{font-family:Georgia,'Times New Roman',serif;font-size:.8rem;color:var(--gold)}
         .mistakes-toggle{background:var(--error);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:.8rem}
         .mistakes-arrow{transition:transform .3s}
         .mistakes-tray.expanded .mistakes-arrow{transform:rotate(180deg)}
@@ -275,7 +262,9 @@
         .mistakes-detail .event-year{font-family:Georgia,'Times New Roman',serif;font-size:1.3rem;font-weight:700;color:var(--error)}
         .mistakes-detail .close-btn{background:var(--ink);color:var(--parchment);border:none;padding:8px 20px;border-radius:6px;font-family:Georgia,'Times New Roman',serif;font-size:.8rem;cursor:pointer;margin-top:10px}
         .error-msg{color:var(--error);text-align:center;padding:10px;font-weight:600}
-                .demo-controls{margin-top:15px;padding-top:15px;border-top:2px dashed var(--gold)}
+        .reconnecting{position:fixed;top:0;left:0;right:0;background:var(--accent);color:#fff;text-align:center;padding:12px 20px;font-size:.95rem;z-index:200;display:none;font-family:Georgia,'Times New Roman',serif}
+        .reconnecting.show{display:block}
+        .demo-controls{margin-top:15px;padding-top:15px;border-top:2px dashed var(--gold)}
         .demo-label{font-family:Georgia,'Times New Roman',serif;font-size:.9rem;color:var(--ink-light);text-align:center;margin-bottom:10px}
         .player-count-row{display:flex;align-items:center;gap:10px;margin:10px 0}
         .player-count-row label{flex:1;font-family:Georgia,'Times New Roman',serif}
@@ -294,9 +283,10 @@
     </style>
 </head>
 <body>
-    <div id="bg-cover"><img src="icon-512.png" alt=""></div>
+    <div id="bg-cover"><img src="library.jpg" alt=""></div>
     <div id="game-bg"><img src="background.jpg" alt=""></div>
-
+    <div class="reconnecting" id="reconnecting">Reconnecting...</div>
+    
     <div class="container">
         <!-- HOME SCREEN -->
         <div class="screen active" id="home-screen">
@@ -347,7 +337,7 @@
         <!-- GAME SCREEN -->
         <div class="screen" id="game-screen">
             <div class="debug-grid"></div>
-            <button id="leave-game-btn" onclick="leaveGame()" style="position:fixed;top:10px;left:25px;z-index:1000;background:var(--error);color:#fff;border:2px solid var(--gold);border-radius:8px;padding:8px 16px;font-family:Georgia,serif;font-size:0.85rem;cursor:pointer;display:none;">Leave</button>
+            <button id="leave-game-btn" onclick="leaveGame()" style="position:fixed;top:10px;left:25px;z-index:250;background:var(--error);color:#fff;border:2px solid var(--gold);border-radius:8px;padding:8px 16px;font-family:Georgia,serif;font-size:0.85rem;cursor:pointer;display:none;">Leave</button>
     <div class="turn-banner" id="turn-banner">Waiting...</div>
             <div class="game-center">
                 <div class="timeline-container">
@@ -386,7 +376,7 @@
     </div>
 
     <!-- MISTAKES TRAY (outside container so it's fixed to bottom) -->
-    <div class="mistakes-tray empty" id="mistakes-tray">
+    <div class="mistakes-tray empty" id="mistakes-tray" style="display:none !important">
         <div class="mistakes-header" onclick="toggleMistakesTray()">
             <span class="mistakes-arrow">▲</span>
             <h3>Your Mistakes</h3>
@@ -1380,7 +1370,7 @@ const shuffle=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floo
 const genCode=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='';for(let i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r;};
 
 let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,gameState=null,playerNames={};
-let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3,leavingGame=false;
+let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3;
 
 // Check for pending rejoin on page load
 function checkPendingRejoin(){
@@ -1586,8 +1576,10 @@ function createPeer(id){
             handleConnection(conn);
         });
         peer.on('disconnected',()=>{
+            $('reconnecting').classList.add('show');
             setTimeout(()=>peer&&peer.reconnect(),1000);
         });
+        peer.on('close',()=>$('reconnecting').classList.remove('show'));
     });
 }
 
@@ -1605,8 +1597,13 @@ function handleConnection(conn){
                 broadcastState();
             }
         });
-        // Don't send lobby here - wait for join message so we have the player's name
-        // The join handler will send the lobby with correct player info
+        if(isHost){
+            // If game is running, they'll send rejoin message
+            // Otherwise send lobby info
+            if(!gameState){
+                conn.send({type:'lobby',code:lobbyCode,players:getLobbyPlayers()});
+            }
+        }
     });
 }
 
@@ -1621,14 +1618,7 @@ function handleMessage(conn,data){
                 const color=COLORS[gameState?gameState.players.length:conns.length];
                 playerNames[conn.peer]=data.name;const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
                 if(!gameState){
-                    // Broadcast to OTHER players (not the one who just joined)
-                    conns.forEach(c=>{
-                        if(c.peer !== conn.peer){
-                            try{c.send({type:'player-joined',player:newPlayer});}catch(e){}
-                        }
-                    });
-                    // Send full player list to the new player
-                    conn.send({type:'lobby',code:lobbyCode,players:getLobbyPlayers()});
+                    broadcastToAll({type:'player-joined',player:newPlayer});
                     updateLobbyUI(getLobbyPlayers());
                 }else{
                     gameState.players.push(newPlayer);
@@ -1664,14 +1654,7 @@ function handleMessage(conn,data){
             }
             break;
         case'player-joined':
-            // Add new player to current display (received by other clients, not the joining player)
-            const lobbyList = $('lobby-players');
-            const div = document.createElement('div');
-            div.className = 'player-item';
-            div.innerHTML = `<div class="player-dot" style="background:${data.player.color}"></div>
-                <span class="player-name">${data.player.name}</span>`;
-            lobbyList.appendChild(div);
-            $('waiting-msg').style.display = 'none';
+            updateLobbyUI([...getLobbyPlayers(),data.player]);
             break;
         case'start':
             gameState=data.state;
@@ -1852,7 +1835,7 @@ async function joinGame(){
 }
 
 async function attemptReconnect(code){
-    if(!code || isHost || isDemo || leavingGame) return;
+    if(!code || isHost || isDemo) return;
     
     reconnectAttempts++;
     console.log('Reconnect attempt', reconnectAttempts);
@@ -1861,8 +1844,15 @@ async function attemptReconnect(code){
         // Save state for refresh-based rejoin
         sessionStorage.setItem('chronicle-rejoin-code', code);
         sessionStorage.setItem('chronicle-rejoin-name', myName);
+        
+        // Show reconnect prompt
+        $('reconnecting').innerHTML = 'Connection lost. <button onclick="location.reload()" style="background:white;color:#8b0000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;margin-left:10px;cursor:pointer">Tap to Rejoin</button>';
+        $('reconnecting').classList.add('show');
         return;
     }
+    
+    $('reconnecting').textContent = 'Reconnecting... (' + reconnectAttempts + '/' + maxReconnectAttempts + ')';
+    $('reconnecting').classList.add('show');
     
     // Wait before retry
     await new Promise(r => setTimeout(r, 1500));
@@ -1904,6 +1894,8 @@ async function attemptReconnect(code){
         
         // Success!
         reconnectAttempts = 0;
+        $('reconnecting').textContent = 'Reconnecting...';
+        $('reconnecting').classList.remove('show');
         conns = [conn];
         hostConn = conn;
         
@@ -2015,11 +2007,11 @@ function renderGame(){
     tl.innerHTML='';
     const sorted=[...gameState.timeline].sort((a,b)=>a.y-b.y);
     
-    // Calculate scale class based on number of items - scale to fit up to 7 cards, then scroll
+    // Calculate scale class based on number of items
     let sizeClass = '';
-    if(sorted.length >= 3 && sorted.length <= 4) sizeClass = 'tl-scale-90';
-    else if(sorted.length >= 5 && sorted.length <= 6) sizeClass = 'tl-scale-75';
-    else if(sorted.length >= 7) sizeClass = 'tl-scale-60';
+    if(sorted.length >= 4 && sorted.length <= 5) sizeClass = 'tl-scale-90';
+    else if(sorted.length >= 6 && sorted.length <= 7) sizeClass = 'tl-scale-75';
+    else if(sorted.length >= 8) sizeClass = 'tl-scale-60';
     
     const rowDiv=document.createElement('div');
     rowDiv.className='timeline-row';const timelineBar=document.createElement('div');timelineBar.style.cssText='position:absolute;top:50%;left:10px;right:10px;height:40px;background:linear-gradient(90deg,#9a7b3a,#c4a44d,#9a7b3a);transform:translateY(-50%);border-radius:4px;z-index:0';rowDiv.appendChild(timelineBar);rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
@@ -2029,6 +2021,19 @@ function renderGame(){
         dz.className='drop-zone'+(isMyTurn?'':' disabled');
         dz.dataset.position=i;
         const pos=i;
+        const handleTap=()=>{
+            if(isMyTurn||isDemo){
+                cardSelected=false;
+                const card=$('current-card');
+                if(card)card.classList.remove('selected');
+                makeMove(pos);
+            }
+        };
+        dz.onclick=handleTap;
+        dz.ontouchend=(e)=>{
+            e.preventDefault();
+            handleTap();
+        };
         dz.ondragover=(e)=>{
             if(!isMyTurn&&!isDemo)return;
             e.preventDefault();
@@ -2054,7 +2059,44 @@ function renderGame(){
     }
     tl.appendChild(rowDiv);
     
-    // No CSS transform scaling - use CSS classes instead to avoid breaking drag
+    // Dynamic scaling - start normal, scale down to fit up to 8 cards, then scroll
+    // Use double rAF to ensure layout is complete before measuring
+    requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+            const container = document.querySelector('.timeline-container');
+            const timeline = document.querySelector('.timeline');
+            if(container && timeline){
+                // Reset any previous scaling first
+                timeline.style.transform = 'none';
+                timeline.style.transformOrigin = '';
+                
+                // Force reflow to get accurate measurement
+                void timeline.offsetWidth;
+                
+                const containerWidth = container.clientWidth;
+                const timelineWidth = timeline.scrollWidth;
+                const cardCount = sorted.length;
+                
+                // Only scale if we have 4+ cards AND timeline overflows
+                if(cardCount >= 4 && timelineWidth > containerWidth){
+                    let scale;
+                    if(cardCount <= 8){
+                        // 4-8 cards: scale to fit ALL cards
+                        scale = containerWidth / timelineWidth * 0.95;
+                    } else {
+                        // 9+ cards: scale to fit 8 cards worth, then scroll
+                        scale = (containerWidth * cardCount) / (8 * timelineWidth);
+                    }
+                    // Don't scale below 0.4 (40%)
+                    scale = Math.max(0.4, Math.min(scale, 1));
+                    timeline.style.transform = `scale(${scale})`;
+                    timeline.style.transformOrigin = 'left center';
+                } else {
+                    timeline.style.transform = 'none';
+                }
+            }
+        });
+    });
     
     if(isDemo){
         $('game-status').textContent='Drag card or tap a + slot to place it';
@@ -2396,13 +2438,13 @@ function playAgain(){
     renderGame();
 }
 
-function leaveLobby(){leavingGame=true;goHome();}
+function leaveLobby(){goHome();}
 
-function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';goHome();}
+function leaveGame(){document.getElementById('leave-game-btn').style.display='none';goHome();}
 function goHome(){
     if(peer){try{peer.destroy();}catch(e){}}
     peer=null;conns=[];gameState=null;isHost=false;isDemo=false;
-    hostConn=null;reconnectAttempts=0;connectionCheckPending=false;leavingGame=false;
+    hostConn=null;reconnectAttempts=0;connectionCheckPending=false;
     // Clear any pending rejoin
     sessionStorage.removeItem('chronicle-rejoin-code');
     sessionStorage.removeItem('chronicle-rejoin-name');
@@ -2410,6 +2452,8 @@ function goHome(){
     $('home-status').textContent='';
     $('qr-container').innerHTML='';
     $('mistakes-tray').classList.remove('visible','expanded');
+    $('reconnecting').textContent='Reconnecting...';
+    $('reconnecting').classList.remove('show');
     window.history.replaceState({},document.title,window.location.pathname);
 }
 
@@ -2715,16 +2759,23 @@ if(document.readyState==='loading'){
 
 // Register Service Worker for PWA
 if('serviceWorker' in navigator){
-    // Auto-reload when new service worker takes control
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-        window.location.reload();
-    });
     window.addEventListener('load',()=>{
         navigator.serviceWorker.register('./sw.js')
-            .then(reg=>console.log('Service Worker registered:', reg.scope))
+            .then(reg=>{
+                console.log('Service Worker registered:', reg.scope);
+                // Check for updates
+                reg.addEventListener('updatefound',()=>{
+                    const newWorker=reg.installing;
+                    newWorker.addEventListener('statechange',()=>{
+                        if(newWorker.state==='installed' && navigator.serviceWorker.controller){
+                            console.log('New version available! Refresh to update.');
+                        }
+                    });
+                });
+            })
             .catch(err=>console.log('Service Worker registration failed:', err));
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.7</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
