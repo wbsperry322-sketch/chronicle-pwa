@@ -1,4 +1,4 @@
-<!-- Chronicle v3.5 -->
+<!-- Chronicle v3.6 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -31,6 +31,7 @@
         #game-screen .container{max-width:100%;padding:0}
         .game-center{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;padding:0}
         .game-bottom{padding:0 15px;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
+        @media(min-width:800px) and (min-height:600px){.game-bottom{bottom:120px}.game-bottom .game-card{max-width:450px;padding:21px 30px;border-radius:18px;border-width:4px}.game-bottom .card-event{font-size:1.5rem;margin-bottom:15px}.game-bottom .card-year{font-size:1.8rem}}
         .debug-grid{display:none}
         @media(max-height:500px) and (orientation:landscape){
             /* Fix white spaces */
