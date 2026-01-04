@@ -1,4 +1,4 @@
-<!-- Chronicle v4.9 -->
+<!-- Chronicle v5.0 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -262,8 +262,7 @@
         .mistakes-detail .event-year{font-family:Georgia,'Times New Roman',serif;font-size:1.3rem;font-weight:700;color:var(--error)}
         .mistakes-detail .close-btn{background:var(--ink);color:var(--parchment);border:none;padding:8px 20px;border-radius:6px;font-family:Georgia,'Times New Roman',serif;font-size:.8rem;cursor:pointer;margin-top:10px}
         .error-msg{color:var(--error);text-align:center;padding:10px;font-weight:600}
-        .reconnecting{display:none!important}
-        .demo-controls{margin-top:15px;padding-top:15px;border-top:2px dashed var(--gold)}
+                .demo-controls{margin-top:15px;padding-top:15px;border-top:2px dashed var(--gold)}
         .demo-label{font-family:Georgia,'Times New Roman',serif;font-size:.9rem;color:var(--ink-light);text-align:center;margin-bottom:10px}
         .player-count-row{display:flex;align-items:center;gap:10px;margin:10px 0}
         .player-count-row label{flex:1;font-family:Georgia,'Times New Roman',serif}
@@ -284,8 +283,7 @@
 <body>
     <div id="bg-cover"><img src="library.jpg" alt=""></div>
     <div id="game-bg"><img src="background.jpg" alt=""></div>
-    <div class="reconnecting" id="reconnecting">Reconnecting...</div>
-    
+
     <div class="container">
         <!-- HOME SCREEN -->
         <div class="screen active" id="home-screen">
@@ -1369,7 +1367,7 @@ const shuffle=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floo
 const genCode=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='';for(let i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r;};
 
 let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,gameState=null,playerNames={};
-let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3;
+let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3,leavingGame=false;
 
 // Check for pending rejoin on page load
 function checkPendingRejoin(){
@@ -1575,10 +1573,8 @@ function createPeer(id){
             handleConnection(conn);
         });
         peer.on('disconnected',()=>{
-            $('reconnecting').classList.add('show');
             setTimeout(()=>peer&&peer.reconnect(),1000);
         });
-        peer.on('close',()=>$('reconnecting').classList.remove('show'));
     });
 }
 
@@ -1843,7 +1839,7 @@ async function joinGame(){
 }
 
 async function attemptReconnect(code){
-    if(!code || isHost || isDemo) return;
+    if(!code || isHost || isDemo || leavingGame) return;
     
     reconnectAttempts++;
     console.log('Reconnect attempt', reconnectAttempts);
@@ -1852,15 +1848,8 @@ async function attemptReconnect(code){
         // Save state for refresh-based rejoin
         sessionStorage.setItem('chronicle-rejoin-code', code);
         sessionStorage.setItem('chronicle-rejoin-name', myName);
-        
-        // Show reconnect prompt
-        $('reconnecting').innerHTML = 'Connection lost. <button onclick="location.reload()" style="background:white;color:#8b0000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;margin-left:10px;cursor:pointer">Tap to Rejoin</button>';
-        $('reconnecting').classList.add('show');
         return;
     }
-    
-    $('reconnecting').textContent = 'Reconnecting... (' + reconnectAttempts + '/' + maxReconnectAttempts + ')';
-    $('reconnecting').classList.add('show');
     
     // Wait before retry
     await new Promise(r => setTimeout(r, 1500));
@@ -1902,8 +1891,6 @@ async function attemptReconnect(code){
         
         // Success!
         reconnectAttempts = 0;
-        $('reconnecting').textContent = 'Reconnecting...';
-        $('reconnecting').classList.remove('show');
         conns = [conn];
         hostConn = conn;
         
@@ -2446,13 +2433,13 @@ function playAgain(){
     renderGame();
 }
 
-function leaveLobby(){goHome();}
+function leaveLobby(){leavingGame=true;goHome();}
 
-function leaveGame(){document.getElementById('leave-game-btn').style.display='none';goHome();}
+function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';goHome();}
 function goHome(){
     if(peer){try{peer.destroy();}catch(e){}}
     peer=null;conns=[];gameState=null;isHost=false;isDemo=false;
-    hostConn=null;reconnectAttempts=0;connectionCheckPending=false;
+    hostConn=null;reconnectAttempts=0;connectionCheckPending=false;leavingGame=false;
     // Clear any pending rejoin
     sessionStorage.removeItem('chronicle-rejoin-code');
     sessionStorage.removeItem('chronicle-rejoin-name');
@@ -2460,8 +2447,6 @@ function goHome(){
     $('home-status').textContent='';
     $('qr-container').innerHTML='';
     $('mistakes-tray').classList.remove('visible','expanded');
-    $('reconnecting').textContent='Reconnecting...';
-    $('reconnecting').classList.remove('show');
     window.history.replaceState({},document.title,window.location.pathname);
 }
 
@@ -2785,5 +2770,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.9</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.0</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
