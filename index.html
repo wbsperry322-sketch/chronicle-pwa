@@ -1,4 +1,4 @@
-<!-- Chronicle v6.8 -->
+<!-- Chronicle v6.9 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -88,6 +88,8 @@
             .mistakes-tray .tray-header,.mistakes-tray .mistakes-header{height:45px !important;padding:0 15px !important;display:flex !important;align-items:center !important;justify-content:center !important}
             .mistakes-tray h3{font-size:1rem !important;text-align:center !important;margin:0 !important;padding-bottom:12px !important}
             .mistakes-tray .mistakes-toggle{font-size:1rem !important;padding:4px 8px !important;width:28px !important;height:28px !important}
+            /* Leave button - move up in landscape */
+            #leave-game-btn{top:5px !important;left:5px !important;padding:4px 10px !important;font-size:0.75rem !important}
             /* Cards use original size - JS handles scaling */
         }
         /* Desktop - timeline 100% larger */
@@ -2207,6 +2209,7 @@ function startGame(){
 }
 
 function drawCard(){
+    moveInProgress = false; // Reset move guard for next turn
     if(gameState.deck.length===0){
         endGame();
         return;
@@ -2293,19 +2296,7 @@ function renderGame(){
         dz.className='drop-zone'+(isMyTurn?'':' disabled');
         dz.dataset.position=i;
         const pos=i;
-        const handleTap=()=>{
-            if(isMyTurn||isDemo){
-                cardSelected=false;
-                const card=$('current-card');
-                if(card)card.classList.remove('selected');
-                makeMove(pos);
-            }
-        };
-        dz.onclick=handleTap;
-        dz.ontouchend=(e)=>{
-            e.preventDefault();
-            handleTap();
-        };
+        // Tap to place disabled - only drag and drop allowed
         dz.ondragover=(e)=>{
             if(!isMyTurn&&!isDemo)return;
             e.preventDefault();
@@ -2368,11 +2359,19 @@ function makeMove(position){
     }
 }
 
+let moveInProgress = false;
+
 function processMove(playerId,position){
+    // Prevent duplicate moves
+    if(moveInProgress) return;
+
     const expectedPlayer=gameState.players[gameState.currentPlayer];
     if(!isDemo&&expectedPlayer.id!==playerId)return;
-    
+
     const card=gameState.currentCard;
+    if(!card) return; // No card to place
+
+    moveInProgress = true;
     const sorted=[...gameState.timeline].sort((a,b)=>a.y-b.y);
     const before=sorted[position-1];
     const after=sorted[position];
@@ -3027,5 +3026,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.8</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.9</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
