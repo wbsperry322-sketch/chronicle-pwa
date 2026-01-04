@@ -1,4 +1,4 @@
-<!-- Chronicle v5.5 -->
+<!-- Chronicle v5.6 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -1542,50 +1542,66 @@ function createPeer(id){
             reject(new Error('PeerJS not loaded. Try refreshing the page.'));
             return;
         }
-        // Use default PeerJS cloud (more reliable than 0.peerjs.com)
-        const config = {
-            debug: 1,
-            config: {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:global.stun.twilio.com:3478' },
-                    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-                    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-                    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-                ]
+        // Try default PeerJS first, fallback to peerjs.92k.de if down
+        const iceServers = [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:global.stun.twilio.com:3478' },
+            { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+            { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+            { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+        ];
+
+        // Try default server first
+        let serverIndex = 0;
+        const servers = [
+            { debug: 1, config: { iceServers } }, // default PeerJS cloud
+            { host: 'peerjs.92k.de', secure: true, debug: 1, config: { iceServers } } // fallback
+        ];
+
+        const tryServer = () => {
+            if (serverIndex >= servers.length) {
+                reject(new Error('All servers unavailable'));
+                return;
             }
+            console.log('Trying server:', serverIndex === 0 ? 'default' : 'peerjs.92k.de');
+            peer = new Peer(id, servers[serverIndex]);
+            const timeout = setTimeout(() => {
+                console.log('Server timeout, trying next...');
+                peer.destroy();
+                serverIndex++;
+                tryServer();
+            }, 8000);
+            peer.on('open', (peerId) => {
+                clearTimeout(timeout);
+                console.log('Connected to PeerJS server with ID:', peerId);
+                resolve();
+            });
+            peer.on('error', err => {
+                clearTimeout(timeout);
+                console.error('Peer error:', err);
+                if (err.type === 'unavailable-id') {
+                    reject(new Error('Code taken, try again'));
+                } else if (err.type === 'server-error' || err.type === 'network') {
+                    // Try next server
+                    console.log('Server error, trying next...');
+                    peer.destroy();
+                    serverIndex++;
+                    tryServer();
+                } else {
+                    reject(new Error(err.type + ': ' + (err.message || 'Connection failed')));
+                }
+            });
+            peer.on('connection', conn => {
+                console.log('Incoming connection from:', conn.peer);
+                if ($('waiting-msg')) $('waiting-msg').textContent = 'Player connecting...';
+                handleConnection(conn);
+            });
+            peer.on('disconnected', () => {
+                setTimeout(() => peer && peer.reconnect(), 1000);
+            });
+            peer.on('close', () => {});
         };
-        peer=new Peer(id, config);
-        const timeout=setTimeout(()=>{
-            reject(new Error('Connection timeout - server may be down'));
-        },15000);
-        peer.on('open',(peerId)=>{
-            clearTimeout(timeout);
-            console.log('Connected to PeerJS server with ID:',peerId);
-            resolve();
-        });
-        peer.on('error',err=>{
-            clearTimeout(timeout);
-            console.error('Peer error:',err);
-            if(err.type==='unavailable-id'){
-                reject(new Error('Code taken, try again'));
-            }else if(err.type==='network'){
-                reject(new Error('Network error - check your connection'));
-            }else if(err.type==='server-error'){
-                reject(new Error('Server error - try again later'));
-            }else{
-                reject(new Error(err.type+': '+(err.message||'Connection failed')));
-            }
-        });
-        peer.on('connection',conn=>{
-            console.log('Incoming connection from:',conn.peer);
-            if($('waiting-msg'))$('waiting-msg').textContent='Player connecting...';
-            handleConnection(conn);
-        });
-        peer.on('disconnected',()=>{
-            setTimeout(()=>peer&&peer.reconnect(),1000);
-        });
-        peer.on('close',()=>{});
+        tryServer();
     });
 }
 
@@ -1772,28 +1788,52 @@ async function joinGame(){
         return;
     }
     try{
-        const config = {
-            debug: 1,
-            config: {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:global.stun.twilio.com:3478' },
-                    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-                    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-                    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-                ]
-            }
-        };
-        peer=new Peer(config);
+        const iceServers = [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:global.stun.twilio.com:3478' },
+            { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+            { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+            { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+        ];
+        const servers = [
+            { debug: 1, config: { iceServers } }, // default
+            { host: 'peerjs.92k.de', secure: true, debug: 1, config: { iceServers } } // fallback
+        ];
+
         $('home-status').textContent='Connecting to server...';
-        await new Promise((res,rej)=>{
-            const timeout=setTimeout(()=>rej(new Error('Server timeout')),15000);
-            peer.on('open',(id)=>{
-                clearTimeout(timeout);
-                $('home-status').textContent='Connected! ID: '+id.substring(0,8)+'...';
-                res();
-            });
-            peer.on('error',e=>{clearTimeout(timeout);rej(e);});
+        await new Promise((res, rej) => {
+            let serverIndex = 0;
+            const tryServer = () => {
+                if (serverIndex >= servers.length) {
+                    rej(new Error('All servers unavailable'));
+                    return;
+                }
+                console.log('Trying server:', serverIndex === 0 ? 'default' : 'peerjs.92k.de');
+                peer = new Peer(servers[serverIndex]);
+                const timeout = setTimeout(() => {
+                    console.log('Server timeout, trying next...');
+                    peer.destroy();
+                    serverIndex++;
+                    tryServer();
+                }, 8000);
+                peer.on('open', (id) => {
+                    clearTimeout(timeout);
+                    $('home-status').textContent = 'Connected! ID: ' + id.substring(0, 8) + '...';
+                    res();
+                });
+                peer.on('error', e => {
+                    clearTimeout(timeout);
+                    if (e.type === 'server-error' || e.type === 'network') {
+                        console.log('Server error, trying next...');
+                        peer.destroy();
+                        serverIndex++;
+                        tryServer();
+                    } else {
+                        rej(e);
+                    }
+                });
+            };
+            tryServer();
         });
         myId=peer.id;
         isDemo=false;
@@ -1860,23 +1900,44 @@ async function attemptReconnect(code){
             peer = null;
         }
         
-        // Create fresh peer
-        peer = new Peer(null, {
-            debug: 0,
-            config: {
-                iceServers: [
-                    {urls:'stun:stun.l.google.com:19302'},
-                    {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
-                    {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'}
-                ]
-            }
-        });
-        
-        // Wait for peer to connect
+        // Create fresh peer with fallback servers
+        const iceServers = [
+            {urls:'stun:stun.l.google.com:19302'},
+            {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
+            {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'}
+        ];
+        const servers = [
+            { debug: 0, config: { iceServers } },
+            { host: 'peerjs.92k.de', secure: true, debug: 0, config: { iceServers } }
+        ];
+
+        // Wait for peer to connect with fallback
         await new Promise((res, rej) => {
-            const timeout = setTimeout(() => rej(new Error('peer timeout')), 5000);
-            peer.on('open', () => { clearTimeout(timeout); res(); });
-            peer.on('error', (e) => { clearTimeout(timeout); rej(e); });
+            let serverIndex = 0;
+            const tryServer = () => {
+                if (serverIndex >= servers.length) {
+                    rej(new Error('All servers unavailable'));
+                    return;
+                }
+                peer = new Peer(null, servers[serverIndex]);
+                const timeout = setTimeout(() => {
+                    peer.destroy();
+                    serverIndex++;
+                    tryServer();
+                }, 5000);
+                peer.on('open', () => { clearTimeout(timeout); res(); });
+                peer.on('error', (e) => {
+                    clearTimeout(timeout);
+                    if (e.type === 'server-error' || e.type === 'network') {
+                        peer.destroy();
+                        serverIndex++;
+                        tryServer();
+                    } else {
+                        rej(e);
+                    }
+                });
+            };
+            tryServer();
         });
         
         // Connect to host
@@ -2754,5 +2815,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
