@@ -1,4 +1,4 @@
-<!-- Chronicle v4.3 -->
+<!-- Chronicle v4.4 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -59,7 +59,7 @@
             #game-screen .timeline-row{padding:2px 3px !important}
             #game-screen .timeline-row::before{height:24px !important}
             /* Current card at top right */
-            #game-screen .game-bottom{position:fixed !important;top:25px !important;right:5px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
+            #game-screen .game-bottom{position:fixed !important;top:10px !important;right:15px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
             #game-screen .game-bottom .game-card{max-width:200px !important;padding:14px 18px !important}
             #game-screen .game-bottom .game-card.thinking{animation:thinking-glow-gold 2s ease-in-out infinite !important}
             #game-screen .game-bottom .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite !important}
@@ -113,7 +113,7 @@
         .game-card.thinking{animation:thinking-glow-gold 2s ease-in-out infinite}
         .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite;cursor:grab}
         .game-card.selected{animation:none;box-shadow:0 0 25px var(--gold);transform:scale(1.05)}
-        .game-card.dragging{cursor:grabbing;transform:scale(1.05);box-shadow:0 15px 50px rgba(0,0,0,.5);animation:none;opacity:.9;z-index:1000;position:relative}
+        .game-card.dragging{cursor:grabbing;box-shadow:0 15px 50px rgba(0,0,0,.5);animation:none;opacity:.9;z-index:9999}
         .game-card.drag-enabled{cursor:grab}
         @keyframes thinking-glow-gold{
             0%,100%{box-shadow:0 0 15px rgba(196,164,77,.5),0 0 30px rgba(196,164,77,.2);transform:scale(1)}
@@ -2758,5 +2758,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.3</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.4</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
