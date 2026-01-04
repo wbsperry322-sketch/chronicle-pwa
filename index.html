@@ -1,4 +1,4 @@
-<!-- Chronicle v5.2 -->
+<!-- Chronicle v5.3 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -54,27 +54,27 @@
             /* Timeline spans full width */
             #game-screen .game-center{position:fixed !important;top:50% !important;left:10px !important;right:10px !important;transform:translateY(-50%) !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 !important;width:auto !important;height:auto !important;margin:0 !important}
             #game-screen .timeline-container{padding:3px !important;margin:0 !important;max-height:calc(100vh - 70px) !important;max-width:100% !important;overflow-x:auto !important;overflow-y:hidden !important;background:transparent !important;box-shadow:none !important;border:none !important;-webkit-overflow-scrolling:touch !important;display:flex !important;justify-content:flex-start !important}
-            #game-screen .timeline{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark)) !important;border-radius:8px !important;padding:4px !important}
-            #game-screen .timeline-row{padding:2px 3px !important}
-            #game-screen .tl-card{min-width:138px !important;max-width:160px !important;padding:11px 14px !important;border-radius:9px !important}
-            #game-screen .tl-card .ev{font-size:0.88rem !important}
-            #game-screen .tl-card .yr{font-size:1.1rem !important}
-            #game-screen .drop-zone{width:60px !important;height:100px !important;border-radius:9px !important;margin:0 5px !important}
-            #game-screen .drop-zone::after{font-size:1.1rem !important}
-            #game-screen .timeline-row::before{height:22px !important}
+            #game-screen .timeline{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark)) !important;border-radius:10px !important;padding:6px !important}
+            #game-screen .timeline-row{padding:3px 4px !important}
+            #game-screen .tl-card{min-width:180px !important;max-width:208px !important;padding:14px 18px !important;border-radius:12px !important}
+            #game-screen .tl-card .ev{font-size:1.14rem !important}
+            #game-screen .tl-card .yr{font-size:1.43rem !important}
+            #game-screen .drop-zone{width:78px !important;height:130px !important;border-radius:12px !important;margin:0 6px !important}
+            #game-screen .drop-zone::after{font-size:1.43rem !important}
+            #game-screen .timeline-row::before{height:29px !important}
             /* Landscape scale classes */
-            #game-screen .timeline-row.tl-scale-90 .tl-card{min-width:115px !important;max-width:135px !important;padding:8px 10px !important}
-            #game-screen .timeline-row.tl-scale-90 .tl-card .ev{font-size:0.72rem !important}
-            #game-screen .timeline-row.tl-scale-90 .tl-card .yr{font-size:0.9rem !important}
-            #game-screen .timeline-row.tl-scale-90 .drop-zone{width:52px !important;height:85px !important}
-            #game-screen .timeline-row.tl-scale-75 .tl-card{min-width:95px !important;max-width:115px !important;padding:6px 8px !important}
-            #game-screen .timeline-row.tl-scale-75 .tl-card .ev{font-size:0.62rem !important}
-            #game-screen .timeline-row.tl-scale-75 .tl-card .yr{font-size:0.8rem !important}
-            #game-screen .timeline-row.tl-scale-75 .drop-zone{width:45px !important;height:75px !important}
-            #game-screen .timeline-row.tl-scale-60 .tl-card{min-width:80px !important;max-width:100px !important;padding:5px 6px !important}
-            #game-screen .timeline-row.tl-scale-60 .tl-card .ev{font-size:0.55rem !important}
-            #game-screen .timeline-row.tl-scale-60 .tl-card .yr{font-size:0.7rem !important}
-            #game-screen .timeline-row.tl-scale-60 .drop-zone{width:38px !important;height:65px !important;margin:0 3px !important}
+            #game-screen .timeline-row.tl-scale-90 .tl-card{min-width:150px !important;max-width:176px !important;padding:10px 13px !important}
+            #game-screen .timeline-row.tl-scale-90 .tl-card .ev{font-size:0.94rem !important}
+            #game-screen .timeline-row.tl-scale-90 .tl-card .yr{font-size:1.17rem !important}
+            #game-screen .timeline-row.tl-scale-90 .drop-zone{width:68px !important;height:110px !important}
+            #game-screen .timeline-row.tl-scale-75 .tl-card{min-width:124px !important;max-width:150px !important;padding:8px 10px !important}
+            #game-screen .timeline-row.tl-scale-75 .tl-card .ev{font-size:0.81rem !important}
+            #game-screen .timeline-row.tl-scale-75 .tl-card .yr{font-size:1.04rem !important}
+            #game-screen .timeline-row.tl-scale-75 .drop-zone{width:58px !important;height:98px !important}
+            #game-screen .timeline-row.tl-scale-60 .tl-card{min-width:104px !important;max-width:130px !important;padding:6px 8px !important}
+            #game-screen .timeline-row.tl-scale-60 .tl-card .ev{font-size:0.72rem !important}
+            #game-screen .timeline-row.tl-scale-60 .tl-card .yr{font-size:0.91rem !important}
+            #game-screen .timeline-row.tl-scale-60 .drop-zone{width:49px !important;height:85px !important;margin:0 4px !important}
             /* Current card - moved down and left */
             #game-screen .game-bottom{position:fixed !important;top:45px !important;right:45px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
             #game-screen .game-bottom .game-card{max-width:144px !important;padding:10px 13px !important}
@@ -85,8 +85,8 @@
             /* Mistakes tray - always show in landscape */
             .mistakes-tray,.mistakes-tray.visible{display:flex !important;transform:translateY(calc(100% - 50px)) !important;flex-direction:column !important}
             .mistakes-tray.visible.expanded{transform:translateY(0) !important}
-            .mistakes-tray .tray-header,.mistakes-tray .mistakes-header{height:50px !important;padding:10px 15px !important}
-            .mistakes-tray h3{font-size:1rem !important;text-align:center !important}
+            .mistakes-tray .tray-header,.mistakes-tray .mistakes-header{height:50px !important;padding:0 15px !important;display:flex !important;align-items:center !important;justify-content:center !important}
+            .mistakes-tray h3{font-size:1rem !important;text-align:center !important;margin:0 !important;line-height:50px !important}
             .mistakes-tray .mistakes-toggle{font-size:1rem !important;padding:4px 8px !important;width:28px !important;height:28px !important}
             /* Cards use original size - JS handles scaling */
         }
@@ -2024,7 +2024,7 @@ function renderGame(){
     }
     
     const rowDiv=document.createElement('div');
-    rowDiv.className='timeline-row';const timelineBar=document.createElement('div');timelineBar.style.cssText='position:absolute;top:50%;left:10px;right:10px;height:20px;background:linear-gradient(90deg,#9a7b3a,#c4a44d,#9a7b3a);transform:translateY(-50%);border-radius:4px;z-index:0';rowDiv.appendChild(timelineBar);rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
+    rowDiv.className='timeline-row';const timelineBar=document.createElement('div');timelineBar.style.cssText='position:absolute;top:50%;left:10px;right:10px;height:26px;background:linear-gradient(90deg,#9a7b3a,#c4a44d,#9a7b3a);transform:translateY(-50%);border-radius:5px;z-index:0';rowDiv.appendChild(timelineBar);rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
     
     for(let i=0;i<=sorted.length;i++){
         const dz=document.createElement('div');
@@ -2760,5 +2760,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.2</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.3</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
