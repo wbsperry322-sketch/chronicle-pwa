@@ -1,4 +1,4 @@
-<!-- Chronicle v5.1 -->
+<!-- Chronicle v5.2 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -59,22 +59,22 @@
             #game-screen .tl-card{min-width:138px !important;max-width:160px !important;padding:11px 14px !important;border-radius:9px !important}
             #game-screen .tl-card .ev{font-size:0.88rem !important}
             #game-screen .tl-card .yr{font-size:1.1rem !important}
-            #game-screen .drop-zone{width:55px !important;height:96px !important;border-radius:9px !important;margin:0 4px !important}
+            #game-screen .drop-zone{width:60px !important;height:100px !important;border-radius:9px !important;margin:0 5px !important}
             #game-screen .drop-zone::after{font-size:1.1rem !important}
             #game-screen .timeline-row::before{height:22px !important}
             /* Landscape scale classes */
             #game-screen .timeline-row.tl-scale-90 .tl-card{min-width:115px !important;max-width:135px !important;padding:8px 10px !important}
             #game-screen .timeline-row.tl-scale-90 .tl-card .ev{font-size:0.72rem !important}
             #game-screen .timeline-row.tl-scale-90 .tl-card .yr{font-size:0.9rem !important}
-            #game-screen .timeline-row.tl-scale-90 .drop-zone{width:42px !important;height:75px !important}
+            #game-screen .timeline-row.tl-scale-90 .drop-zone{width:52px !important;height:85px !important}
             #game-screen .timeline-row.tl-scale-75 .tl-card{min-width:95px !important;max-width:115px !important;padding:6px 8px !important}
             #game-screen .timeline-row.tl-scale-75 .tl-card .ev{font-size:0.62rem !important}
             #game-screen .timeline-row.tl-scale-75 .tl-card .yr{font-size:0.8rem !important}
-            #game-screen .timeline-row.tl-scale-75 .drop-zone{width:35px !important;height:65px !important}
+            #game-screen .timeline-row.tl-scale-75 .drop-zone{width:45px !important;height:75px !important}
             #game-screen .timeline-row.tl-scale-60 .tl-card{min-width:80px !important;max-width:100px !important;padding:5px 6px !important}
             #game-screen .timeline-row.tl-scale-60 .tl-card .ev{font-size:0.55rem !important}
             #game-screen .timeline-row.tl-scale-60 .tl-card .yr{font-size:0.7rem !important}
-            #game-screen .timeline-row.tl-scale-60 .drop-zone{width:28px !important;height:55px !important;margin:0 2px !important}
+            #game-screen .timeline-row.tl-scale-60 .drop-zone{width:38px !important;height:65px !important;margin:0 3px !important}
             /* Current card - moved down and left */
             #game-screen .game-bottom{position:fixed !important;top:45px !important;right:45px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
             #game-screen .game-bottom .game-card{max-width:144px !important;padding:10px 13px !important}
@@ -195,20 +195,20 @@
         #game-screen .turn-banner{position:relative;z-index:2}
         .tl-card .ev{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:7px;line-height:1.2}
         .tl-card .yr{font-family:Georgia,'Times New Roman',serif;font-size:1.3rem;font-weight:700;color:var(--accent)}
-        .drop-zone{width:45px;height:85px;border:3px dashed var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(196,164,77,.1);margin:0 3px;transition:all .2s;cursor:pointer}
+        .drop-zone{width:55px;height:95px;border:3px dashed var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(196,164,77,.15);margin:0 4px;transition:all .2s;cursor:pointer}
         /* Scaling classes for timeline - scale DOWN to fit more cards */
         .timeline-row.tl-scale-90 .tl-card{min-width:105px;max-width:130px;padding:8px 10px}
         .timeline-row.tl-scale-90 .tl-card .ev{font-size:0.85rem}
         .timeline-row.tl-scale-90 .tl-card .yr{font-size:1.05rem}
-        .timeline-row.tl-scale-90 .drop-zone{width:38px;height:72px}
+        .timeline-row.tl-scale-90 .drop-zone{width:48px;height:82px}
         .timeline-row.tl-scale-75 .tl-card{min-width:90px;max-width:110px;padding:6px 8px}
         .timeline-row.tl-scale-75 .tl-card .ev{font-size:0.75rem}
         .timeline-row.tl-scale-75 .tl-card .yr{font-size:0.9rem}
-        .timeline-row.tl-scale-75 .drop-zone{width:32px;height:62px}
+        .timeline-row.tl-scale-75 .drop-zone{width:42px;height:72px}
         .timeline-row.tl-scale-60 .tl-card{min-width:75px;max-width:95px;padding:5px 6px}
         .timeline-row.tl-scale-60 .tl-card .ev{font-size:0.65rem}
         .timeline-row.tl-scale-60 .tl-card .yr{font-size:0.8rem}
-        .timeline-row.tl-scale-60 .drop-zone{width:26px;height:52px;margin:0 2px}
+        .timeline-row.tl-scale-60 .drop-zone{width:36px;height:62px;margin:0 3px}
         .drop-zone::after{content:'+';font-size:1.3rem;color:var(--gold);transition:transform .2s}
         .drop-zone:active,.drop-zone.selected{background:rgba(196,164,77,.4);transform:scale(1.1)}
         .drop-zone.drag-over{background:rgba(45,90,39,.3);border-color:var(--success);transform:scale(1.15)}
@@ -2024,7 +2024,7 @@ function renderGame(){
     }
     
     const rowDiv=document.createElement('div');
-    rowDiv.className='timeline-row';const timelineBar=document.createElement('div');timelineBar.style.cssText='position:absolute;top:50%;left:10px;right:10px;height:40px;background:linear-gradient(90deg,#9a7b3a,#c4a44d,#9a7b3a);transform:translateY(-50%);border-radius:4px;z-index:0';rowDiv.appendChild(timelineBar);rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
+    rowDiv.className='timeline-row';const timelineBar=document.createElement('div');timelineBar.style.cssText='position:absolute;top:50%;left:10px;right:10px;height:20px;background:linear-gradient(90deg,#9a7b3a,#c4a44d,#9a7b3a);transform:translateY(-50%);border-radius:4px;z-index:0';rowDiv.appendChild(timelineBar);rowDiv.className='timeline-row' + (sizeClass ? ' ' + sizeClass : '');
     
     for(let i=0;i<=sorted.length;i++){
         const dz=document.createElement('div');
@@ -2760,5 +2760,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.1</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.2</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
