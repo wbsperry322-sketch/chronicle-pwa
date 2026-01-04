@@ -1,4 +1,4 @@
-<!-- Chronicle v2.5 -->
+<!-- Chronicle v2.6 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -27,10 +27,10 @@
         #home-screen .card-box,#lobby-screen .card-box,#gameover-screen .card-box{max-width:500px;margin-left:auto;margin-right:auto}
         .screen{display:none;flex-direction:column;min-height:100vh}
         .screen.active{display:flex}
-        #game-screen.active{display:flex;flex-direction:column;padding-bottom:180px;padding-top:80px}
+        #game-screen.active{display:flex;flex-direction:column}
         #game-screen .container{max-width:100%;padding:10px}
-        .game-center{flex:1;display:flex;align-items:center;justify-content:center;overflow-x:auto;padding:10px 0;width:100%}
-        .game-bottom{padding:0 15px;position:fixed;bottom:50px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
+        .game-center{flex:1;display:flex;align-items:center;justify-content:center;overflow-x:auto;padding:10px 0;width:100%;margin-bottom:120px}
+        .game-bottom{padding:0 15px;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
         @media(max-height:500px) and (orientation:landscape){
             /* Fix white spaces */
             html{background:#1a0f0a !important;overflow:visible !important}
@@ -2753,5 +2753,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v2.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v2.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
