@@ -1,4 +1,4 @@
-<!-- Chronicle v5.8 -->
+<!-- Chronicle v5.9 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -30,7 +30,7 @@
         #game-screen.active{display:flex;flex-direction:column;padding:0 !important;margin:0 !important}
         #game-screen .container{max-width:100%;padding:0}
         .game-center{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;padding:0}
-        .game-bottom{padding:0 15px;position:fixed;bottom:30px;left:0;right:0;display:flex;flex-direction:column;align-items:center}
+        .game-bottom{padding:0 15px;position:fixed;bottom:50px;left:0;right:0;display:flex;flex-direction:column;align-items:center}
         .debug-grid{display:none}
         @media(max-height:500px) and (orientation:landscape){
             /* Fix white spaces */
@@ -76,7 +76,7 @@
             #game-screen .timeline-row.tl-scale-60 .tl-card .yr{font-size:0.82rem !important}
             #game-screen .timeline-row.tl-scale-60 .drop-zone{width:44px !important;height:77px !important;margin:0 4px !important}
             /* Current card - slightly bigger and moved down */
-            #game-screen .game-bottom{position:fixed !important;top:35px !important;right:40px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
+            #game-screen .game-bottom{position:fixed !important;top:25px !important;right:40px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
             #game-screen .game-bottom .game-card{max-width:160px !important;padding:12px 15px !important}
             #game-screen .game-bottom .game-card.thinking{animation:thinking-glow-gold 2s ease-in-out infinite !important}
             #game-screen .game-bottom .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite !important}
@@ -86,7 +86,7 @@
             .mistakes-tray,.mistakes-tray.visible{display:flex !important;transform:translateY(calc(100% - 45px)) !important;flex-direction:column !important}
             .mistakes-tray.visible.expanded{transform:translateY(0) !important}
             .mistakes-tray .tray-header,.mistakes-tray .mistakes-header{height:45px !important;padding:0 15px !important;display:flex !important;align-items:center !important;justify-content:center !important}
-            .mistakes-tray h3{font-size:1rem !important;text-align:center !important;margin:0 !important;padding-bottom:10px !important}
+            .mistakes-tray h3{font-size:1rem !important;text-align:center !important;margin:0 !important;padding-bottom:12px !important}
             .mistakes-tray .mistakes-toggle{font-size:1rem !important;padding:4px 8px !important;width:28px !important;height:28px !important}
             /* Cards use original size - JS handles scaling */
         }
@@ -348,7 +348,6 @@
         <div class="screen" id="game-screen">
             <div class="debug-grid"></div>
             <button id="leave-game-btn" onclick="leaveGame()" style="position:fixed;top:10px;left:25px;z-index:250;background:var(--error);color:#fff;border:2px solid var(--gold);border-radius:8px;padding:8px 16px;font-family:Georgia,serif;font-size:0.85rem;cursor:pointer;display:none;">Leave</button>
-            <button id="mute-btn" onclick="toggleMute()" style="position:fixed;top:10px;left:100px;z-index:250;background:var(--gold-dark);color:#fff;border:2px solid var(--gold);border-radius:8px;padding:8px 12px;font-family:Georgia,serif;font-size:1rem;cursor:pointer;display:none;">&#9834;</button>
     <div class="turn-banner" id="turn-banner">Waiting...</div>
             <div class="game-center">
                 <div class="timeline-container">
@@ -1384,165 +1383,6 @@ let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,
 let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3,leavingGame=false;
 let lobbyPlayers=[];  // Store lobby players for non-hosts
 
-// Audio system
-let audioCtx=null;
-let musicPlaying=false;
-let musicGain=null;
-let musicNodes=[];
-let audioMuted=localStorage.getItem('chronicle-muted')==='true';
-
-function toggleMute(){
-    audioMuted=!audioMuted;
-    localStorage.setItem('chronicle-muted',audioMuted);
-    updateMuteButton();
-    if(audioMuted){
-        stopBackgroundMusic();
-    }else if(document.getElementById('game-screen').classList.contains('active')){
-        startBackgroundMusic();
-    }
-}
-
-function updateMuteButton(){
-    const btn=document.getElementById('mute-btn');
-    if(btn){
-        btn.innerHTML=audioMuted?'&#9835;':'&#9834;'; // different music notes
-        btn.style.opacity=audioMuted?'0.5':'1';
-    }
-}
-
-function initAudio(){
-    if(audioCtx) return;
-    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-    musicGain=audioCtx.createGain();
-    musicGain.gain.value=0.15;
-    musicGain.connect(audioCtx.destination);
-}
-
-function playCorrectSound(){
-    if(audioMuted) return;
-    if(!audioCtx) initAudio();
-    if(audioCtx.state==='suspended') audioCtx.resume();
-    const now=audioCtx.currentTime;
-    // Triumphant fanfare - major chord arpeggio
-    const notes=[523.25,659.25,783.99,1046.50]; // C5, E5, G5, C6
-    notes.forEach((freq,i)=>{
-        const osc=audioCtx.createOscillator();
-        const gain=audioCtx.createGain();
-        osc.type='triangle';
-        osc.frequency.value=freq;
-        gain.gain.setValueAtTime(0,now+i*0.1);
-        gain.gain.linearRampToValueAtTime(0.3,now+i*0.1+0.05);
-        gain.gain.linearRampToValueAtTime(0,now+i*0.1+0.4);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now+i*0.1);
-        osc.stop(now+i*0.1+0.5);
-    });
-    // Add a bell-like chime
-    const bell=audioCtx.createOscillator();
-    const bellGain=audioCtx.createGain();
-    bell.type='sine';
-    bell.frequency.value=1318.51; // E6
-    bellGain.gain.setValueAtTime(0.4,now+0.3);
-    bellGain.gain.exponentialRampToValueAtTime(0.01,now+1.2);
-    bell.connect(bellGain);
-    bellGain.connect(audioCtx.destination);
-    bell.start(now+0.3);
-    bell.stop(now+1.3);
-}
-
-function playWrongSound(){
-    if(audioMuted) return;
-    if(!audioCtx) initAudio();
-    if(audioCtx.state==='suspended') audioCtx.resume();
-    const now=audioCtx.currentTime;
-    // Descending minor tone - sad trombone style
-    const osc=audioCtx.createOscillator();
-    const gain=audioCtx.createGain();
-    osc.type='sawtooth';
-    osc.frequency.setValueAtTime(311.13,now); // Eb4
-    osc.frequency.linearRampToValueAtTime(233.08,now+0.4); // Bb3
-    gain.gain.setValueAtTime(0.2,now);
-    gain.gain.linearRampToValueAtTime(0.15,now+0.2);
-    gain.gain.linearRampToValueAtTime(0,now+0.5);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start(now);
-    osc.stop(now+0.6);
-    // Second lower tone
-    const osc2=audioCtx.createOscillator();
-    const gain2=audioCtx.createGain();
-    osc2.type='sawtooth';
-    osc2.frequency.setValueAtTime(233.08,now+0.3);
-    osc2.frequency.linearRampToValueAtTime(185,now+0.7);
-    gain2.gain.setValueAtTime(0.15,now+0.3);
-    gain2.gain.linearRampToValueAtTime(0,now+0.8);
-    osc2.connect(gain2);
-    gain2.connect(audioCtx.destination);
-    osc2.start(now+0.3);
-    osc2.stop(now+0.9);
-}
-
-function startBackgroundMusic(){
-    if(audioMuted) return;
-    if(!audioCtx) initAudio();
-    if(audioCtx.state==='suspended') audioCtx.resume();
-    if(musicPlaying) return;
-    musicPlaying=true;
-
-    // Medieval/Renaissance style ambient music using pentatonic scale
-    const baseNotes=[196,220,261.63,293.66,329.63,392,440]; // G3 pentatonic-ish
-
-    function playMusicNote(){
-        if(!musicPlaying) return;
-        const now=audioCtx.currentTime;
-        const note=baseNotes[Math.floor(Math.random()*baseNotes.length)];
-        const osc=audioCtx.createOscillator();
-        const gain=audioCtx.createGain();
-        const filter=audioCtx.createBiquadFilter();
-
-        osc.type=Math.random()>0.5?'triangle':'sine';
-        osc.frequency.value=note*(Math.random()>0.7?2:1);
-        filter.type='lowpass';
-        filter.frequency.value=800;
-        gain.gain.setValueAtTime(0,now);
-        gain.gain.linearRampToValueAtTime(0.3,now+0.1);
-        gain.gain.linearRampToValueAtTime(0,now+2+Math.random()*2);
-
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(musicGain);
-        osc.start(now);
-        osc.stop(now+4);
-        musicNodes.push({osc,timeout:setTimeout(playMusicNote,800+Math.random()*1500)});
-    }
-
-    // Start multiple voices
-    for(let i=0;i<3;i++){
-        setTimeout(playMusicNote,i*600);
-    }
-
-    // Add a drone note
-    const drone=audioCtx.createOscillator();
-    const droneGain=audioCtx.createGain();
-    drone.type='sine';
-    drone.frequency.value=98; // G2 drone
-    droneGain.gain.value=0.1;
-    drone.connect(droneGain);
-    droneGain.connect(musicGain);
-    drone.start();
-    musicNodes.push({osc:drone,gain:droneGain});
-}
-
-function stopBackgroundMusic(){
-    musicPlaying=false;
-    musicNodes.forEach(n=>{
-        if(n.timeout) clearTimeout(n.timeout);
-        try{n.osc.stop();}catch(e){}
-    });
-    musicNodes=[];
-}
-
 // Check for pending rejoin on page load
 function checkPendingRejoin(){
     const pendingCode = sessionStorage.getItem('chronicle-rejoin-code');
@@ -1569,11 +1409,9 @@ const showScreen=id=>{
     if(id==='game-screen'){
         $('bg-cover').classList.add('hide');
         $('game-bg').classList.add('show');
-        startBackgroundMusic();
     }else{
         $('bg-cover').classList.remove('hide');
         $('game-bg').classList.remove('show');
-        stopBackgroundMusic();
     }
 };
 
@@ -1694,8 +1532,7 @@ function startDemo(){document.getElementById('version-tag').style.display='block
         currentPlayer:0
     };
     drawCard();
-    showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';document.getElementById('mute-btn').style.display='block';updateMuteButton();
-    renderGame();
+    showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';    renderGame();
 }
 
 // ============ ONLINE MODE ============
@@ -1850,15 +1687,13 @@ function handleMessage(conn,data){
             break;
         case'start':
             gameState=data.state;
-            showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';document.getElementById('mute-btn').style.display='block';updateMuteButton();
-            renderGame();
+            showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';            renderGame();
             break;
         case'state':
             gameState=data.state;
             // If we're receiving state, make sure game screen is showing
             if(gameState && gameState.timeline){
-                showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';document.getElementById('mute-btn').style.display='block';updateMuteButton();
-            }
+                showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';            }
             renderGame();
             break;
         case'move':
@@ -1879,8 +1714,7 @@ function handleMessage(conn,data){
             break;
         case'restart':
             gameState=data.state;
-            showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';document.getElementById('mute-btn').style.display='block';updateMuteButton();
-            renderGame();
+            showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';            renderGame();
             break;
         case'ping':
             // Respond with pong to confirm connection
@@ -2160,8 +1994,7 @@ function startGame(){
     };
     drawCard();
     broadcastToAll({type:'start',state:gameState});
-    showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';document.getElementById('mute-btn').style.display='block';updateMuteButton();document.getElementById('mute-btn').style.display='block';updateMuteButton();
-    renderGame();
+    showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';document.getElementById('mute-btn').style.display='block';updateMuteButton();    renderGame();
 }
 
 function drawCard(){
@@ -2494,12 +2327,9 @@ function showFeedback(correct,year,player,desc,cardName,position){
         descEl.classList.remove('show');
     }
     
-    // Play sound effects
+    // Trigger fireworks on correct answer
     if(correct){
-        playCorrectSound();
         createFireworks();
-    }else{
-        playWrongSound();
     }
     
     // Fetch Wikipedia image for background
@@ -2630,13 +2460,12 @@ function playAgain(){
     if(!isDemo){
         broadcastToAll({type:'restart',state:gameState});
     }
-    showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';document.getElementById('mute-btn').style.display='block';updateMuteButton();
-    renderGame();
+    showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';    renderGame();
 }
 
 function leaveLobby(){goHome();}
 
-function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';document.getElementById('mute-btn').style.display='none';goHome();}
+function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';goHome();}
 function goHome(){
     if(peer){try{peer.destroy();}catch(e){}}
     peer=null;conns=[];gameState=null;isHost=false;isDemo=false;
@@ -2983,5 +2812,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.8</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.9</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
