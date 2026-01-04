@@ -1,4 +1,4 @@
-<!-- Chronicle v6.4 -->
+<!-- Chronicle v6.5 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -1669,16 +1669,23 @@ function handleConnection(conn){
         conn.on('data',data=>handleMessage(conn,data));
         conn.on('close',()=>{
             conns=conns.filter(c=>c!==conn);
-            if(isHost&&gameState){
-                const p=gameState.players.find(p=>p.id===conn.peer);
-                if(p){
-                    p.connected=false;
-                    // Start 20-second kick timer
-                    disconnectTimers[conn.peer]=setTimeout(()=>{
-                        kickDisconnectedPlayer(conn.peer);
-                    },20000);
+            if(isHost){
+                if(gameState){
+                    // During game - mark disconnected and start kick timer
+                    const p=gameState.players.find(p=>p.id===conn.peer);
+                    if(p){
+                        p.connected=false;
+                        disconnectTimers[conn.peer]=setTimeout(()=>{
+                            kickDisconnectedPlayer(conn.peer);
+                        },20000);
+                    }
+                    broadcastState();
+                }else{
+                    // In lobby - remove player from list
+                    lobbyPlayers=lobbyPlayers.filter(p=>p.id!==conn.peer);
+                    updateLobbyUI(lobbyPlayers);
+                    broadcastToAll({type:'lobby',code:lobbyCode,players:lobbyPlayers});
                 }
-                broadcastState();
             }
         });
         if(isHost){
@@ -2949,5 +2956,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.4</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
