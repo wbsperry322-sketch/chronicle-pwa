@@ -1,4 +1,4 @@
-<!-- Chronicle v5.9 -->
+<!-- Chronicle v6.0 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -1382,6 +1382,7 @@ const genCode=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='';for(let i
 let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,gameState=null,playerNames={};
 let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3,leavingGame=false;
 let lobbyPlayers=[];  // Store lobby players for non-hosts
+let disconnectTimers={};  // Track disconnect timeouts for kicking players
 
 // Check for pending rejoin on page load
 function checkPendingRejoin(){
@@ -1615,7 +1616,13 @@ function handleConnection(conn){
             conns=conns.filter(c=>c!==conn);
             if(isHost&&gameState){
                 const p=gameState.players.find(p=>p.id===conn.peer);
-                if(p)p.connected=false;
+                if(p){
+                    p.connected=false;
+                    // Start 20-second kick timer
+                    disconnectTimers[conn.peer]=setTimeout(()=>{
+                        kickDisconnectedPlayer(conn.peer);
+                    },20000);
+                }
                 broadcastState();
             }
         });
@@ -1657,6 +1664,11 @@ function handleMessage(conn,data){
                 // Find existing player and reconnect them
                 const existingPlayer = gameState.players.find(p => p.name === data.name);
                 if(existingPlayer){
+                    // Cancel kick timer if exists
+                    if(disconnectTimers[existingPlayer.id]){
+                        clearTimeout(disconnectTimers[existingPlayer.id]);
+                        delete disconnectTimers[existingPlayer.id];
+                    }
                     existingPlayer.id = conn.peer;
                     existingPlayer.connected = true;
                     // Make sure connection is in conns array
@@ -1733,6 +1745,39 @@ function broadcastToAll(msg){
 function broadcastState(){
     broadcastToAll({type:'state',state:gameState});
     renderGame();
+}
+
+function kickDisconnectedPlayer(peerId){
+    if(!isHost || !gameState) return;
+    delete disconnectTimers[peerId];
+    const playerIndex = gameState.players.findIndex(p => p.id === peerId);
+    if(playerIndex === -1) return;
+
+    const kickedPlayer = gameState.players[playerIndex];
+    console.log('Kicking disconnected player:', kickedPlayer.name);
+
+    // Remove player from game
+    gameState.players.splice(playerIndex, 1);
+
+    // If kicked player was current player, move to next
+    if(gameState.currentPlayer >= gameState.players.length){
+        gameState.currentPlayer = 0;
+    }else if(playerIndex < gameState.currentPlayer){
+        gameState.currentPlayer--;
+    }else if(playerIndex === gameState.currentPlayer){
+        // Current player was kicked, move to next (index stays same but points to next player now)
+        if(gameState.currentPlayer >= gameState.players.length){
+            gameState.currentPlayer = 0;
+        }
+    }
+
+    // If only one player left, end the game
+    if(gameState.players.length < 2){
+        endGame();
+        return;
+    }
+
+    broadcastState();
 }
 
 function getLobbyPlayers(){
@@ -2468,6 +2513,9 @@ function leaveLobby(){goHome();}
 function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';goHome();}
 function goHome(){
     if(peer){try{peer.destroy();}catch(e){}}
+    // Clear all disconnect timers
+    Object.values(disconnectTimers).forEach(t=>clearTimeout(t));
+    disconnectTimers={};
     peer=null;conns=[];gameState=null;isHost=false;isDemo=false;
     hostConn=null;reconnectAttempts=0;connectionCheckPending=false;leavingGame=false;lobbyPlayers=[];
     // Clear any pending rejoin
@@ -2812,5 +2860,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.9</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.0</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
