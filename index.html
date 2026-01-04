@@ -1,4 +1,4 @@
-<!-- Chronicle v4.5 -->
+<!-- Chronicle v4.6 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -113,7 +113,7 @@
         .game-card.thinking{animation:thinking-glow-gold 2s ease-in-out infinite}
         .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite;cursor:grab}
         .game-card.selected{animation:none;box-shadow:0 0 25px var(--gold);transform:scale(1.05)}
-        .game-card.dragging{cursor:grabbing;box-shadow:0 15px 50px rgba(0,0,0,.5);animation:none;opacity:.9;z-index:9999}
+        .game-card.dragging{cursor:grabbing;transform:scale(1.05);box-shadow:0 15px 50px rgba(0,0,0,.5);animation:none;opacity:.9;z-index:1000;position:relative}
         .game-card.drag-enabled{cursor:grab}
         @keyframes thinking-glow-gold{
             0%,100%{box-shadow:0 0 15px rgba(196,164,77,.5),0 0 30px rgba(196,164,77,.2);transform:scale(1)}
@@ -2614,13 +2614,9 @@ function setupCardDrag(enabled){
     const newCard=card.cloneNode(true);
     card.parentNode.replaceChild(newCard,card);
 
-    // Track if we dragged (to prevent click after drag)
-    let didDrag=false;
-
-    // Always allow click/tap to show blurb (but not after drag)
+    // Always allow click/tap to show blurb
     newCard.onclick=()=>{
-        if(!didDrag) showCardBlurb();
-        didDrag=false;
+        showCardBlurb();
     };
 
     if(!enabled){
@@ -2676,8 +2672,6 @@ function setupCardDrag(enabled){
             newCard.style.position='fixed';
             newCard.style.zIndex='9999';
             newCard.style.pointerEvents='none';
-            newCard.style.transform='none';
-            newCard.style.margin='0';
         }
 
         if(!isDragging)return;
@@ -2702,12 +2696,12 @@ function setupCardDrag(enabled){
     },{passive:false});
     
     newCard.addEventListener('touchend',(e)=>{
-        // If it was a tap (no drag), let onclick handle it
+        // If it was a tap (no drag), show the blurb
         if(!hasMoved){
+            showCardBlurb();
             return;
         }
 
-        didDrag=true; // Prevent onclick from firing
         if(!isDragging)return;
         isDragging=false;
         newCard.classList.remove('dragging');
@@ -2762,5 +2756,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
