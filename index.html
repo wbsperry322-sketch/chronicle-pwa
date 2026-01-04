@@ -1,4 +1,4 @@
-<!-- Chronicle v4.4 -->
+<!-- Chronicle v4.5 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -59,7 +59,7 @@
             #game-screen .timeline-row{padding:2px 3px !important}
             #game-screen .timeline-row::before{height:24px !important}
             /* Current card at top right */
-            #game-screen .game-bottom{position:fixed !important;top:10px !important;right:15px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
+            #game-screen .game-bottom{position:fixed !important;top:10px !important;right:5px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
             #game-screen .game-bottom .game-card{max-width:200px !important;padding:14px 18px !important}
             #game-screen .game-bottom .game-card.thinking{animation:thinking-glow-gold 2s ease-in-out infinite !important}
             #game-screen .game-bottom .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite !important}
@@ -146,19 +146,19 @@
         }
         .turn-banner.my-turn::before{background:linear-gradient(135deg,var(--success) 50%,transparent 50%)}
         .turn-banner.my-turn::after{background:linear-gradient(-135deg,var(--success) 50%,transparent 50%)}
-        .timeline-container{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border-radius:18px;padding:22px;box-shadow:0 6px 30px rgba(0,0,0,.4);overflow-x:auto;-webkit-overflow-scrolling:touch}
+        .timeline-container{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border-radius:14px;padding:16px;box-shadow:0 5px 22px rgba(0,0,0,.4);overflow-x:auto;-webkit-overflow-scrolling:touch}
         .timeline{min-width:max-content}
-        .timeline-row{display:flex;align-items:center;position:relative;padding:7px 15px}
+        .timeline-row{display:flex;align-items:center;position:relative;padding:5px 11px}
         .timeline-row::before{display:none}
         .tl-item{position:relative;z-index:1;flex-shrink:0}
         .tl-card{
             background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));
-            border:3px solid var(--gold);
-            border-radius:12px;
-            padding:15px 18px;
-            min-width:180px;max-width:210px;
+            border:2px solid var(--gold);
+            border-radius:9px;
+            padding:11px 14px;
+            min-width:135px;max-width:158px;
             text-align:center;
-            box-shadow:3px 3px 12px rgba(0,0,0,.3);
+            box-shadow:2px 2px 9px rgba(0,0,0,.3);
             position:relative
         }
         #game-bg{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;overflow:hidden;opacity:0;transition:opacity 0.5s}
@@ -167,23 +167,23 @@
         #game-bg::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(26,15,10,0.4)}
         #game-screen .container{position:relative;z-index:1}
         #game-screen .turn-banner{position:relative;z-index:2}
-        .tl-card .ev{font-family:Georgia,'Times New Roman',serif;font-size:1.125rem;font-weight:600;color:var(--ink);margin-bottom:7px;line-height:1.2}
-        .tl-card .yr{font-family:Georgia,'Times New Roman',serif;font-size:1.5rem;font-weight:700;color:var(--accent)}
-        .drop-zone{width:72px;height:126px;border:3px dashed var(--gold);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(196,164,77,.1);margin:0 6px;transition:all .2s;cursor:pointer}
+        .tl-card .ev{font-family:Georgia,'Times New Roman',serif;font-size:0.85rem;font-weight:600;color:var(--ink);margin-bottom:5px;line-height:1.2}
+        .tl-card .yr{font-family:Georgia,'Times New Roman',serif;font-size:1.125rem;font-weight:700;color:var(--accent)}
+        .drop-zone{width:54px;height:95px;border:2px dashed var(--gold);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(196,164,77,.1);margin:0 5px;transition:all .2s;cursor:pointer}
         /* Scaling classes for timeline to fit 10 items */
-        .timeline-row.tl-scale-90 .tl-card{min-width:150px;max-width:180px;padding:12px 15px}
-        .timeline-row.tl-scale-90 .tl-card .ev{font-size:.975rem}
-        .timeline-row.tl-scale-90 .tl-card .yr{font-size:1.35rem}
-        .timeline-row.tl-scale-90 .drop-zone{width:57px;height:108px}
-        .timeline-row.tl-scale-75 .tl-card{min-width:127px;max-width:150px;padding:9px 12px}
-        .timeline-row.tl-scale-75 .tl-card .ev{font-size:.825rem}
-        .timeline-row.tl-scale-75 .tl-card .yr{font-size:1.2rem}
-        .timeline-row.tl-scale-75 .drop-zone{width:48px;height:90px}
-        .timeline-row.tl-scale-60 .tl-card{min-width:105px;max-width:127px;padding:7px 9px}
-        .timeline-row.tl-scale-60 .tl-card .ev{font-size:.75rem}
-        .timeline-row.tl-scale-60 .tl-card .yr{font-size:1.05rem}
-        .timeline-row.tl-scale-60 .drop-zone{width:39px;height:81px;margin:0 3px}
-        .drop-zone::after{content:'+';font-size:1.5rem;color:var(--gold);transition:transform .2s}
+        .timeline-row.tl-scale-90 .tl-card{min-width:112px;max-width:135px;padding:9px 11px}
+        .timeline-row.tl-scale-90 .tl-card .ev{font-size:.73rem}
+        .timeline-row.tl-scale-90 .tl-card .yr{font-size:1rem}
+        .timeline-row.tl-scale-90 .drop-zone{width:43px;height:81px}
+        .timeline-row.tl-scale-75 .tl-card{min-width:95px;max-width:112px;padding:7px 9px}
+        .timeline-row.tl-scale-75 .tl-card .ev{font-size:.62rem}
+        .timeline-row.tl-scale-75 .tl-card .yr{font-size:.9rem}
+        .timeline-row.tl-scale-75 .drop-zone{width:36px;height:68px}
+        .timeline-row.tl-scale-60 .tl-card{min-width:79px;max-width:95px;padding:5px 7px}
+        .timeline-row.tl-scale-60 .tl-card .ev{font-size:.56rem}
+        .timeline-row.tl-scale-60 .tl-card .yr{font-size:.79rem}
+        .timeline-row.tl-scale-60 .drop-zone{width:29px;height:61px;margin:0 2px}
+        .drop-zone::after{content:'+';font-size:1.125rem;color:var(--gold);transition:transform .2s}
         .drop-zone:active,.drop-zone.selected{background:rgba(196,164,77,.4);transform:scale(1.1)}
         .drop-zone.drag-over{background:rgba(45,90,39,.3);border-color:var(--success);transform:scale(1.15)}
         .drop-zone.drag-over::after{content:'✓';color:var(--success);transform:scale(1.3)}
@@ -2613,10 +2613,14 @@ function setupCardDrag(enabled){
     // Remove old listeners by cloning
     const newCard=card.cloneNode(true);
     card.parentNode.replaceChild(newCard,card);
-    
-    // Always allow click/tap to show blurb
+
+    // Track if we dragged (to prevent click after drag)
+    let didDrag=false;
+
+    // Always allow click/tap to show blurb (but not after drag)
     newCard.onclick=()=>{
-        showCardBlurb();
+        if(!didDrag) showCardBlurb();
+        didDrag=false;
     };
 
     if(!enabled){
@@ -2698,12 +2702,12 @@ function setupCardDrag(enabled){
     },{passive:false});
     
     newCard.addEventListener('touchend',(e)=>{
-        // If it was a tap (no drag), show the blurb
+        // If it was a tap (no drag), let onclick handle it
         if(!hasMoved){
-            showCardBlurb();
             return;
         }
 
+        didDrag=true; // Prevent onclick from firing
         if(!isDragging)return;
         isDragging=false;
         newCard.classList.remove('dragging');
@@ -2758,5 +2762,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.4</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
