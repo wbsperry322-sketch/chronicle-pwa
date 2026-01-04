@@ -1,4 +1,4 @@
-<!-- Chronicle v85 -->
+<!-- Chronicle v86 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -27,9 +27,10 @@
         #home-screen .card-box,#lobby-screen .card-box,#gameover-screen .card-box{max-width:500px;margin-left:auto;margin-right:auto}
         .screen{display:none;flex-direction:column;min-height:100vh}
         .screen.active{display:flex}
-        #game-screen.active{display:flex;flex-direction:column;min-height:100vh;height:100vh;padding-bottom:140px}
+        #game-screen.active{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;padding:60px 0 160px 0}
         #game-screen .container{max-width:100%;padding:10px;display:flex;flex-direction:column;flex:1}
-        .game-center{flex:1;display:flex;align-items:center;justify-content:center;overflow-x:auto;padding:10px 0;width:100%;min-height:0}
+        #game-screen .turn-banner{position:absolute;top:15px;left:50%;transform:translateX(-50%)}
+        .game-center{display:flex;align-items:center;justify-content:center;overflow-x:auto;padding:10px 0;width:100%}
         .game-bottom{padding:0 15px;position:fixed;bottom:70px;left:0;right:0;display:flex;flex-direction:column;align-items:center}
         @media(max-height:500px) and (orientation:landscape){
             /* Fix white spaces */
@@ -147,7 +148,7 @@
         .turn-banner.my-turn::after{background:linear-gradient(-135deg,var(--success) 50%,transparent 50%)}
         .timeline-container{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border-radius:12px;padding:15px;box-shadow:0 4px 20px rgba(0,0,0,.4);margin:0 15px;overflow-x:auto;-webkit-overflow-scrolling:touch}
         .timeline{min-width:max-content}
-        .timeline-row{display:flex;align-items:center;position:relative;padding:5px 10px}
+        .timeline-row{display:flex;align-items:center;position:relative;padding:5px 10px;min-height:90px}
         .timeline-row::before{display:none}
         .tl-item{position:relative;z-index:1;flex-shrink:0}
         .tl-card{
@@ -322,10 +323,10 @@
         </div>
 
         <!-- GAME SCREEN -->
-        <div class="screen" id="game-screen" style="position:relative;">
+        <div class="screen" id="game-screen">
             <button id="leave-game-btn" onclick="leaveGame()" style="position:fixed;top:10px;left:10px;z-index:200;background:var(--error);color:#fff;border:2px solid var(--gold);border-radius:8px;padding:8px 16px;font-family:Georgia,serif;font-size:0.85rem;cursor:pointer;display:none;">Leave</button>
     <div class="turn-banner" id="turn-banner">Waiting...</div>
-            <div class="game-center" style="position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);">
+            <div class="game-center">
                 <div class="timeline-container">
                     <div class="timeline" id="timeline"></div>
                 </div>
@@ -2776,5 +2777,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v1.2.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v1.2.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
