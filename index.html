@@ -64,8 +64,8 @@
             #game-screen .game-bottom .card-event{font-size:0.8rem !important}
             #game-screen .game-bottom .cards-left,#game-screen .game-bottom .status-text{display:none !important}
             /* Mistakes tray - visible, show 80px (2x bigger) */
-            .mistakes-tray{display:block !important;transform:translateY(calc(100% - 25px)) !important}
-            .mistakes-tray.visible{display:block !important;transform:translateY(calc(100% - 25px)) !important}
+            .mistakes-tray{display:none !important;transform:translateY(calc(100% - 25px)) !important}
+            .mistakes-tray.visible{display:none !important;transform:translateY(calc(100% - 25px)) !important}
             .mistakes-tray.visible.expanded{transform:translateY(0) !important}
             .mistakes-tray .tray-header,.mistakes-tray .mistakes-header{height:45px !important;padding:5px 15px !important}
             .mistakes-tray h3{font-size:.9rem !important}
@@ -1916,5 +1916,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:60px;left:5px;font-size:10px;color:rgba(255,255,255,0.5);z-index:9999;display:block;">v1.0.4</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:")document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:60px;left:5px;font-size:10px;color:rgba(255,255,255,0.5);z-index:9999;display:block;">v1.0.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:")document.getElementById("version-tag").style.display="block";</script></body>
 </html>
