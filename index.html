@@ -542,7 +542,7 @@ const fY=y=>y<0?Math.abs(y)+' BCE':y+' CE';
 const shuffle=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;};
 const genCode=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='';for(let i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r;};
 
-let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,gameState=null;
+let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,gameState=null,playerNames={};
 let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3;
 
 // Check for pending rejoin on page load
@@ -780,7 +780,7 @@ function handleMessage(conn,data){
         case'join':
             if(isHost){
                 const color=COLORS[gameState?gameState.players.length:conns.length];
-                const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
+                playerNames[conn.peer]=data.name;const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
                 if(!gameState){
                     broadcastToAll({type:'player-joined',player:newPlayer});
                     updateLobbyUI(getLobbyPlayers());
@@ -807,7 +807,7 @@ function handleMessage(conn,data){
                 }else{
                     // Player not found, add as new
                     const color=COLORS[gameState.players.length % COLORS.length];
-                    const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
+                    playerNames[conn.peer]=data.name;const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
                     gameState.players.push(newPlayer);
                     if(!conns.includes(conn)){
                         conns.push(conn);
@@ -878,7 +878,7 @@ function getLobbyPlayers(){
     conns.forEach((c,i)=>{
         const existing=players.find(p=>p.id===c.peer);
         if(!existing){
-            players.push({id:c.peer,name:'Player '+(i+2),color:COLORS[i+1],score:0,connected:true,mistakes:[]});
+            players.push({id:c.peer,name:playerNames[c.peer]||'Player '+(i+2),color:COLORS[i+1],score:0,connected:true,mistakes:[]});
         }
     });
     return players;
@@ -1916,5 +1916,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v1.1.2</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v1.1.3</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
