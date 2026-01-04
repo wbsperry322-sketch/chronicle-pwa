@@ -1,4 +1,4 @@
-<!-- Chronicle v5.6 -->
+<!-- Chronicle v5.7 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -1381,6 +1381,7 @@ const genCode=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='';for(let i
 
 let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,gameState=null,playerNames={};
 let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3,leavingGame=false;
+let lobbyPlayers=[];  // Store lobby players for non-hosts
 
 // Check for pending rejoin on page load
 function checkPendingRejoin(){
@@ -1633,15 +1634,18 @@ function handleMessage(conn,data){
     switch(data.type){
         case'lobby':
             lobbyCode=data.code;
+            lobbyPlayers=data.players;  // Store for non-hosts
             updateLobbyUI(data.players);
             break;
         case'join':
             if(isHost){
-                const color=COLORS[gameState?gameState.players.length:conns.length];
-                playerNames[conn.peer]=data.name;const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
+                const color=COLORS[gameState?gameState.players.length:lobbyPlayers.length];
+                playerNames[conn.peer]=data.name;
+                const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
                 if(!gameState){
+                    lobbyPlayers.push(newPlayer);
                     broadcastToAll({type:'player-joined',player:newPlayer});
-                    updateLobbyUI(getLobbyPlayers());
+                    updateLobbyUI(lobbyPlayers);
                 }else{
                     gameState.players.push(newPlayer);
                     broadcastState();
@@ -1676,7 +1680,11 @@ function handleMessage(conn,data){
             }
             break;
         case'player-joined':
-            updateLobbyUI([...getLobbyPlayers(),data.player]);
+            // For non-hosts: add new player to stored list
+            if(!lobbyPlayers.find(p=>p.id===data.player.id)){
+                lobbyPlayers.push(data.player);
+            }
+            updateLobbyUI(lobbyPlayers);
             break;
         case'start':
             gameState=data.state;
@@ -1732,14 +1740,8 @@ function broadcastState(){
 }
 
 function getLobbyPlayers(){
-    const players=[{id:myId,name:myName,color:COLORS[0],score:0,connected:true,isHost:true,mistakes:[]}];
-    conns.forEach((c,i)=>{
-        const existing=players.find(p=>p.id===c.peer);
-        if(!existing){
-            players.push({id:c.peer,name:playerNames[c.peer]||'Player '+(i+2),color:COLORS[i+1],score:0,connected:true,mistakes:[]});
-        }
-    });
-    return players;
+    // Return the stored lobbyPlayers with mistakes array added
+    return lobbyPlayers.map(p => ({...p, mistakes: p.mistakes || []}));
 }
 
 async function createGame(){
@@ -1764,7 +1766,8 @@ async function createGame(){
         $('waiting-msg').textContent='Your peer ID: '+myId+' - Waiting for players...';
         const url=window.location.origin+window.location.pathname+'?join='+lobbyCode;
         $('share-url').textContent=url;
-        updateLobbyUI([{id:myId,name:myName,color:COLORS[0],score:0,connected:true,isHost:true}]);
+        lobbyPlayers=[{id:myId,name:myName,color:COLORS[0],score:0,connected:true,isHost:true}];
+        updateLobbyUI(lobbyPlayers);
     }catch(e){
         $('home-status').textContent='Error: '+e.message;
         if(e.message.includes('Code taken')){
@@ -2472,7 +2475,7 @@ function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').
 function goHome(){
     if(peer){try{peer.destroy();}catch(e){}}
     peer=null;conns=[];gameState=null;isHost=false;isDemo=false;
-    hostConn=null;reconnectAttempts=0;connectionCheckPending=false;leavingGame=false;
+    hostConn=null;reconnectAttempts=0;connectionCheckPending=false;leavingGame=false;lobbyPlayers=[];
     // Clear any pending rejoin
     sessionStorage.removeItem('chronicle-rejoin-code');
     sessionStorage.removeItem('chronicle-rejoin-name');
@@ -2815,5 +2818,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.7</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
