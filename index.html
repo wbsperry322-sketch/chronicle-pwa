@@ -1,4 +1,4 @@
-<!-- Chronicle v4.9 -->
+<!-- Chronicle v5.0 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -51,9 +51,9 @@
             /* Turn banner at top */
             #game-screen .turn-banner{position:fixed !important;top:5px !important;left:50% !important;transform:translateX(-50%) !important;font-size:0.7rem !important;padding:6px 20px !important;margin:0 !important;z-index:100 !important}
             #game-screen .turn-banner::before,#game-screen .turn-banner::after{display:none !important}
-            /* Timeline centered */
-            #game-screen .game-center{position:fixed !important;top:50% !important;left:50% !important;transform:translate(-50%,-50%) !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 5px !important;width:auto !important;height:auto !important;margin:0 !important}
-            #game-screen .timeline-container{padding:3px !important;margin:0 auto !important;max-height:calc(100vh - 70px) !important;overflow-x:auto !important;overflow-y:hidden !important;background:transparent !important;box-shadow:none !important;border:none !important;-webkit-overflow-scrolling:touch !important;display:flex !important;justify-content:center !important}
+            /* Timeline spans full width */
+            #game-screen .game-center{position:fixed !important;top:50% !important;left:10px !important;right:10px !important;transform:translateY(-50%) !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 !important;width:auto !important;height:auto !important;margin:0 !important}
+            #game-screen .timeline-container{padding:3px !important;margin:0 !important;max-height:calc(100vh - 70px) !important;max-width:100% !important;overflow-x:auto !important;overflow-y:hidden !important;background:transparent !important;box-shadow:none !important;border:none !important;-webkit-overflow-scrolling:touch !important;display:flex !important;justify-content:flex-start !important}
             #game-screen .timeline{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark)) !important;border-radius:8px !important;padding:4px !important}
             #game-screen .timeline-row{padding:2px 3px !important}
             #game-screen .tl-card{min-width:138px !important;max-width:160px !important;padding:11px 14px !important;border-radius:9px !important}
@@ -2008,19 +2008,19 @@ function renderGame(){
     const sorted=[...gameState.timeline].sort((a,b)=>a.y-b.y);
     
     // Dynamic scaling via CSS classes - grow until near screen edge, then scale down
-    // After 7 cards at smallest size, scrolling kicks in
+    // Scrolling starts at 6 cards (landscape) or 3 cards (portrait)
     let sizeClass = '';
     const cardCount = sorted.length;
-    // In landscape, scale earlier due to limited width
     const isLandscape = window.innerWidth > window.innerHeight;
     if(isLandscape){
+        // Landscape: scale at 2-3 (90%), 4-5 (75%), 6+ (60% with scrolling)
         if(cardCount >= 2 && cardCount <= 3) sizeClass = 'tl-scale-90';
         else if(cardCount >= 4 && cardCount <= 5) sizeClass = 'tl-scale-75';
         else if(cardCount >= 6) sizeClass = 'tl-scale-60';
     } else {
-        if(cardCount >= 3 && cardCount <= 4) sizeClass = 'tl-scale-90';
-        else if(cardCount >= 5 && cardCount <= 6) sizeClass = 'tl-scale-75';
-        else if(cardCount >= 7) sizeClass = 'tl-scale-60';
+        // Portrait: always use smallest scale, scrolling starts immediately at 3+
+        if(cardCount >= 3) sizeClass = 'tl-scale-60';
+        else if(cardCount >= 2) sizeClass = 'tl-scale-75';
     }
     
     const rowDiv=document.createElement('div');
@@ -2760,5 +2760,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.9</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v5.0</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
