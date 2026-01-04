@@ -2611,11 +2611,16 @@ function setupCardDrag(enabled){
     const newCard=card.cloneNode(true);
     card.parentNode.replaceChild(newCard,card);
     
+    // Always allow tap to show blurb
+    newCard.onclick=()=>{
+        showCardBlurb();
+    };
+
     if(!enabled){
         cardSelected=false;
         return;
     }
-    
+
     // Desktop drag
     newCard.ondragstart=(e)=>{
         isDragging=true;
@@ -2630,20 +2635,7 @@ function setupCardDrag(enabled){
         newCard.classList.remove('dragging');
         document.querySelectorAll('.drop-zone').forEach(dz=>dz.classList.remove('drag-over'));
     };
-    
-    // Tap to select card (mobile fallback)
-    newCard.onclick=()=>{
-        if(!enabled)return;
-        cardSelected=!cardSelected;
-        if(cardSelected){
-            newCard.classList.add('selected');
-            $('game-status').textContent='Now tap where you want to place it';
-        }else{
-            newCard.classList.remove('selected');
-            $('game-status').textContent='Tap the card, then tap where to place it';
-        }
-    };
-    
+
     // Touch drag for mobile
     let touchCurrentZone=null;
     let touchStartX=0, touchStartY=0;
