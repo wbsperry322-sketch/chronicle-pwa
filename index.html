@@ -1,4 +1,4 @@
-<!-- Chronicle v3.7 -->
+<!-- Chronicle v3.8 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -51,11 +51,16 @@
             /* Turn banner at top */
             #game-screen .turn-banner{position:fixed !important;top:5px !important;left:50% !important;transform:translateX(-50%) !important;font-size:0.7rem !important;padding:6px 20px !important;margin:0 !important;z-index:100 !important}
             #game-screen .turn-banner::before,#game-screen .turn-banner::after{display:none !important}
-            /* Timeline centered */
-            #game-screen .game-center{position:fixed !important;top:50% !important;left:50% !important;transform:translate(-50%,-50%) !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 5px !important;width:auto !important;height:auto !important;margin:0 !important}
-            #game-screen .timeline-container{padding:3px !important;margin:0 auto !important;max-height:calc(100vh - 70px) !important;overflow-x:auto !important;overflow-y:hidden !important;background:transparent !important;box-shadow:none !important;border:none !important;-webkit-overflow-scrolling:touch !important;display:flex !important;justify-content:center !important}
-            #game-screen .timeline{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark)) !important;border-radius:8px !important;padding:5px !important}
-            #game-screen .timeline-row{padding:2px 3px !important}
+            /* Timeline centered - moved down */
+            #game-screen .game-center{position:fixed !important;top:60% !important;left:50% !important;transform:translate(-50%,-50%) !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 5px !important;width:auto !important;height:auto !important;margin:0 !important}
+            #game-screen .timeline-container{padding:4px !important;margin:0 auto !important;max-height:calc(100vh - 70px) !important;overflow-x:auto !important;overflow-y:hidden !important;background:transparent !important;box-shadow:none !important;border:none !important;-webkit-overflow-scrolling:touch !important;display:flex !important;justify-content:center !important}
+            #game-screen .timeline{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark)) !important;border-radius:10px !important;padding:6px !important}
+            #game-screen .timeline-row{padding:3px 4px !important}
+            #game-screen .tl-card{min-width:195px !important;max-width:228px !important;padding:16px 20px !important;border-radius:13px !important}
+            #game-screen .tl-card .ev{font-size:1.25rem !important}
+            #game-screen .tl-card .yr{font-size:1.6rem !important}
+            #game-screen .drop-zone{width:78px !important;height:136px !important;border-radius:13px !important;margin:0 6px !important}
+            #game-screen .drop-zone::after{font-size:1.6rem !important}
             #game-screen .timeline-row::before{height:24px !important}
             /* Current card at top right */
             #game-screen .game-bottom{position:fixed !important;top:25px !important;right:25px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
@@ -64,9 +69,9 @@
             #game-screen .game-bottom .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite !important}
             #game-screen .game-bottom .card-event{font-size:0.8rem !important}
             #game-screen .game-bottom .cards-left,#game-screen .game-bottom .status-text{display:none !important}
-            /* Mistakes tray - visible, show 80px (2x bigger) */
-            .mistakes-tray{display:none !important;transform:translateY(calc(100% - 25px)) !important}
-            .mistakes-tray.visible{display:none !important;transform:translateY(calc(100% - 25px)) !important}
+            /* Mistakes tray - visible */
+            .mistakes-tray{transform:translateY(calc(100% - 25px)) !important}
+            .mistakes-tray.visible{display:block !important;transform:translateY(calc(100% - 25px)) !important}
             .mistakes-tray.visible.expanded{transform:translateY(0) !important}
             .mistakes-tray .tray-header,.mistakes-tray .mistakes-header{height:45px !important;padding:5px 15px !important}
             .mistakes-tray h3{font-size:.9rem !important}
@@ -2755,5 +2760,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v3.7</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v3.8</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
