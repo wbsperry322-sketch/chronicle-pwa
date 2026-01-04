@@ -1,4 +1,4 @@
-<!-- Chronicle v6.2 -->
+<!-- Chronicle v6.3 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -1383,6 +1383,52 @@ let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,
 let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3,leavingGame=false;
 let lobbyPlayers=[];  // Store lobby players for non-hosts
 let disconnectTimers={};  // Track disconnect timeouts for kicking players
+let keepAliveInterval=null;  // Keep connection alive when backgrounded
+let wakeLock=null;  // Prevent screen sleep during game
+
+// Start keep-alive pings to prevent disconnect when minimized
+function startKeepAlive(){
+    stopKeepAlive();
+    keepAliveInterval=setInterval(()=>{
+        if(peer && peer.open && conns.length > 0){
+            conns.forEach(c=>{
+                if(c && c.open){
+                    try{ c.send({type:'ping'}); }catch(e){}
+                }
+            });
+        }
+    }, 5000); // Ping every 5 seconds
+
+    // Request wake lock to keep screen on
+    requestWakeLock();
+}
+
+function stopKeepAlive(){
+    if(keepAliveInterval){
+        clearInterval(keepAliveInterval);
+        keepAliveInterval=null;
+    }
+    releaseWakeLock();
+}
+
+// Wake Lock API - prevents screen from sleeping during game
+async function requestWakeLock(){
+    if('wakeLock' in navigator){
+        try{
+            wakeLock=await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release',()=>{wakeLock=null;});
+        }catch(e){
+            console.log('Wake lock failed:',e);
+        }
+    }
+}
+
+function releaseWakeLock(){
+    if(wakeLock){
+        wakeLock.release();
+        wakeLock=null;
+    }
+}
 
 // Check for pending rejoin on page load
 function checkPendingRejoin(){
@@ -1410,9 +1456,11 @@ const showScreen=id=>{
     if(id==='game-screen'){
         $('bg-cover').classList.add('hide');
         $('game-bg').classList.add('show');
+        if(!isDemo) startKeepAlive();
     }else{
         $('bg-cover').classList.remove('hide');
         $('game-bg').classList.remove('show');
+        stopKeepAlive();
     }
 };
 
@@ -1462,10 +1510,13 @@ function init(){
     
     // Keep connection alive when tab is backgrounded (mobile)
     document.addEventListener('visibilitychange', ()=>{
-        if(document.visibilityState === 'visible' && !isHost && !isDemo && lobbyCode){
-            console.log('Tab visible - checking connection...');
-            // Check if connection is actually alive
-            checkConnectionHealth();
+        if(document.visibilityState === 'visible'){
+            // Re-request wake lock when app becomes visible
+            if(gameState && !isDemo) requestWakeLock();
+            if(!isHost && !isDemo && lobbyCode){
+                console.log('Tab visible - checking connection...');
+                checkConnectionHealth();
+            }
         }
     });
     
@@ -2513,9 +2564,10 @@ function leaveLobby(){goHome();}
 function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';goHome();}
 function goHome(){
     if(peer){try{peer.destroy();}catch(e){}}
-    // Clear all disconnect timers
+    // Clear all disconnect timers and keep-alive
     Object.values(disconnectTimers).forEach(t=>clearTimeout(t));
     disconnectTimers={};
+    stopKeepAlive();
     peer=null;conns=[];gameState=null;isHost=false;isDemo=false;
     hostConn=null;reconnectAttempts=0;connectionCheckPending=false;leavingGame=false;lobbyPlayers=[];
     // Clear any pending rejoin
@@ -2860,5 +2912,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.2</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.3</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
