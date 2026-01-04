@@ -1,4 +1,4 @@
-<!-- Chronicle v6.6 -->
+<!-- Chronicle v6.7 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -1544,48 +1544,47 @@ let hostReconnectInProgress = false;
 function checkHostPeerConnection(){
     if(hostReconnectInProgress || !isHost || !peer) return;
 
-    // Check if peer is still connected to the PeerJS server
-    if(peer.disconnected || peer.destroyed){
-        console.log('Host peer disconnected, attempting to reconnect...');
-        hostReconnectInProgress = true;
+    console.log('Host peer status - open:', peer.open, 'disconnected:', peer.disconnected, 'destroyed:', peer.destroyed);
 
-        if(peer.destroyed){
-            // Need to create a new peer with the same ID
-            const oldId = lobbyCode;
-            peer = null;
+    // If peer is destroyed, recreate it
+    if(peer.destroyed){
+        console.log('Host peer destroyed, recreating...');
+        hostReconnectInProgress = true;
+        const oldId = lobbyCode;
+        peer = null;
+        createPeer(oldId).then(()=>{
+            console.log('Host peer recreated successfully');
+            hostReconnectInProgress = false;
+        }).catch(err=>{
+            console.error('Failed to recreate host peer:', err);
+            hostReconnectInProgress = false;
+            alert('Connection lost. Please refresh and host a new game.');
+        });
+        return;
+    }
+
+    // Force reconnect regardless of status - iOS often shows wrong status
+    hostReconnectInProgress = true;
+    console.log('Host forcing peer reconnect...');
+
+    try {
+        // Destroy and recreate for clean state
+        const oldId = lobbyCode;
+        peer.destroy();
+        peer = null;
+
+        setTimeout(()=>{
             createPeer(oldId).then(()=>{
-                console.log('Host peer recreated successfully');
+                console.log('Host peer reconnected successfully');
                 hostReconnectInProgress = false;
             }).catch(err=>{
-                console.error('Failed to recreate host peer:', err);
+                console.error('Failed to reconnect host peer:', err);
                 hostReconnectInProgress = false;
-                alert('Connection lost. Please refresh and host a new game.');
             });
-        } else {
-            // Just disconnected, try to reconnect
-            try {
-                peer.reconnect();
-                setTimeout(()=>{
-                    hostReconnectInProgress = false;
-                    if(peer.open){
-                        console.log('Host peer reconnected successfully');
-                    }
-                }, 3000);
-            } catch(e){
-                console.error('Reconnect failed:', e);
-                hostReconnectInProgress = false;
-            }
-        }
-    } else if(!peer.open){
-        // Peer exists but not open yet, wait and retry
-        console.log('Host peer not open, waiting...');
-        setTimeout(()=>{
-            if(peer && !peer.open && !peer.disconnected){
-                peer.reconnect();
-            }
-        }, 1000);
-    } else {
-        console.log('Host peer connection is healthy');
+        }, 500);
+    } catch(e){
+        console.error('Reconnect failed:', e);
+        hostReconnectInProgress = false;
     }
 }
 
@@ -1998,14 +1997,27 @@ async function joinGame(){
         });
         myId=peer.id;
         isDemo=false;
-        $('home-status').textContent='Looking for host: chronicle-'+code+'...';
-        const conn=peer.connect('chronicle-'+code,{reliable:true});
-        const connTimeout=setTimeout(()=>{
-            $('join-error').textContent='Could not connect - host may be offline or code is wrong';
-            $('join-error').style.display='block';
-            $('home-status').textContent='';
-        },10000);
-        conn.on('open',()=>{
+
+        // Retry logic for connecting to host
+        let joinAttempt = 0;
+        const maxJoinAttempts = 3;
+
+        const tryConnect = () => {
+            joinAttempt++;
+            $('home-status').textContent='Looking for host (attempt '+joinAttempt+'/'+maxJoinAttempts+')...';
+            const conn=peer.connect('chronicle-'+code,{reliable:true});
+            const connTimeout=setTimeout(()=>{
+                conn.close();
+                if(joinAttempt < maxJoinAttempts){
+                    console.log('Connection attempt '+joinAttempt+' failed, retrying...');
+                    setTimeout(tryConnect, 1500);
+                } else {
+                    $('join-error').textContent='Could not connect - host may be offline or code is wrong';
+                    $('join-error').style.display='block';
+                    $('home-status').textContent='';
+                }
+            },8000);
+            conn.on('open',()=>{
             clearTimeout(connTimeout);
             conns.push(conn);
             hostConn = conn; // Store host connection for reconnection
@@ -2027,10 +2039,17 @@ async function joinGame(){
         conn.on('error',(err)=>{
             clearTimeout(connTimeout);
             console.error('Connection error:',err);
-            $('join-error').textContent='Could not connect to game';
-            $('join-error').style.display='block';
-            $('home-status').textContent='';
+            if(joinAttempt < maxJoinAttempts){
+                console.log('Connection error on attempt '+joinAttempt+', retrying...');
+                setTimeout(tryConnect, 1500);
+            } else {
+                $('join-error').textContent='Could not connect to game';
+                $('join-error').style.display='block';
+                $('home-status').textContent='';
+            }
         });
+        };
+        tryConnect();
     }catch(e){
         $('join-error').textContent='Connection failed: '+e.message;
         $('join-error').style.display='block';
@@ -3011,5 +3030,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.7</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
