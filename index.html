@@ -2640,35 +2640,45 @@ function setupCardDrag(enabled){
     let touchCurrentZone=null;
     let touchStartX=0, touchStartY=0;
     let cardOriginalStyle='';
-    
+    let touchStartTime=0;
+    let hasMoved=false;
+
     newCard.addEventListener('touchstart',(e)=>{
-        isDragging=true;
-        newCard.classList.add('dragging');
         const touch=e.touches[0];
         touchStartX=touch.clientX;
         touchStartY=touch.clientY;
+        touchStartTime=Date.now();
+        hasMoved=false;
         cardOriginalStyle=newCard.style.cssText;
-        newCard.style.position='fixed';
-        newCard.style.zIndex='9999';
-        newCard.style.left=(touch.clientX-100)+'px';
-        newCard.style.top=(touch.clientY-50)+'px';
-        newCard.style.pointerEvents='none';
     },{passive:true});
     
     newCard.addEventListener('touchmove',(e)=>{
+        const touch=e.touches[0];
+        const dx=Math.abs(touch.clientX-touchStartX);
+        const dy=Math.abs(touch.clientY-touchStartY);
+
+        // Start drag only after moving 10px
+        if(!isDragging && (dx>10||dy>10)){
+            isDragging=true;
+            hasMoved=true;
+            newCard.classList.add('dragging');
+            newCard.style.position='fixed';
+            newCard.style.zIndex='9999';
+            newCard.style.pointerEvents='none';
+        }
+
         if(!isDragging)return;
         e.preventDefault();
-        const touch=e.touches[0];
-        
+
         // Move card with finger
         newCard.style.left=(touch.clientX-100)+'px';
         newCard.style.top=(touch.clientY-50)+'px';
-        
+
         const element=document.elementFromPoint(touch.clientX,touch.clientY);
-        
+
         // Clear previous highlights
         document.querySelectorAll('.drop-zone').forEach(dz=>dz.classList.remove('drag-over'));
-        
+
         // Highlight current drop zone
         if(element&&element.classList.contains('drop-zone')){
             element.classList.add('drag-over');
@@ -2679,13 +2689,19 @@ function setupCardDrag(enabled){
     },{passive:false});
     
     newCard.addEventListener('touchend',(e)=>{
+        // If it was a tap (no drag), show the blurb
+        if(!hasMoved){
+            showCardBlurb();
+            return;
+        }
+
         if(!isDragging)return;
         isDragging=false;
         newCard.classList.remove('dragging');
         newCard.style.cssText=cardOriginalStyle; // Restore original position
         newCard.style.pointerEvents='';
         document.querySelectorAll('.drop-zone').forEach(dz=>dz.classList.remove('drag-over'));
-        
+
         if(touchCurrentZone){
             const pos=parseInt(touchCurrentZone.dataset.position);
             cardSelected=false;
