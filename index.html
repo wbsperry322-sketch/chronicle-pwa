@@ -1,4 +1,4 @@
-<!-- Chronicle v4.2 -->
+<!-- Chronicle v4.3 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -30,7 +30,7 @@
         #game-screen.active{display:flex;flex-direction:column;padding:0 !important;margin:0 !important}
         #game-screen .container{max-width:100%;padding:0}
         .game-center{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;padding:0}
-        .game-bottom{padding:0 15px;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
+        .game-bottom{padding:0 15px;position:fixed;bottom:15px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
         @media(min-width:800px) and (min-height:600px){.game-bottom{bottom:120px}.game-bottom .game-card{max-width:450px;padding:21px 30px;border-radius:18px;border-width:4px}.game-bottom .card-event{font-size:1.5rem;margin-bottom:15px}.game-bottom .card-year{font-size:1.8rem}.timeline-container{border-radius:24px;padding:30px;box-shadow:0 8px 40px rgba(0,0,0,.4)}.timeline-row{padding:10px 20px}.tl-card{border-width:4px;border-radius:16px;padding:20px 24px;min-width:240px;max-width:280px;box-shadow:4px 4px 16px rgba(0,0,0,.3)}.tl-card .ev{font-size:1.5rem;margin-bottom:10px}.tl-card .yr{font-size:2rem}.drop-zone{width:96px;height:168px;border-width:4px;border-radius:16px;margin:0 8px}.drop-zone::after{font-size:2rem}}
         .debug-grid{display:none}
         @media(max-height:500px) and (orientation:landscape){
@@ -59,7 +59,7 @@
             #game-screen .timeline-row{padding:2px 3px !important}
             #game-screen .timeline-row::before{height:24px !important}
             /* Current card at top right */
-            #game-screen .game-bottom{position:fixed !important;top:25px !important;right:25px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
+            #game-screen .game-bottom{position:fixed !important;top:25px !important;right:5px !important;left:auto !important;bottom:auto !important;width:auto !important;flex-direction:row !important;padding:0 !important;z-index:50 !important}
             #game-screen .game-bottom .game-card{max-width:200px !important;padding:14px 18px !important}
             #game-screen .game-bottom .game-card.thinking{animation:thinking-glow-gold 2s ease-in-out infinite !important}
             #game-screen .game-bottom .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite !important}
@@ -2672,6 +2672,8 @@ function setupCardDrag(enabled){
             newCard.style.position='fixed';
             newCard.style.zIndex='9999';
             newCard.style.pointerEvents='none';
+            newCard.style.transform='none';
+            newCard.style.margin='0';
         }
 
         if(!isDragging)return;
@@ -2756,5 +2758,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.2</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v4.3</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
