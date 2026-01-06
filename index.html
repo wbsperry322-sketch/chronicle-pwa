@@ -1,4 +1,4 @@
-<!-- Chronicle v6.9 -->
+<!-- Chronicle v7.0 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -89,7 +89,7 @@
             .mistakes-tray h3{font-size:1rem !important;text-align:center !important;margin:0 !important;padding-bottom:12px !important}
             .mistakes-tray .mistakes-toggle{font-size:1rem !important;padding:4px 8px !important;width:28px !important;height:28px !important}
             /* Leave button - move up in landscape */
-            #leave-game-btn{top:5px !important;left:5px !important;padding:4px 10px !important;font-size:0.75rem !important}
+            #leave-game-btn{top:12px !important;left:20px !important;padding:8px 14px !important;font-size:0.85rem !important}
             /* Cards use original size - JS handles scaling */
         }
         /* Desktop - timeline 100% larger */
@@ -1389,6 +1389,8 @@ let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,
 let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=5,leavingGame=false;
 let lobbyPlayers=[];  // Store lobby players for non-hosts
 let disconnectTimers={};  // Track disconnect timeouts for kicking players
+let displayedCard=null;  // Lock the displayed card to prevent mid-turn changes
+let lastCurrentPlayer=-1;  // Track player changes
 let keepAliveInterval=null;  // Keep connection alive when backgrounded
 let wakeLock=null;  // Prevent screen sleep during game
 
@@ -2257,11 +2259,16 @@ function renderGame(){
         $('turn-banner').className='turn-banner'+(isMyTurn?' my-turn':'');
     }
     
-    // Card
+    // Card - only update if turn changed or no card displayed yet
     const cardEl=$('current-card');
     cardEl.className='game-card thinking'+(isMyTurn?' my-turn drag-enabled':'');
     cardEl.draggable=isMyTurn;
-    const cardName=gameState.currentCard?gameState.currentCard.e:'';
+    // Lock the displayed card to prevent mid-turn changes from state broadcasts
+    if(gameState.currentPlayer !== lastCurrentPlayer || !displayedCard){
+        displayedCard = gameState.currentCard ? {...gameState.currentCard} : null;
+        lastCurrentPlayer = gameState.currentPlayer;
+    }
+    const cardName=displayedCard?displayedCard.e:'';
     $('card-event').textContent=cardName;
     $('card-year').textContent='????';
     $('card-year').className='card-year hidden';
@@ -2683,6 +2690,7 @@ function goHome(){
     hideReconnectBanner();
     peer=null;conns=[];gameState=null;isHost=false;isDemo=false;
     hostConn=null;reconnectAttempts=0;connectionCheckPending=false;leavingGame=false;lobbyPlayers=[];
+    displayedCard=null;lastCurrentPlayer=-1;
     isReconnecting=false;
     // Clear any pending rejoin
     sessionStorage.removeItem('chronicle-rejoin-code');
@@ -3026,5 +3034,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v6.9</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v7.0</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
