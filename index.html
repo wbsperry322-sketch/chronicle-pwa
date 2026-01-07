@@ -1957,42 +1957,41 @@ function processMove(playerId,position){
     // Check if this completes a round (all players have gone once)
     const nextPlayer = (gameState.currentPlayer + 1) % gameState.players.length;
     const roundComplete = nextPlayer === 0;
-    
+
     // Timing depends on whether we show scoreboard
     const feedbackDuration = correct ? 6500 : 4500;
     const afterFeedback = 3000 + feedbackDuration; // When feedback ends
-    
+
+    // Draw next card early (during feedback) so it's ready when feedback closes
+    setTimeout(()=>{
+        gameState.timeline.forEach(t=>t.justPlaced=false);
+        gameState.currentPlayer = nextPlayer;
+        if(gameState.deck.length>0){
+            drawCard();
+            if(!isDemo && isHost)broadcastState();
+            renderGame();
+        }
+    }, 3500); // Draw card shortly after feedback popup appears
+
     if(roundComplete){
         // Show scoreboard after feedback ends
         setTimeout(()=>{
             showScoreboard();
             if(!isDemo && isHost) db.ref(`games/${lobbyCode}/status`).set('scoreboard');
         }, afterFeedback);
-        
-        // Next turn after scoreboard (feedback + 5s scoreboard)
+
+        // Check for game end after scoreboard
         const nextDelay = afterFeedback + 5000;
         setTimeout(()=>{
-            gameState.timeline.forEach(t=>t.justPlaced=false);
-            gameState.currentPlayer = nextPlayer;
-            if(gameState.deck.length>0){
-                drawCard();
-                if(!isDemo)broadcastState();
-                renderGame();
-            }else{
+            if(gameState.deck.length===0){
                 endGame();
             }
         }, nextDelay);
     } else {
-        // No scoreboard, just move to next player after feedback
-        const nextDelay = afterFeedback + 500; // Small buffer after feedback
+        // Check for game end after feedback
+        const nextDelay = afterFeedback + 500;
         setTimeout(()=>{
-            gameState.timeline.forEach(t=>t.justPlaced=false);
-            gameState.currentPlayer = nextPlayer;
-            if(gameState.deck.length>0){
-                drawCard();
-                if(!isDemo)broadcastState();
-                renderGame();
-            }else{
+            if(gameState.deck.length===0){
                 endGame();
             }
         }, nextDelay);
@@ -2571,5 +2570,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v7.3</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v7.4</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
