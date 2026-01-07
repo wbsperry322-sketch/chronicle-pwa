@@ -2269,6 +2269,7 @@ function preloadNextImages(){
 }
 
 function renderGame(){
+    try{
     // Scroll to top to ensure turn banner is visible (especially in landscape)
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
@@ -2276,7 +2277,9 @@ function renderGame(){
 
     if(!gameState){console.log('renderGame: no gameState');return;}
     if(!gameState.players||!gameState.players.length){console.log('renderGame: no players');return;}
+    console.log('renderGame: myId=',myId,'players=',gameState.players.map(p=>p.id+':'+p.name));
     const myPlayerIndex=isDemo?gameState.currentPlayer:gameState.players.findIndex(p=>p.id===myId);
+    console.log('renderGame: myPlayerIndex=',myPlayerIndex,'currentPlayer=',gameState.currentPlayer);
     const isMyTurn=gameState.currentPlayer===myPlayerIndex||(isDemo);
     const cp=gameState.players[gameState.currentPlayer];
     if(!cp){console.log('renderGame: no current player at index',gameState.currentPlayer);return;}
@@ -2383,6 +2386,7 @@ function renderGame(){
     
     // Update mistakes tray
     renderMistakes();
+    }catch(e){console.error('renderGame error:',e);}
 }
 
 function makeMove(position){
@@ -3066,5 +3070,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v7.12</div><button id="grid-toggle-btn" style="position:fixed;bottom:10px;left:60px;font-size:12px;background:#333;color:#4a90d9;border:1px solid #4a90d9;border-radius:4px;padding:2px 8px;cursor:pointer;z-index:99999;display:none;">Grid</button><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test")){document.getElementById("version-tag").style.display="block";document.getElementById("grid-toggle-btn").style.display="block";}document.getElementById("grid-toggle-btn").onclick=function(){document.querySelector(".debug-grid").classList.toggle("visible");};</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v7.13</div><button id="grid-toggle-btn" style="position:fixed;bottom:10px;left:60px;font-size:12px;background:#333;color:#4a90d9;border:1px solid #4a90d9;border-radius:4px;padding:2px 8px;cursor:pointer;z-index:99999;display:none;">Grid</button><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test")){document.getElementById("version-tag").style.display="block";document.getElementById("grid-toggle-btn").style.display="block";}document.getElementById("grid-toggle-btn").onclick=function(){document.querySelector(".debug-grid").classList.toggle("visible");};</script></body>
 </html>
