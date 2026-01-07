@@ -1747,13 +1747,8 @@ function handleConnection(conn){
                 }
             }
         });
-        if(isHost){
-            // If game is running, they'll send rejoin message
-            // Otherwise send lobby info
-            if(!gameState){
-                conn.send({type:'lobby',code:lobbyCode,players:getLobbyPlayers()});
-            }
-        }
+        // Don't send lobby info here - wait for 'join' message first
+        // This prevents race condition where player sees old lobby state without themselves
     });
 }
 
@@ -1783,7 +1778,10 @@ function handleMessage(conn,data){
                 const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
                 if(!gameState){
                     lobbyPlayers.push(newPlayer);
-                    broadcastToAll({type:'player-joined',player:newPlayer});
+                    // Send full lobby state to the new player
+                    conn.send({type:'lobby',code:lobbyCode,players:getLobbyPlayers()});
+                    // Notify other players about the new player
+                    conns.filter(c=>c!==conn).forEach(c=>{try{c.send({type:'player-joined',player:newPlayer});}catch(e){}});
                     updateLobbyUI(lobbyPlayers);
                 }else{
                     // Check duplicates in gameState too
