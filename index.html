@@ -2217,6 +2217,12 @@ function updateLobbyUI(players){
 
 function startGame(){
     const players=getLobbyPlayers();
+    console.log('startGame: players=',players.length,'lobbyPlayers=',lobbyPlayers.length);
+    if(!players.length){
+        console.error('startGame: No players!');
+        alert('Error: No players in lobby');
+        return;
+    }
     players[0].name=myName;
     const shuffled=shuffle(EVENTS);
     displayedCard=null;lastCurrentPlayer=-1; // Reset for new game
@@ -2228,6 +2234,7 @@ function startGame(){
         currentPlayer:0
     };
     drawCard();
+    console.log('startGame: currentCard=',gameState.currentCard?gameState.currentCard.e:'null');
     broadcastToAll({type:'start',state:gameState});
     showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';document.getElementById('mute-btn').style.display='block';updateMuteButton();    renderGame();
 }
