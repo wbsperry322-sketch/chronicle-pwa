@@ -2266,11 +2266,13 @@ function renderGame(){
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
-    
-    if(!gameState)return;
+
+    if(!gameState){console.log('renderGame: no gameState');return;}
+    if(!gameState.players||!gameState.players.length){console.log('renderGame: no players');return;}
     const myPlayerIndex=isDemo?gameState.currentPlayer:gameState.players.findIndex(p=>p.id===myId);
     const isMyTurn=gameState.currentPlayer===myPlayerIndex||(isDemo);
     const cp=gameState.players[gameState.currentPlayer];
+    if(!cp){console.log('renderGame: no current player at index',gameState.currentPlayer);return;}
     
     // Turn banner
     if(isDemo){
