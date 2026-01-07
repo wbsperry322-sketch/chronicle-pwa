@@ -1698,6 +1698,8 @@ function handleMessage(conn,data){
             updateLobbyUI(lobbyPlayers);
             break;
         case'start':
+            // Clear any old UI first
+            $('timeline').innerHTML='';
             gameState=data.state;
             showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';            renderGame();
             break;
@@ -1725,6 +1727,8 @@ function handleMessage(conn,data){
             showGameOver();
             break;
         case'restart':
+            // Clear any old UI first
+            $('timeline').innerHTML='';
             gameState=data.state;
             showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';            renderGame();
             break;
@@ -2029,7 +2033,11 @@ function updateLobbyUI(players){
 function startGame(){
     const players=getLobbyPlayers();
     players[0].name=myName;
+    players.forEach(p=>{p.score=0;p.mistakes=[];}); // Ensure fresh scores
     const shuffled=shuffle(EVENTS);
+    // Clear any old state first
+    gameState=null;
+    // Create fresh game state
     gameState={
         players,
         timeline:[{e:shuffled[0].e,y:shuffled[0].y}],
@@ -2038,6 +2046,8 @@ function startGame(){
         currentPlayer:0
     };
     drawCard();
+    // Clear UI before broadcasting
+    $('timeline').innerHTML='';
     broadcastToAll({type:'start',state:gameState});
     showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';document.getElementById('mute-btn').style.display='block';updateMuteButton();    renderGame();
 }
