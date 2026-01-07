@@ -419,22 +419,23 @@
 
     
 
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script>
-// Load PeerJS on demand
-let peerJSLoaded = false;
-function loadPeerJS() {
-    return new Promise((resolve, reject) => {
-        if (peerJSLoaded || typeof Peer !== 'undefined') {
-            resolve();
-            return;
-        }
-        const s = document.createElement('script');
-        s.src = 'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js';
-        s.onload = () => { peerJSLoaded = true; resolve(); };
-        s.onerror = () => reject(new Error('Could not load networking library'));
-        document.head.appendChild(s);
-    });
-}
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyC2nbXBzOAB63RSs-n1f9OjzZHuXNHJuN8",
+    authDomain: "chronicle-game-ffa37.firebaseapp.com",
+    databaseURL: "https://chronicle-game-ffa37-default-rtdb.firebaseio.com",
+    projectId: "chronicle-game-ffa37",
+    storageBucket: "chronicle-game-ffa37.firebasestorage.app",
+    messagingSenderId: "1030640704242",
+    appId: "1:1030640704242:web:293eb472152c4b8df50e6b"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 const EVENTS=[{e:"Great Pyramid of Giza built",y:-2560,d:"The oldest of the Seven Wonders of the Ancient World, built as a tomb for Pharaoh Khufu."},{e:"Code of Hammurabi written",y:-1754,d:"One of the oldest written legal codes, featuring 282 laws including 'an eye for an eye'."},{e:"Tutankhamun becomes Pharaoh",y:-1332,d:"The 'Boy King' took the throne at age 9 and ruled until his death at 19."},{e:"Trojan War",y:-1184,d:"Legendary war between Greeks and Troy, featuring the famous wooden horse trick."},{e:"First Olympic Games",y:-776,d:"Ancient Greeks held athletic competitions to honor Zeus at Olympia."},{e:"Founding of Rome",y:-753,d:"According to legend, twin brothers Romulus and Remus founded the city."},{e:"Homer writes Iliad",y:-750,d:"Epic poem about the Trojan War, one of the oldest works of Western literature."},{e:"Birth of Buddha",y:-563,d:"Siddhartha Gautama, who would become the Buddha and found Buddhism."},{e:"Birth of Confucius",y:-551,d:"Chinese philosopher whose teachings profoundly influenced East Asian culture."},{e:"Roman Republic established",y:-509,d:"Romans overthrew their king and created a republic that lasted nearly 500 years."},{e:"Battle of Marathon",y:-490,d:"Athenians defeated a larger Persian force; a messenger's run inspired the marathon race."},{e:"Battle of Thermopylae",y:-480,d:"300 Spartans and allies held off the Persian army in a legendary last stand."},{e:"Parthenon construction begins",y:-447,d:"The iconic temple to Athena on the Athenian Acropolis took 15 years to complete."},{e:"Death of Socrates",y:-399,d:"The philosopher was sentenced to death by drinking hemlock for 'corrupting youth'."},{e:"Plato founds Academy",y:-387,d:"One of the first institutions of higher learning in the Western world."},{e:"Alexander conquers Persia",y:-331,d:"At just 25, Alexander the Great defeated the mighty Persian Empire."},{e:"Death of Alexander",y:-323,d:"He died at 32, leaving an empire stretching from Greece to India."},{e:"Great Wall of China begins",y:-221,d:"Emperor Qin Shi Huang connected existing walls to protect against northern invaders."},{e:"Hannibal crosses Alps",y:-218,d:"The Carthaginian general famously brought war elephants over the mountains to attack Rome."},{e:"Caesar conquers Gaul",y:-58,d:"Julius Caesar's military campaigns added modern-day France to Roman territory."},{e:"Caesar assassinated",y:-44,d:"Stabbed 23 times by senators on the Ides of March in the Roman Senate."},{e:"Battle of Actium",y:-31,d:"Octavian defeated Antony and Cleopatra, paving the way for the Roman Empire."},{e:"Birth of Jesus",y:-4,d:"The central figure of Christianity, born in Bethlehem during King Herod's reign."},{e:"Crucifixion of Jesus",y:33,d:"Executed by Roman authorities in Jerusalem, an event central to Christian faith."},{e:"Great Fire of Rome",y:64,d:"Devastating fire that burned for 6 days; Emperor Nero was rumored to have fiddled."},{e:"Destruction of Pompeii",y:79,d:"Mount Vesuvius erupted, burying the city in ash and preserving it for centuries."},{e:"Colosseum completed",y:80,d:"Rome's iconic amphitheater could hold 50,000 spectators for gladiator fights."},{e:"Hadrian's Wall begins",y:122,d:"Roman Emperor Hadrian built this 73-mile wall across northern Britain."},{e:"Constantine converts",y:312,d:"First Roman emperor to convert to Christianity, changing the course of history."},{e:"Council of Nicaea",y:325,d:"First major Christian council, which established the Nicene Creed."},{e:"Fall of Western Rome",y:476,d:"The last Roman emperor was deposed, traditionally marking the end of ancient history."},{e:"Birth of Muhammad",y:570,d:"The founder of Islam, born in Mecca in present-day Saudi Arabia."},{e:"Muhammad's Hijra",y:622,d:"Muhammad's migration to Medina marks year one of the Islamic calendar."},{e:"Death of Muhammad",y:632,d:"The Prophet died in Medina, leaving behind a rapidly growing religious movement."},{e:"Islamic conquest of Spain",y:711,d:"Moors from North Africa crossed Gibraltar and conquered most of the Iberian Peninsula."},{e:"Battle of Tours",y:732,d:"Charles Martel stopped the Muslim advance into Western Europe."},{e:"Vikings raid Lindisfarne",y:793,d:"This attack on an English monastery marked the beginning of the Viking Age."},{e:"Charlemagne crowned",y:800,d:"Pope Leo III crowned him Emperor, reviving the idea of a unified Christian Europe."},{e:"Treaty of Verdun",y:843,d:"Divided Charlemagne's empire into three parts, shaping modern European borders."},{e:"Leif Erikson reaches America",y:1000,d:"The Viking explorer reached North America 500 years before Columbus."},{e:"Norman Conquest",y:1066,d:"William the Conqueror defeated King Harold at the Battle of Hastings."},{e:"First Crusade begins",y:1096,d:"Pope Urban II called for Christians to reclaim the Holy Land from Muslims."},{e:"Crusaders take Jerusalem",y:1099,d:"After a brutal siege, Crusaders captured the holy city."},{e:"Templars founded",y:1119,d:"Knights Templar formed to protect Christian pilgrims traveling to Jerusalem."},{e:"Becket murdered",y:1170,d:"Archbishop Thomas Becket was killed in Canterbury Cathedral by knights of Henry II."},{e:"Saladin takes Jerusalem",y:1187,d:"The Muslim leader recaptured Jerusalem, sparking the Third Crusade."},{e:"Magna Carta signed",y:1215,d:"English nobles forced King John to sign, limiting royal power for the first time."},{e:"Genghis Khan takes Beijing",y:1215,d:"The Mongol conqueror captured the capital of the Jin dynasty."},{e:"Death of Genghis Khan",y:1227,d:"He left behind the largest contiguous land empire in history."},{e:"Marco Polo reaches China",y:1275,d:"The Venetian merchant's travels introduced Europeans to Asian wonders."},{e:"Mongol Empire peak",y:1279,d:"Under Kublai Khan, the empire stretched from Korea to Eastern Europe."},{e:"William Wallace victory",y:1297,d:"Scottish hero defeated the English at the Battle of Stirling Bridge."},{e:"Dante's Divine Comedy",y:1308,d:"The Italian poet began his epic journey through Hell, Purgatory, and Paradise."},{e:"Hundred Years War begins",y:1337,d:"England and France began a series of conflicts lasting 116 years."},{e:"Black Death in Europe",y:1347,d:"The plague killed 30-60% of Europe's population within a few years."},{e:"Chaucer's Canterbury Tales",y:1387,d:"Geoffrey Chaucer began writing his famous collection of stories in Middle English."},{e:"Battle of Agincourt",y:1415,d:"Henry V's English army defeated a much larger French force."},{e:"Joan of Arc burned",y:1431,d:"The teenage French heroine was executed for heresy at age 19."},{e:"Fall of Constantinople",y:1453,d:"Ottoman Turks conquered the Byzantine capital, ending the Roman Empire for good."},{e:"Gutenberg Bible",y:1455,d:"First major book printed with movable type, revolutionizing communication."},{e:"Wars of Roses begin",y:1455,d:"English civil war between the houses of York and Lancaster for the throne."},{e:"Spanish Inquisition",y:1478,d:"Catholic tribunal established to maintain religious orthodoxy in Spain."},{e:"Columbus reaches Americas",y:1492,d:"His voyage opened sustained European contact with the New World."},{e:"Vasco da Gama reaches India",y:1498,d:"First European to reach India by sea, opening lucrative trade routes."},{e:"Michelangelo's David",y:1504,d:"The 17-foot marble statue became a symbol of the Italian Renaissance."},{e:"Luther's 95 Theses",y:1517,d:"Martin Luther's criticisms of the Catholic Church sparked the Protestant Reformation."},{e:"Cortés conquers Aztecs",y:1521,d:"Spanish conquistador defeated the Aztec Empire with guns, germs, and steel."},{e:"Magellan circumnavigation",y:1522,d:"First expedition to sail around the world, though Magellan died en route."},{e:"Pizarro conquers Incas",y:1533,d:"Spanish conquistador toppled the Inca Empire in South America."},{e:"Church of England founded",y:1534,d:"Henry VIII broke from Rome after the Pope refused to annul his marriage."},{e:"Copernicus heliocentric theory",y:1543,d:"Proposed that Earth revolves around the Sun, not vice versa."},{e:"Council of Trent",y:1545,d:"Catholic Church's response to the Protestant Reformation."},{e:"Elizabeth I crowned",y:1558,d:"The 'Virgin Queen' began her 45-year reign over England."},{e:"Shakespeare born",y:1564,d:"The Bard of Avon, widely regarded as the greatest writer in English."},{e:"St. Bartholomew Massacre",y:1572,d:"French Catholics killed thousands of Protestant Huguenots in Paris."},{e:"Spanish Armada defeated",y:1588,d:"England's navy and storms destroyed Spain's invasion fleet."},{e:"Shakespeare's Hamlet",y:1601,d:"'To be or not to be' - one of the most famous plays ever written."},{e:"Jamestown founded",y:1607,d:"First permanent English settlement in North America."},{e:"Galileo confirms heliocentrism",y:1610,d:"His telescope observations proved Copernicus right about the solar system."},{e:"King James Bible",y:1611,d:"Influential English translation that shaped the language for centuries."},{e:"Thirty Years War begins",y:1618,d:"Devastating religious conflict that killed millions in Central Europe."},{e:"Pilgrims at Plymouth",y:1620,d:"English Separatists established a colony in Massachusetts."},{e:"Taj Mahal begins",y:1632,d:"Mughal emperor Shah Jahan built this marble mausoleum for his wife."},{e:"English Civil War",y:1642,d:"Conflict between King Charles I and Parliament over power and religion."},{e:"Charles I executed",y:1649,d:"The king was beheaded, and England briefly became a republic."},{e:"Great Fire of London",y:1666,d:"Destroyed 13,200 houses and 87 churches, but killed only 6 people officially."},{e:"Newton's Principia",y:1687,d:"Isaac Newton's laws of motion and gravity revolutionized physics."},{e:"Salem Witch Trials",y:1692,d:"Mass hysteria in Massachusetts led to 20 executions for witchcraft."},{e:"St. Petersburg founded",y:1703,d:"Peter the Great built Russia's 'Window to the West' on a swamp."},{e:"Bach's Brandenburg Concertos",y:1721,d:"Six concertos showcasing the Baroque master's genius."},{e:"Voltaire's Candide",y:1759,d:"Satirical novella mocking optimism: 'We must cultivate our garden.'"},{e:"Boston Tea Party",y:1773,d:"Colonists dumped tea into the harbor to protest British taxation."},{e:"Declaration of Independence",y:1776,d:"American colonies declared freedom from British rule."},{e:"Mozart's Don Giovanni",y:1787,d:"One of the greatest operas ever composed."},{e:"US Constitution ratified",y:1788,d:"Established the framework of American government still in use today."},{e:"French Revolution begins",y:1789,d:"Overthrow of the monarchy with cries of 'Liberty, Equality, Fraternity!'"},{e:"Storming of Bastille",y:1789,d:"Parisian revolutionaries seized the royal fortress-prison."},{e:"Reign of Terror",y:1793,d:"Revolutionary tribunals executed thousands, including the king and queen."},{e:"Marie Antoinette executed",y:1793,d:"The queen was guillotined nine months after her husband Louis XVI."},{e:"Smallpox vaccine",y:1796,d:"Edward Jenner's discovery led to the eventual eradication of the disease."},{e:"Napoleon becomes Emperor",y:1804,d:"Crowned himself Emperor of the French at Notre-Dame Cathedral."},{e:"Haiti independence",y:1804,d:"First successful slave revolution created the first free Black republic."},{e:"Battle of Trafalgar",y:1805,d:"British navy under Nelson defeated Napoleon's fleet but Nelson died in victory."},{e:"Napoleon invades Russia",y:1812,d:"His Grand Army of 600,000 was destroyed by Russian winter and tactics."},{e:"Battle of Waterloo",y:1815,d:"Napoleon's final defeat ended 23 years of French Revolutionary wars."},{e:"First photograph",y:1826,d:"Nicéphore Niépce captured the first permanent photograph from his window."},{e:"Greek independence",y:1832,d:"Greece won freedom from the Ottoman Empire after a long war."},{e:"British abolish slavery",y:1833,d:"Slavery banned throughout the British Empire."},{e:"Victoria crowned",y:1837,d:"Beginning of the Victorian era that defined the 19th century."},{e:"First Opium War",y:1839,d:"Britain forced China to open ports and cede Hong Kong."},{e:"Irish Potato Famine",y:1845,d:"Blight destroyed potato crops, causing a million deaths and mass emigration."},{e:"Communist Manifesto",y:1848,d:"Marx and Engels' pamphlet declared 'Workers of the world, unite!'"},{e:"California Gold Rush",y:1848,d:"Discovery at Sutter's Mill brought 300,000 people to California."},{e:"Great Exhibition",y:1851,d:"World's fair in London's Crystal Palace showcased industrial progress."},{e:"Crimean War begins",y:1853,d:"Britain and France fought Russia; Florence Nightingale revolutionized nursing."},{e:"Origin of Species",y:1859,d:"Darwin's theory of evolution by natural selection transformed biology."},{e:"US Civil War begins",y:1861,d:"Conflict over slavery and states' rights tore America apart."},{e:"Emancipation Proclamation",y:1863,d:"Lincoln declared slaves in rebel states 'forever free.'"},{e:"Lincoln assassinated",y:1865,d:"Shot by John Wilkes Booth at Ford's Theatre, five days after the war ended."},{e:"Meiji Restoration",y:1868,d:"Japan rapidly modernized after the emperor regained power."},{e:"Suez Canal opens",y:1869,d:"Connecting the Mediterranean to the Red Sea transformed global shipping."},{e:"Franco-Prussian War",y:1870,d:"Prussia's victory led to German unification and French humiliation."},{e:"German Empire formed",y:1871,d:"Bismarck united German states into a powerful new nation."},{e:"Telephone patented",y:1876,d:"Alexander Graham Bell's invention revolutionized communication."},{e:"Battle of Little Bighorn",y:1876,d:"Lakota and Cheyenne warriors defeated Custer's 7th Cavalry."},{e:"Phonograph invented",y:1877,d:"Edison's 'talking machine' could record and play back sound."},{e:"Light bulb demonstrated",y:1879,d:"Edison's practical incandescent bulb lit up the world."},{e:"First automobile",y:1886,d:"Karl Benz patented the first true automobile powered by gasoline."},{e:"Jack the Ripper",y:1888,d:"Unidentified serial killer terrorized London's East End."},{e:"Eiffel Tower completed",y:1889,d:"Built for the World's Fair, it was the tallest structure for 41 years."},{e:"Wounded Knee",y:1890,d:"US Army massacred 250-300 Lakota people in South Dakota."},{e:"X-rays discovered",y:1895,d:"Wilhelm Röntgen's discovery revolutionized medicine."},{e:"Modern Olympics begin",y:1896,d:"First international Olympic Games held in Athens, Greece."},{e:"Spanish-American War",y:1898,d:"US gained Cuba, Puerto Rico, Guam, and Philippines from Spain."},{e:"Boxer Rebellion",y:1900,d:"Chinese nationalists besieged foreign diplomats in Beijing."},{e:"Victoria dies",y:1901,d:"End of an era after 63 years on the British throne."},{e:"Wright Brothers flight",y:1903,d:"First powered airplane flight lasted 12 seconds at Kitty Hawk."},{e:"Special Relativity",y:1905,d:"Einstein's theory introduced E=mc² and changed physics forever."},{e:"SF Earthquake",y:1906,d:"Magnitude 7.9 quake and fires destroyed much of San Francisco."},{e:"Model T introduced",y:1908,d:"Ford's affordable car put America on wheels."},{e:"Titanic sinks",y:1912,d:"'Unsinkable' ship hit an iceberg; 1,500 died in the icy Atlantic."},{e:"WWI begins",y:1914,d:"The 'Great War' would kill 17 million people over four years."},{e:"Franz Ferdinand killed",y:1914,d:"Assassination of the Austrian heir sparked World War I."},{e:"Battle of Somme",y:1916,d:"One million casualties in five months of trench warfare."},{e:"Spanish Flu",y:1918,d:"Pandemic killed 50-100 million people worldwide."},{e:"Treaty of Versailles",y:1919,d:"Peace treaty that ended WWI but planted seeds for WWII."},{e:"US Women vote",y:1920,d:"19th Amendment finally granted women's suffrage nationwide."},{e:"Tut's tomb found",y:1922,d:"Howard Carter discovered the nearly intact tomb in Egypt's Valley of the Kings."},{e:"Stalin takes power",y:1924,d:"Began a brutal reign that would kill millions of Soviets."},{e:"Lindbergh flight",y:1927,d:"First solo nonstop transatlantic flight from New York to Paris."},{e:"Penicillin discovered",y:1928,d:"Alexander Fleming's accidental discovery launched the antibiotic era."},{e:"Empire State completed",y:1931,d:"World's tallest building for nearly 40 years."},{e:"Hitler becomes Chancellor",y:1933,d:"Nazi leader gained power legally, then destroyed democracy."},{e:"Hindenburg disaster",y:1937,d:"Hydrogen airship exploded in New Jersey, ending the airship era."},{e:"Kristallnacht",y:1938,d:"'Night of Broken Glass' - Nazi mobs attacked Jews across Germany."},{e:"WWII begins",y:1939,d:"Germany invaded Poland, starting history's deadliest conflict."},{e:"Dunkirk evacuation",y:1940,d:"338,000 Allied troops rescued from France by military and civilian boats."},{e:"Pearl Harbor",y:1941,d:"Japan's surprise attack brought the US into World War II."},{e:"D-Day",y:1944,d:"Allied invasion of Normandy began the liberation of Western Europe."},{e:"Hiroshima bombing",y:1945,d:"First atomic bomb used in warfare killed 80,000 instantly."},{e:"UN founded",y:1945,d:"International organization created to prevent future world wars."},{e:"India independence",y:1947,d:"End of British colonial rule, but partition caused massive violence."},{e:"Israel established",y:1948,d:"Jewish state declared, leading to immediate war with Arab neighbors."},{e:"NATO founded",y:1949,d:"Western military alliance formed to counter Soviet expansion."},{e:"PRC proclaimed",y:1949,d:"Mao Zedong declared the People's Republic after communist victory."},{e:"Korean War begins",y:1950,d:"North Korea invaded the South, drawing in US and Chinese forces."},{e:"DNA discovered",y:1953,d:"Watson and Crick revealed the double helix structure of life."},{e:"Brown v. Board",y:1954,d:"Supreme Court ruled school segregation unconstitutional."},{e:"Rosa Parks",y:1955,d:"Her refusal to give up her bus seat sparked the Montgomery Bus Boycott."},{e:"Sputnik launched",y:1957,d:"Soviet satellite started the Space Race with the US."},{e:"Cuban Revolution",y:1959,d:"Fidel Castro overthrew the US-backed dictator Batista."},{e:"Berlin Wall built",y:1961,d:"East Germany built the wall to stop citizens fleeing to the West."},{e:"Cuban Missile Crisis",y:1962,d:"US and USSR came closest to nuclear war over Soviet missiles in Cuba."},{e:"I Have a Dream",y:1963,d:"MLK's iconic speech at the March on Washington."},{e:"JFK assassinated",y:1963,d:"President Kennedy shot in Dallas; his death shocked the world."},{e:"Civil Rights Act",y:1964,d:"Landmark law outlawed discrimination based on race, color, religion, sex."},{e:"Malcolm X killed",y:1965,d:"The Black nationalist leader was shot at a rally in New York."},{e:"Six-Day War",y:1967,d:"Israel defeated Arab neighbors and captured Jerusalem, Gaza, and more."},{e:"MLK assassinated",y:1968,d:"Civil rights leader shot in Memphis, sparking riots nationwide."},{e:"Moon landing",y:1969,d:"'One small step for man' - Neil Armstrong walked on the Moon."},{e:"Woodstock",y:1969,d:"Legendary music festival drew 400,000 to a New York farm."},{e:"First email",y:1971,d:"Ray Tomlinson sent the first network email using the @ symbol."},{e:"Watergate",y:1972,d:"Break-in and cover-up scandal that forced Nixon to resign."},{e:"Vietnam War ends",y:1975,d:"Fall of Saigon ended America's longest and most divisive war."},{e:"Apple founded",y:1976,d:"Steve Jobs and Steve Wozniak started the company in a garage."},{e:"First PC",y:1977,d:"Apple II, Commodore PET, and TRS-80 brought computers home."},{e:"Iranian Revolution",y:1979,d:"Islamic revolutionaries overthrew the US-backed Shah."},{e:"Lennon killed",y:1980,d:"Former Beatle shot outside his New York apartment."},{e:"AIDS recognized",y:1981,d:"CDC reported first cases of what became a global pandemic."},{e:"Chernobyl",y:1986,d:"Worst nuclear disaster in history contaminated vast areas."},{e:"Berlin Wall falls",y:1989,d:"East Germans flooded through as the Iron Curtain collapsed."},{e:"Tiananmen Square",y:1989,d:"Chinese military crushed pro-democracy protests in Beijing."},{e:"Mandela freed",y:1990,d:"After 27 years in prison, the anti-apartheid leader walked free."},{e:"WWW invented",y:1991,d:"Tim Berners-Lee created the World Wide Web at CERN."},{e:"USSR dissolves",y:1991,d:"End of the Soviet Union and the Cold War."},{e:"Mandela President",y:1994,d:"South Africa's first Black president after the end of apartheid."},{e:"Rwandan Genocide",y:1994,d:"800,000 Tutsis killed by Hutu extremists in 100 days."},{e:"Dolly cloned",y:1996,d:"First mammal cloned from an adult cell was a Scottish sheep."},{e:"Hong Kong returned",y:1997,d:"British colony handed back to China after 156 years."},{e:"Diana dies",y:1997,d:"Princess Diana killed in Paris car crash, mourned worldwide."},{e:"Google founded",y:1998,d:"Larry Page and Sergey Brin started the search engine at Stanford."},{e:"Y2K",y:2000,d:"Fears of computer crashes at midnight proved largely unfounded."},{e:"9/11 attacks",y:2001,d:"Terrorists flew planes into the World Trade Center and Pentagon."},{e:"Afghanistan invasion",y:2001,d:"US-led forces toppled the Taliban after 9/11."},{e:"Euro circulation",y:2002,d:"New currency replaced francs, marks, lira across Europe."},{e:"Iraq invasion",y:2003,d:"US-led coalition invaded based on claims of weapons of mass destruction."},{e:"Facebook founded",y:2004,d:"Mark Zuckerberg launched the social network from his Harvard dorm."},{e:"YouTube launched",y:2005,d:"Video-sharing site changed how we consume media."},{e:"Twitter launched",y:2006,d:"Microblogging platform limited posts to 140 characters."},{e:"iPhone released",y:2007,d:"Apple's smartphone revolutionized mobile technology."},{e:"Obama elected",y:2008,d:"First African American president in US history."},{e:"Bin Laden killed",y:2011,d:"US Navy SEALs found and killed the 9/11 mastermind in Pakistan."},{e:"Arab Spring",y:2011,d:"Wave of protests toppled dictators across the Middle East."},{e:"Higgs Boson",y:2012,d:"'God particle' discovered at CERN, confirming physics theory."},{e:"Boston bombing",y:2013,d:"Terror attack at the marathon killed 3 and injured hundreds."},{e:"Crimea annexed",y:2014,d:"Russia seized the Ukrainian peninsula after a disputed referendum."},{e:"Brexit vote",y:2016,d:"UK voted to leave the European Union in a shock referendum."},{e:"Trump elected",y:2016,d:"Businessman and reality TV star won the US presidency."},{e:"COVID pandemic",y:2020,d:"Coronavirus spread globally, killing millions and changing daily life."},{e:"Floyd protests",y:2020,d:"George Floyd's death sparked worldwide protests against police brutality."},{e:"Biden elected",y:2020,d:"Defeated Trump in an election marked by record turnout."},{e:"Capitol storming",y:2021,d:"Trump supporters attacked the US Capitol during election certification."},{e:"Ukraine invasion",y:2022,d:"Russia launched full-scale invasion, causing Europe's largest war since WWII."},{e:"Elizabeth II dies",y:2022,d:"Britain's longest-reigning monarch died after 70 years on the throne."},{e:"ChatGPT released",y:2022,d:"OpenAI's chatbot sparked global conversation about AI's future."},
 // Prehistoric Events
@@ -1379,10 +1380,12 @@ const fY=y=>y<0?Math.abs(y)+' BCE':y+' CE';
 const shuffle=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;};
 const genCode=()=>{const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let r='';for(let i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];return r;};
 
-let peer=null,conns=[],myId='',myName='',lobbyCode='',isHost=false,isDemo=false,gameState=null,playerNames={};
-let hostConn=null,reconnectAttempts=0,maxReconnectAttempts=3,leavingGame=false;
-let lobbyPlayers=[];  // Store lobby players for non-hosts
+let myId='',myName='',lobbyCode='',isHost=false,isDemo=false,gameState=null,playerNames={};
+let leavingGame=false;
+let lobbyPlayers=[];  // Store lobby players
 let disconnectTimers={};  // Track disconnect timeouts for kicking players
+let gameRef=null,playersRef=null,stateRef=null;  // Firebase references
+let unsubscribers=[];  // Firebase listeners to clean up
 
 // Check for pending rejoin on page load
 function checkPendingRejoin(){
@@ -1460,50 +1463,10 @@ function init(){
         if(gameState) renderGame();
     });
     
-    // Keep connection alive when tab is backgrounded (mobile)
-    document.addEventListener('visibilitychange', ()=>{
-        if(document.visibilityState === 'visible' && !isHost && !isDemo && lobbyCode){
-            console.log('Tab visible - checking connection...');
-            // Check if connection is actually alive
-            checkConnectionHealth();
-        }
-    });
-    
-    // Also check on page focus (backup for Safari)
-    window.addEventListener('focus', ()=>{
-        if(!isHost && !isDemo && lobbyCode){
-            setTimeout(checkConnectionHealth, 500);
-        }
-    });
+    // Firebase handles connection automatically - no manual checks needed
 }
 
-let connectionCheckPending = false;
-
-function checkConnectionHealth(){
-    if(connectionCheckPending || isHost || isDemo || !lobbyCode) return;
-    
-    // Check if we have a connection and it's open
-    if(!conns.length || !conns[0] || !conns[0].open){
-        console.log('Connection dead, attempting reconnect...');
-        attemptReconnect(lobbyCode);
-        return;
-    }
-    
-    // Try to send ping - if it fails, reconnect
-    connectionCheckPending = true;
-    
-    try {
-        conns[0].send({type:'ping'});
-        // If send succeeds, connection might be ok
-        setTimeout(()=>{
-            connectionCheckPending = false;
-        }, 1000);
-    } catch(e) {
-        console.log('Ping send failed, reconnecting...');
-        connectionCheckPending = false;
-        attemptReconnect(lobbyCode);
-    }
-}
+// Connection health is handled by Firebase automatically
 
 // ============ DEMO MODE (Local Play) ============
 function startDemo(){document.getElementById('version-tag').style.display='block';
@@ -1536,288 +1499,113 @@ function startDemo(){document.getElementById('version-tag').style.display='block
     showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';    renderGame();
 }
 
-// ============ ONLINE MODE ============
-function createPeer(id){
-    return new Promise((resolve,reject)=>{
-        if(typeof Peer==='undefined'){
-            reject(new Error('PeerJS not loaded. Try refreshing the page.'));
-            return;
+// ============ ONLINE MODE (Firebase) ============
+
+// Clean up Firebase listeners
+function cleanupFirebase(){
+    unsubscribers.forEach(unsub=>{try{unsub();}catch(e){}});
+    unsubscribers=[];
+    if(gameRef){
+        // Remove player from game if leaving
+        if(myId && !isHost){
+            db.ref(`games/${lobbyCode}/players/${myId}`).remove();
         }
-        // Try default PeerJS first, fallback to peerjs.92k.de if down
-        const iceServers = [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:global.stun.twilio.com:3478' },
-            { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-            { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-            { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-        ];
-
-        // Try default server first
-        let serverIndex = 0;
-        const servers = [
-            { debug: 1, config: { iceServers } }, // default PeerJS cloud
-            { host: 'peerjs.92k.de', secure: true, debug: 1, config: { iceServers } } // fallback
-        ];
-
-        const tryServer = () => {
-            if (serverIndex >= servers.length) {
-                reject(new Error('All servers unavailable'));
-                return;
-            }
-            console.log('Trying server:', serverIndex === 0 ? 'default' : 'peerjs.92k.de');
-            peer = new Peer(id, servers[serverIndex]);
-            const timeout = setTimeout(() => {
-                console.log('Server timeout, trying next...');
-                peer.destroy();
-                serverIndex++;
-                tryServer();
-            }, 8000);
-            peer.on('open', (peerId) => {
-                clearTimeout(timeout);
-                console.log('Connected to PeerJS server with ID:', peerId);
-                resolve();
-            });
-            peer.on('error', err => {
-                clearTimeout(timeout);
-                console.error('Peer error:', err);
-                if (err.type === 'unavailable-id') {
-                    reject(new Error('Code taken, try again'));
-                } else if (err.type === 'server-error' || err.type === 'network') {
-                    // Try next server
-                    console.log('Server error, trying next...');
-                    peer.destroy();
-                    serverIndex++;
-                    tryServer();
-                } else {
-                    reject(new Error(err.type + ': ' + (err.message || 'Connection failed')));
-                }
-            });
-            peer.on('connection', conn => {
-                console.log('Incoming connection from:', conn.peer);
-                if ($('waiting-msg')) $('waiting-msg').textContent = 'Player connecting...';
-                handleConnection(conn);
-            });
-            peer.on('disconnected', () => {
-                setTimeout(() => peer && peer.reconnect(), 1000);
-            });
-            peer.on('close', () => {});
-        };
-        tryServer();
-    });
-}
-
-function handleConnection(conn){
-    conn.on('open',()=>{
-        if(!conns.includes(conn)){
-            conns.push(conn);
+        // If host, remove entire game
+        if(isHost && lobbyCode){
+            db.ref(`games/${lobbyCode}`).remove();
         }
-        conn.on('data',data=>handleMessage(conn,data));
-        conn.on('close',()=>{
-            conns=conns.filter(c=>c!==conn);
-            if(isHost&&gameState){
-                const p=gameState.players.find(p=>p.id===conn.peer);
-                if(p){
-                    p.connected=false;
-                    // Start 20-second kick timer
-                    disconnectTimers[conn.peer]=setTimeout(()=>{
-                        kickDisconnectedPlayer(conn.peer);
-                    },20000);
-                }
-                broadcastState();
-            }
-        });
-        if(isHost){
-            // If game is running, they'll send rejoin message
-            // Otherwise send lobby info
-            if(!gameState){
-                conn.send({type:'lobby',code:lobbyCode,players:getLobbyPlayers()});
-            }
-        }
-    });
-}
-
-function handleMessage(conn,data){
-    switch(data.type){
-        case'lobby':
-            lobbyCode=data.code;
-            lobbyPlayers=data.players;  // Store for non-hosts
-            updateLobbyUI(data.players);
-            break;
-        case'join':
-            if(isHost){
-                const color=COLORS[gameState?gameState.players.length:lobbyPlayers.length];
-                playerNames[conn.peer]=data.name;
-                const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
-                if(!gameState){
-                    lobbyPlayers.push(newPlayer);
-                    broadcastToAll({type:'player-joined',player:newPlayer});
-                    updateLobbyUI(lobbyPlayers);
-                }else{
-                    gameState.players.push(newPlayer);
-                    broadcastState();
-                }
-            }
-            break;
-        case'rejoin':
-            if(isHost && gameState){
-                console.log('Player rejoining:', data.name);
-                // Find existing player and reconnect them
-                const existingPlayer = gameState.players.find(p => p.name === data.name);
-                if(existingPlayer){
-                    // Cancel kick timer if exists
-                    if(disconnectTimers[existingPlayer.id]){
-                        clearTimeout(disconnectTimers[existingPlayer.id]);
-                        delete disconnectTimers[existingPlayer.id];
-                    }
-                    existingPlayer.id = conn.peer;
-                    existingPlayer.connected = true;
-                    // Make sure connection is in conns array
-                    if(!conns.includes(conn)){
-                        conns.push(conn);
-                    }
-                    conn.send({type:'state',state:gameState});
-                    broadcastState();
-                }else{
-                    // Player not found, add as new
-                    const color=COLORS[gameState.players.length % COLORS.length];
-                    playerNames[conn.peer]=data.name;const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
-                    gameState.players.push(newPlayer);
-                    if(!conns.includes(conn)){
-                        conns.push(conn);
-                    }
-                    conn.send({type:'state',state:gameState});
-                    broadcastState();
-                }
-            }
-            break;
-        case'player-joined':
-            // For non-hosts: add new player to stored list
-            if(!lobbyPlayers.find(p=>p.id===data.player.id)){
-                lobbyPlayers.push(data.player);
-            }
-            updateLobbyUI(lobbyPlayers);
-            break;
-        case'start':
-            // Clear any old UI first
-            $('timeline').innerHTML='';
-            gameState=data.state;
-            showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';            renderGame();
-            break;
-        case'state':
-            gameState=data.state;
-            // If we're receiving state, make sure game screen is showing
-            if(gameState && gameState.timeline){
-                showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';            }
-            renderGame();
-            break;
-        case'move':
-            if(isHost)processMove(conn.peer,data.position);
-            break;
-        case'feedback':
-            showFeedback(data.correct,data.year,data.player,data.desc,data.cardName,data.position);
-            break;
-        case'showPlacement':
-            showPlacementHighlight(data.position, data.correct, data.cardName);
-            break;
-        case'scoreboard':
-            showScoreboard();
-            break;
-        case'gameover':
-            gameState=data.state;
-            showGameOver();
-            break;
-        case'restart':
-            // Clear any old UI first
-            $('timeline').innerHTML='';
-            gameState=data.state;
-            showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';            renderGame();
-            break;
-        case'ping':
-            // Respond with pong to confirm connection
-            conn.send({type:'pong'});
-            break;
-        case'pong':
-            // Connection confirmed alive
-            break;
     }
+    gameRef=null;playersRef=null;stateRef=null;
 }
 
-function broadcastToAll(msg){
-    conns.forEach(c=>{try{c.send(msg);}catch(e){}});
-}
-
+// Broadcast state to Firebase (host only)
 function broadcastState(){
-    broadcastToAll({type:'state',state:gameState});
+    if(!isHost || !gameState || !lobbyCode) return;
+    db.ref(`games/${lobbyCode}/state`).set(gameState);
     renderGame();
 }
 
-function kickDisconnectedPlayer(peerId){
-    if(!isHost || !gameState) return;
-    delete disconnectTimers[peerId];
-    const playerIndex = gameState.players.findIndex(p => p.id === peerId);
-    if(playerIndex === -1) return;
-
-    const kickedPlayer = gameState.players[playerIndex];
-    console.log('Kicking disconnected player:', kickedPlayer.name);
-
-    // Remove player from game
-    gameState.players.splice(playerIndex, 1);
-
-    // If kicked player was current player, move to next
-    if(gameState.currentPlayer >= gameState.players.length){
-        gameState.currentPlayer = 0;
-    }else if(playerIndex < gameState.currentPlayer){
-        gameState.currentPlayer--;
-    }else if(playerIndex === gameState.currentPlayer){
-        // Current player was kicked, move to next (index stays same but points to next player now)
-        if(gameState.currentPlayer >= gameState.players.length){
-            gameState.currentPlayer = 0;
-        }
-    }
-
-    // If only one player left, end the game
-    if(gameState.players.length < 2){
-        endGame();
-        return;
-    }
-
-    broadcastState();
+// Send a message/action to Firebase
+function sendAction(action){
+    if(!lobbyCode) return;
+    db.ref(`games/${lobbyCode}/actions`).push({
+        ...action,
+        from: myId,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+    });
 }
 
 function getLobbyPlayers(){
-    // Return the stored lobbyPlayers with mistakes array added
     return lobbyPlayers.map(p => ({...p, mistakes: p.mistakes || []}));
 }
 
 async function createGame(){
     myName=$('player-name').value.trim()||'Host';
-    $('home-status').textContent='Loading...';
+    $('home-status').textContent='Creating game...';
+
     try{
-        await loadPeerJS();
-        $('home-status').textContent='Connecting to server...';
-    }catch(e){
-        $('home-status').textContent='Error: '+e.message;
-        return;
-    }
-    lobbyCode=genCode();
-    try{
-        await createPeer('chronicle-'+lobbyCode);
-        $('home-status').textContent='Connected!';
-        myId=peer.id;
+        lobbyCode=genCode();
+        myId='host_'+Date.now();
+
+        // Check if code is already in use
+        const existing = await db.ref(`games/${lobbyCode}`).once('value');
+        if(existing.exists()){
+            // Code taken, try again
+            setTimeout(createGame,100);
+            return;
+        }
+
+        // Create game in Firebase
+        gameRef = db.ref(`games/${lobbyCode}`);
+        await gameRef.set({
+            host: myId,
+            hostName: myName,
+            created: firebase.database.ServerValue.TIMESTAMP,
+            status: 'lobby'
+        });
+
+        // Add host as first player
+        const hostPlayer = {id:myId,name:myName,color:COLORS[0],score:0,connected:true,isHost:true,mistakes:[]};
+        await db.ref(`games/${lobbyCode}/players/${myId}`).set(hostPlayer);
+
         isHost=true;
         isDemo=false;
+        lobbyPlayers=[hostPlayer];
+
+        // Listen for player changes
+        const playersUnsub = db.ref(`games/${lobbyCode}/players`).on('value', snap=>{
+            const data = snap.val();
+            if(data){
+                lobbyPlayers = Object.values(data);
+                updateLobbyUI(lobbyPlayers);
+            }
+        });
+        unsubscribers.push(()=>db.ref(`games/${lobbyCode}/players`).off('value', playersUnsub));
+
+        // Listen for actions from other players (moves)
+        const actionsUnsub = db.ref(`games/${lobbyCode}/actions`).orderByChild('timestamp').startAt(Date.now()).on('child_added', snap=>{
+            const action = snap.val();
+            if(action && action.from !== myId){
+                handleAction(action);
+            }
+            // Clean up old actions
+            snap.ref.remove();
+        });
+        unsubscribers.push(()=>db.ref(`games/${lobbyCode}/actions`).off('child_added', actionsUnsub));
+
+        // Set up disconnect handling
+        db.ref(`games/${lobbyCode}`).onDisconnect().remove();
+
+        $('home-status').textContent='Game created!';
         showScreen('lobby-screen');
         $('lobby-code-display').textContent=lobbyCode;
-        $('waiting-msg').textContent='Your peer ID: '+myId+' - Waiting for players...';
+        $('waiting-msg').textContent='Waiting for players...';
         const url=window.location.origin+window.location.pathname+'?join='+lobbyCode;
         $('share-url').textContent=url;
-        lobbyPlayers=[{id:myId,name:myName,color:COLORS[0],score:0,connected:true,isHost:true}];
         updateLobbyUI(lobbyPlayers);
     }catch(e){
+        console.error('Create game error:',e);
         $('home-status').textContent='Error: '+e.message;
-        if(e.message.includes('Code taken')){
-            setTimeout(createGame,500);
-        }
     }
 }
 
@@ -1826,192 +1614,112 @@ async function joinGame(){
     const code=$('join-code').value.trim().toUpperCase();
     if(code.length!==4){$('join-error').textContent='Enter 4-character code';$('join-error').style.display='block';return;}
     $('join-error').style.display='none';
-    $('home-status').textContent='Connecting...';
-    try{
-        await loadPeerJS();
-    }catch(e){
-        $('join-error').textContent='Error: '+e.message;
-        $('join-error').style.display='block';
-        $('home-status').textContent='';
-        return;
-    }
-    try{
-        const iceServers = [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:global.stun.twilio.com:3478' },
-            { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-            { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-            { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-        ];
-        const servers = [
-            { debug: 1, config: { iceServers } }, // default
-            { host: 'peerjs.92k.de', secure: true, debug: 1, config: { iceServers } } // fallback
-        ];
+    $('home-status').textContent='Joining game...';
 
-        $('home-status').textContent='Connecting to server...';
-        await new Promise((res, rej) => {
-            let serverIndex = 0;
-            const tryServer = () => {
-                if (serverIndex >= servers.length) {
-                    rej(new Error('All servers unavailable'));
-                    return;
-                }
-                console.log('Trying server:', serverIndex === 0 ? 'default' : 'peerjs.92k.de');
-                peer = new Peer(servers[serverIndex]);
-                const timeout = setTimeout(() => {
-                    console.log('Server timeout, trying next...');
-                    peer.destroy();
-                    serverIndex++;
-                    tryServer();
-                }, 8000);
-                peer.on('open', (id) => {
-                    clearTimeout(timeout);
-                    $('home-status').textContent = 'Connected! ID: ' + id.substring(0, 8) + '...';
-                    res();
-                });
-                peer.on('error', e => {
-                    clearTimeout(timeout);
-                    if (e.type === 'server-error' || e.type === 'network') {
-                        console.log('Server error, trying next...');
-                        peer.destroy();
-                        serverIndex++;
-                        tryServer();
-                    } else {
-                        rej(e);
-                    }
-                });
-            };
-            tryServer();
-        });
-        myId=peer.id;
+    try{
+        // Check if game exists
+        const gameSnap = await db.ref(`games/${code}`).once('value');
+        if(!gameSnap.exists()){
+            $('join-error').textContent='Game not found - check code';
+            $('join-error').style.display='block';
+            $('home-status').textContent='';
+            return;
+        }
+
+        const gameData = gameSnap.val();
+        lobbyCode=code;
+        myId='player_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);
+        isHost=false;
         isDemo=false;
-        $('home-status').textContent='Looking for host: chronicle-'+code+'...';
-        const conn=peer.connect('chronicle-'+code,{reliable:true});
-        const connTimeout=setTimeout(()=>{
-            $('join-error').textContent='Could not connect - host may be offline or code is wrong';
-            $('join-error').style.display='block';
-            $('home-status').textContent='';
-        },10000);
-        conn.on('open',()=>{
-            clearTimeout(connTimeout);
-            conns.push(conn);
-            hostConn = conn; // Store host connection for reconnection
-            conn.send({type:'join',name:myName});
-            conn.on('data',data=>handleMessage(conn,data));
-            conn.on('close',()=>{
-                conns=[];
-                // Try to reconnect instead of going home immediately
-                attemptReconnect(code);
-            });
-            lobbyCode=code;
-            showScreen('lobby-screen');
-            $('lobby-code-display').textContent=code;
-            $('start-game-btn').style.display='none';
-            $('qr-container').innerHTML='';
-            $('share-url').textContent='';
-            $('copy-btn').style.display='none';
+
+        // Count existing players to get color
+        const playersSnap = await db.ref(`games/${code}/players`).once('value');
+        const existingPlayers = playersSnap.val() ? Object.keys(playersSnap.val()).length : 0;
+
+        // Add self as player
+        const myPlayer = {id:myId,name:myName,color:COLORS[existingPlayers % COLORS.length],score:0,connected:true,isHost:false,mistakes:[]};
+        await db.ref(`games/${code}/players/${myId}`).set(myPlayer);
+
+        // Set up disconnect handling - remove self
+        db.ref(`games/${code}/players/${myId}`).onDisconnect().remove();
+
+        // Listen for player changes
+        const playersUnsub = db.ref(`games/${code}/players`).on('value', snap=>{
+            const data = snap.val();
+            if(data){
+                lobbyPlayers = Object.values(data);
+                updateLobbyUI(lobbyPlayers);
+            }else{
+                // Game was deleted (host left)
+                if(!leavingGame) goHome();
+            }
         });
-        conn.on('error',(err)=>{
-            clearTimeout(connTimeout);
-            console.error('Connection error:',err);
-            $('join-error').textContent='Could not connect to game';
-            $('join-error').style.display='block';
-            $('home-status').textContent='';
+        unsubscribers.push(()=>db.ref(`games/${code}/players`).off('value', playersUnsub));
+
+        // Listen for game state changes
+        const stateUnsub = db.ref(`games/${code}/state`).on('value', snap=>{
+            const state = snap.val();
+            if(state){
+                $('timeline').innerHTML='';
+                gameState = state;
+                showScreen('game-screen');
+                document.getElementById('leave-game-btn').style.display='block';
+                renderGame();
+            }
         });
+        unsubscribers.push(()=>db.ref(`games/${code}/state`).off('value', stateUnsub));
+
+        // Listen for feedback messages from host
+        const feedbackUnsub = db.ref(`games/${code}/feedback`).on('value', snap=>{
+            const fb = snap.val();
+            if(fb && fb.timestamp > Date.now() - 5000){
+                showFeedback(fb.correct,fb.year,fb.player,fb.desc,fb.cardName,fb.position);
+            }
+        });
+        unsubscribers.push(()=>db.ref(`games/${code}/feedback`).off('value', feedbackUnsub));
+
+        // Listen for placement highlights
+        const placementUnsub = db.ref(`games/${code}/placement`).on('value', snap=>{
+            const pl = snap.val();
+            if(pl && pl.timestamp > Date.now() - 5000){
+                showPlacementHighlight(pl.position, pl.correct, pl.cardName);
+            }
+        });
+        unsubscribers.push(()=>db.ref(`games/${code}/placement`).off('value', placementUnsub));
+
+        // Listen for game status changes
+        const statusUnsub = db.ref(`games/${code}/status`).on('value', snap=>{
+            const status = snap.val();
+            if(status === 'gameover'){
+                showGameOver();
+            }else if(status === 'scoreboard'){
+                showScoreboard();
+            }
+        });
+        unsubscribers.push(()=>db.ref(`games/${code}/status`).off('value', statusUnsub));
+
+        $('home-status').textContent='Joined!';
+        showScreen('lobby-screen');
+        $('lobby-code-display').textContent=code;
+        $('start-game-btn').style.display='none';
+        $('qr-container').innerHTML='';
+        $('share-url').textContent='';
+        $('copy-btn').style.display='none';
     }catch(e){
-        $('join-error').textContent='Connection failed: '+e.message;
+        console.error('Join error:',e);
+        $('join-error').textContent='Could not join: '+e.message;
         $('join-error').style.display='block';
         $('home-status').textContent='';
     }
 }
 
-async function attemptReconnect(code){
-    if(!code || isHost || isDemo || leavingGame) return;
-    
-    reconnectAttempts++;
-    console.log('Reconnect attempt', reconnectAttempts);
-    
-    if(reconnectAttempts > maxReconnectAttempts){
-        // Save state for refresh-based rejoin
-        sessionStorage.setItem('chronicle-rejoin-code', code);
-        sessionStorage.setItem('chronicle-rejoin-name', myName);
-        return;
-    }
-    
-    // Wait before retry
-    await new Promise(r => setTimeout(r, 1500));
-    
-    try{
-        // Destroy old peer completely
-        if(peer){
-            try{ peer.destroy(); }catch(e){}
-            peer = null;
-        }
-        
-        // Create fresh peer with fallback servers
-        const iceServers = [
-            {urls:'stun:stun.l.google.com:19302'},
-            {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
-            {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'}
-        ];
-        const servers = [
-            { debug: 0, config: { iceServers } },
-            { host: 'peerjs.92k.de', secure: true, debug: 0, config: { iceServers } }
-        ];
-
-        // Wait for peer to connect with fallback
-        await new Promise((res, rej) => {
-            let serverIndex = 0;
-            const tryServer = () => {
-                if (serverIndex >= servers.length) {
-                    rej(new Error('All servers unavailable'));
-                    return;
-                }
-                peer = new Peer(null, servers[serverIndex]);
-                const timeout = setTimeout(() => {
-                    peer.destroy();
-                    serverIndex++;
-                    tryServer();
-                }, 5000);
-                peer.on('open', () => { clearTimeout(timeout); res(); });
-                peer.on('error', (e) => {
-                    clearTimeout(timeout);
-                    if (e.type === 'server-error' || e.type === 'network') {
-                        peer.destroy();
-                        serverIndex++;
-                        tryServer();
-                    } else {
-                        rej(e);
-                    }
-                });
-            };
-            tryServer();
-        });
-        
-        // Connect to host
-        const conn = peer.connect('chronicle-' + code, {reliable: true});
-        
-        await new Promise((res, rej) => {
-            const timeout = setTimeout(() => rej(new Error('conn timeout')), 5000);
-            conn.on('open', () => { clearTimeout(timeout); res(); });
-            conn.on('error', (e) => { clearTimeout(timeout); rej(e); });
-        });
-        
-        // Success!
-        reconnectAttempts = 0;
-        conns = [conn];
-        hostConn = conn;
-        
-        conn.send({type: 'rejoin', name: myName});
-        conn.on('data', data => handleMessage(conn, data));
-        conn.on('close', () => {
-            conns = [];
-            attemptReconnect(code);
-        });
-        
-    }catch(e){
-        console.log('Reconnect failed:', e.message);
-        attemptReconnect(code);
+// Handle actions from other players
+function handleAction(action){
+    if(!isHost) return;
+    switch(action.type){
+        case 'move':
+            processMove(action.from, action.position);
+            break;
     }
 }
 
@@ -2048,7 +1756,9 @@ function startGame(){
     drawCard();
     // Clear UI before broadcasting
     $('timeline').innerHTML='';
-    broadcastToAll({type:'start',state:gameState});
+    // Broadcast game state via Firebase
+    broadcastState();
+    db.ref(`games/${lobbyCode}/status`).set('playing');
     showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';document.getElementById('mute-btn').style.display='block';updateMuteButton();    renderGame();
 }
 
@@ -2210,7 +1920,8 @@ function makeMove(position){
     if(isDemo||isHost){
         processMove(isDemo?gameState.players[gameState.currentPlayer].id:myId,position);
     }else{
-        conns[0].send({type:'move',position});
+        // Send move via Firebase
+        sendAction({type:'move',position});
     }
 }
 
@@ -2238,12 +1949,13 @@ function processMove(playerId,position){
     }
     
     // Broadcast state and attempted position so other players see where card was placed
-    if(!isDemo){
+    if(!isDemo && isHost){
         broadcastState();
-        broadcastToAll({type:'showPlacement',position:position,correct:correct,cardName:cardName});
+        // Send placement highlight via Firebase
+        db.ref(`games/${lobbyCode}/placement`).set({position,correct,cardName,timestamp:Date.now()});
         // Delay the feedback message by 3 seconds so players can see the placement first
         setTimeout(()=>{
-            broadcastToAll({type:'feedback',correct,year:card.y,player:playerName,desc:cardDesc,cardName:cardName,position:position});
+            db.ref(`games/${lobbyCode}/feedback`).set({correct,year:card.y,player:playerName,desc:cardDesc,cardName,position,timestamp:Date.now()});
         },3000);
     }
     renderGame(); // Re-render to show the placed card highlighted
@@ -2265,7 +1977,7 @@ function processMove(playerId,position){
         // Show scoreboard after feedback ends
         setTimeout(()=>{
             showScoreboard();
-            if(!isDemo) broadcastToAll({type:'scoreboard'});
+            if(!isDemo && isHost) db.ref(`games/${lobbyCode}/status`).set('scoreboard');
         }, afterFeedback);
         
         // Next turn after scoreboard (feedback + 5s scoreboard)
@@ -2481,8 +2193,9 @@ function showScoreboard(){
 }
 
 function endGame(){
-    if(!isDemo){
-        broadcastToAll({type:'gameover',state:gameState});
+    if(!isDemo && isHost){
+        broadcastState();
+        db.ref(`games/${lobbyCode}/status`).set('gameover');
     }
     showGameOver();
 }
@@ -2512,8 +2225,9 @@ function playAgain(){
     gameState.currentPlayer=0;
     gameState.players.forEach(p=>{p.score=0;p.mistakes=[];});
     drawCard();
-    if(!isDemo){
-        broadcastToAll({type:'restart',state:gameState});
+    if(!isDemo && isHost){
+        broadcastState();
+        db.ref(`games/${lobbyCode}/status`).set('playing');
     }
     showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';    renderGame();
 }
@@ -2522,15 +2236,13 @@ function leaveLobby(){goHome();}
 
 function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';goHome();}
 function goHome(){
-    if(peer){try{peer.destroy();}catch(e){}}
+    // Clean up Firebase listeners and data
+    cleanupFirebase();
     // Clear all disconnect timers
     Object.values(disconnectTimers).forEach(t=>clearTimeout(t));
     disconnectTimers={};
-    peer=null;conns=[];gameState=null;isHost=false;isDemo=false;
-    hostConn=null;reconnectAttempts=0;connectionCheckPending=false;leavingGame=false;lobbyPlayers=[];
-    // Clear any pending rejoin
-    sessionStorage.removeItem('chronicle-rejoin-code');
-    sessionStorage.removeItem('chronicle-rejoin-name');
+    gameState=null;isHost=false;isDemo=false;
+    leavingGame=false;lobbyPlayers=[];
     showScreen('home-screen');
     $('home-status').textContent='';
     $('qr-container').innerHTML='';
