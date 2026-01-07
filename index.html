@@ -1639,6 +1639,7 @@ function startDemo(){document.getElementById('version-tag').style.display='block
     }
     
     const shuffled=shuffle(EVENTS);
+    displayedCard=null;lastCurrentPlayer=-1; // Reset for new game
     gameState={
         players,
         timeline:[{e:shuffled[0].e,y:shuffled[0].y}],
@@ -1833,6 +1834,7 @@ function handleMessage(conn,data){
             break;
         case'start':
             gameState=data.state;
+            displayedCard=null;lastCurrentPlayer=-1; // Reset for new game
             showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';            renderGame();
             break;
         case'state':
@@ -1860,6 +1862,7 @@ function handleMessage(conn,data){
             break;
         case'restart':
             gameState=data.state;
+            displayedCard=null;lastCurrentPlayer=-1; // Reset for new game
             showScreen('game-screen');document.getElementById('leave-game-btn').style.display='block';            renderGame();
             break;
         case'ping':
@@ -2215,6 +2218,7 @@ function startGame(){
     const players=getLobbyPlayers();
     players[0].name=myName;
     const shuffled=shuffle(EVENTS);
+    displayedCard=null;lastCurrentPlayer=-1; // Reset for new game
     gameState={
         players,
         timeline:[{e:shuffled[0].e,y:shuffled[0].y}],
