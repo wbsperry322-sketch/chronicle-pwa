@@ -31,7 +31,8 @@
         #game-screen .container{max-width:100%;padding:0}
         .game-center{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;padding:0}
         .game-bottom{padding:0 15px;position:fixed;bottom:50px;left:0;right:0;display:flex;flex-direction:column;align-items:center}
-        .debug-grid{display:none}
+        .debug-grid{display:none;position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:99998}
+        .debug-grid.visible{display:block;background:repeating-linear-gradient(90deg,transparent,transparent 49px,rgba(255,0,0,0.3) 49px,rgba(255,0,0,0.3) 50px)}
         @media(max-height:500px) and (orientation:landscape){
             /* Fix white spaces */
             html{background:#1a0f0a !important;overflow:visible !important}
@@ -3060,5 +3061,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v7.4</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v7.7</div><button id="grid-toggle-btn" style="position:fixed;bottom:10px;left:60px;font-size:12px;background:#333;color:#4a90d9;border:1px solid #4a90d9;border-radius:4px;padding:2px 8px;cursor:pointer;z-index:99999;display:none;">Grid</button><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test")){document.getElementById("version-tag").style.display="block";document.getElementById("grid-toggle-btn").style.display="block";}document.getElementById("grid-toggle-btn").onclick=function(){document.querySelector(".debug-grid").classList.toggle("visible");};</script></body>
 </html>
