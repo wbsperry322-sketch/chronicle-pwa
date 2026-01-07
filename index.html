@@ -1766,6 +1766,18 @@ function handleMessage(conn,data){
             break;
         case'join':
             if(isHost){
+                // Check for duplicates by peer ID or name
+                const existingById = lobbyPlayers.find(p=>p.id===conn.peer);
+                const existingByName = lobbyPlayers.find(p=>p.name===data.name);
+                if(existingById || existingByName){
+                    // Player already in lobby, just update their connection
+                    const existing = existingById || existingByName;
+                    existing.id = conn.peer;
+                    existing.connected = true;
+                    conn.send({type:'lobby',code:lobbyCode,players:getLobbyPlayers()});
+                    updateLobbyUI(lobbyPlayers);
+                    break;
+                }
                 const color=COLORS[gameState?gameState.players.length:lobbyPlayers.length];
                 playerNames[conn.peer]=data.name;
                 const newPlayer={id:conn.peer,name:data.name,color,score:0,connected:true};
@@ -1774,8 +1786,11 @@ function handleMessage(conn,data){
                     broadcastToAll({type:'player-joined',player:newPlayer});
                     updateLobbyUI(lobbyPlayers);
                 }else{
-                    gameState.players.push(newPlayer);
-                    broadcastState();
+                    // Check duplicates in gameState too
+                    if(!gameState.players.find(p=>p.id===conn.peer||p.name===data.name)){
+                        gameState.players.push(newPlayer);
+                        broadcastState();
+                    }
                 }
             }
             break;
