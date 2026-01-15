@@ -1169,16 +1169,18 @@ function showFeedback(correct,year,player,desc,cardName,position){
         feedbackImg.style.visibility = 'visible';
         feedbackImg.style.margin = '0 auto';
 
-        // Regal burgundy styling for wrong answer - bigger box
+        // Regal burgundy styling for wrong answer - bigger box in portrait, smaller in landscape
+        const isLandscape = window.innerWidth > window.innerHeight;
         feedbackBox.style.borderColor = '#8b0000';
         feedbackBox.style.background = 'linear-gradient(145deg, #2a1810, #3d221a)';
-        feedbackBox.style.maxWidth = '450px';
-        feedbackBox.style.padding = '40px';
+        feedbackBox.style.maxWidth = isLandscape ? '300px' : '450px';
+        feedbackBox.style.padding = isLandscape ? '20px' : '40px';
         $('feedback-title').style.color = '#c4a44d';
-        $('feedback-title').style.fontSize = '2.5rem';
+        $('feedback-title').style.fontSize = isLandscape ? '1.5rem' : '2.5rem';
         $('feedback-title').style.fontFamily = "'Cinzel', Georgia, serif";
         $('feedback-title').style.letterSpacing = '0.1em';
         $('feedback-title').style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+        feedbackImg.style.maxWidth = isLandscape ? '150px' : '300px';
 
         $('feedback-overlay').classList.add('show');
 
@@ -1195,6 +1197,7 @@ function showFeedback(correct,year,player,desc,cardName,position){
             $('feedback-title').style.fontFamily = '';
             $('feedback-title').style.letterSpacing = '';
             $('feedback-title').style.textShadow = '';
+            feedbackImg.style.maxWidth = '';
         }, 3400);
 
         return;
