@@ -304,7 +304,10 @@
         .card-blurb-hint{font-family:Georgia,'Times New Roman',serif;font-size:.85rem;color:var(--ink-light);font-style:italic;text-align:center}
         .game-card{cursor:pointer}
         @media(max-width:400px){h1{font-size:1.6rem}.lobby-code{font-size:2rem}.card-event{font-size:1.1rem}.btn{padding:12px 20px;font-size:.9rem}}
-        @media(orientation:portrait){#leave-game-btn{top:50px !important;left:10px !important}}
+        @media(orientation:portrait){
+            #leave-game-btn{top:50px !important;left:10px !important}
+            #game-screen .turn-banner{top:50px !important}
+        }
         /* Hide any external loading indicators from CDNs */
         body>*:not(.container):not(.mistakes-tray):not(.feedback-overlay):not(.scoreboard-overlay):not(.card-blurb-overlay):not(#version-tag):not(#bg-cover):not(#game-bg):not(script):not(style){display:none!important}
     </style>
