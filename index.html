@@ -1,4 +1,4 @@
-<!-- Chronicle v7.6 -->
+<!-- Chronicle v7.7 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -1681,24 +1681,16 @@ if('serviceWorker' in navigator){
         window.location.reload();
     });
     window.addEventListener('load',async ()=>{
-        // Unregister ALL service workers to force fresh start
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        for(const reg of registrations){
-            await reg.unregister();
-            console.log('Unregistered service worker');
-        }
-
-        // Clear ALL caches
+        // Clear old caches only (not the current one)
         const cacheNames = await caches.keys();
         for(const name of cacheNames){
-            await caches.delete(name);
-            console.log('Deleted cache:', name);
+            if(name !== 'chronicle-v7.7'){
+                await caches.delete(name);
+                console.log('Deleted old cache:', name);
+            }
         }
 
-        // Small delay to ensure cleanup completes
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        navigator.serviceWorker.register('./sw.js?v=7.6&t=' + Date.now())
+        navigator.serviceWorker.register('./sw.js?v=7.7')
             .then(reg=>{
                 console.log('Service Worker registered:', reg.scope);
                 // Check for updates immediately and periodically
@@ -1719,5 +1711,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v7.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v7.7</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
