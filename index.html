@@ -262,6 +262,14 @@
         .feedback-title{font-family:'Cinzel',Georgia,serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:16px;line-height:1.3;text-align:center}
         .feedback-year{font-family:Georgia,'Times New Roman',serif;font-size:1.8rem;font-weight:700;color:var(--gold);margin:10px 0 16px 0;text-align:center}
         .feedback-desc{font-family:Georgia,'Times New Roman',serif;font-size:1rem;color:var(--ink);line-height:1.6;margin-bottom:0;text-align:center}
+        /* Landscape mode - make all feedback smaller */
+        @media(orientation:landscape){
+            .feedback-box{max-width:300px;padding:20px}
+            .feedback-image{max-width:180px}
+            .feedback-title{font-size:1rem}
+            .feedback-year{font-size:1.3rem}
+            .feedback-desc{font-size:0.85rem}
+        }
         .game-over-content{text-align:center}
         .winner-text{font-family:Georgia,'Times New Roman',serif;font-size:1.5rem;color:var(--success);margin:15px 0}
         .final-scores{margin:20px 0}
@@ -1169,18 +1177,16 @@ function showFeedback(correct,year,player,desc,cardName,position){
         feedbackImg.style.visibility = 'visible';
         feedbackImg.style.margin = '0 auto';
 
-        // Regal burgundy styling for wrong answer - bigger box in portrait, smaller in landscape
-        const isLandscape = window.innerWidth > window.innerHeight;
+        // Regal burgundy styling for wrong answer
         feedbackBox.style.borderColor = '#8b0000';
         feedbackBox.style.background = 'linear-gradient(145deg, #2a1810, #3d221a)';
-        feedbackBox.style.maxWidth = isLandscape ? '300px' : '450px';
-        feedbackBox.style.padding = isLandscape ? '20px' : '40px';
+        feedbackBox.style.maxWidth = '450px';
+        feedbackBox.style.padding = '40px';
         $('feedback-title').style.color = '#c4a44d';
-        $('feedback-title').style.fontSize = isLandscape ? '1.5rem' : '2.5rem';
+        $('feedback-title').style.fontSize = '2.5rem';
         $('feedback-title').style.fontFamily = "'Cinzel', Georgia, serif";
         $('feedback-title').style.letterSpacing = '0.1em';
         $('feedback-title').style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
-        feedbackImg.style.maxWidth = isLandscape ? '150px' : '300px';
 
         $('feedback-overlay').classList.add('show');
 
@@ -1197,7 +1203,6 @@ function showFeedback(correct,year,player,desc,cardName,position){
             $('feedback-title').style.fontFamily = '';
             $('feedback-title').style.letterSpacing = '';
             $('feedback-title').style.textShadow = '';
-            feedbackImg.style.maxWidth = '';
         }, 3400);
 
         return;
