@@ -1,4 +1,4 @@
-<!-- Chronicle v6.0 -->
+<!-- Chronicle v7.6 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -127,11 +127,12 @@
         .host-badge{background:var(--gold);color:var(--ink);padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:700;text-transform:uppercase}
         .waiting-msg{text-align:center;color:var(--ink-light);font-style:italic;padding:20px}
         .game-card{
-            background-image:url('card2-border.jpg');
-            background-size:100% 100%;
-            background-position:center;
-            background-repeat:no-repeat;
-            border:none;
+            background-image:url('card2-border.jpg') !important;
+            background-size:100% 100% !important;
+            background-position:center !important;
+            background-repeat:no-repeat !important;
+            background-color:transparent !important;
+            border:none !important;
             border-radius:11px;
             padding:15px 18px;
             min-width:160px;
@@ -1679,8 +1680,25 @@ if('serviceWorker' in navigator){
         console.log('New service worker activated, reloading...');
         window.location.reload();
     });
-    window.addEventListener('load',()=>{
-        navigator.serviceWorker.register('./sw.js')
+    window.addEventListener('load',async ()=>{
+        // Unregister ALL service workers to force fresh start
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for(const reg of registrations){
+            await reg.unregister();
+            console.log('Unregistered service worker');
+        }
+
+        // Clear ALL caches
+        const cacheNames = await caches.keys();
+        for(const name of cacheNames){
+            await caches.delete(name);
+            console.log('Deleted cache:', name);
+        }
+
+        // Small delay to ensure cleanup completes
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        navigator.serviceWorker.register('./sw.js?v=7.6&t=' + Date.now())
             .then(reg=>{
                 console.log('Service Worker registered:', reg.scope);
                 // Check for updates immediately and periodically
@@ -1701,5 +1719,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v7.4</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v7.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
