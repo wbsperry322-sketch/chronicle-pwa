@@ -1,4 +1,4 @@
-<!-- Chronicle v9.7 - Centering Fixes Jan 15 2026 -->
+<!-- Chronicle v9.9 - Incorrect Text Centering Fix Jan 15 2026 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -152,7 +152,7 @@
             background-color:transparent !important;
             border:none !important;
             border-radius:11px;
-            padding:13px 18px 17px 18px;
+            padding:11px 18px 19px 18px;
             min-width:160px;
             max-width:200px;
             min-height:90px;
@@ -1342,7 +1342,9 @@ function showFeedback(correct,year,player,desc,cardName,position){
         $('feedback-title').style.textAlign = 'center';
         $('feedback-title').style.width = '100%';
         $('feedback-title').style.display = 'block';
-        $('feedback-title').style.margin = '0 auto';
+        $('feedback-title').style.margin = '0 auto 12px auto';
+        $('feedback-title').style.padding = '0';
+        $('feedback-title').style.textIndent = '-0.1em';
         $('feedback-desc').style.textAlign = 'center';
         $('feedback-desc').style.width = '100%';
         $('feedback-desc').style.color = '#f4e4c1';
@@ -1373,6 +1375,10 @@ function showFeedback(correct,year,player,desc,cardName,position){
             $('feedback-title').style.textShadow = '';
             $('feedback-title').style.textAlign = '';
             $('feedback-title').style.width = '';
+            $('feedback-title').style.display = '';
+            $('feedback-title').style.margin = '';
+            $('feedback-title').style.padding = '';
+            $('feedback-title').style.textIndent = '';
             $('feedback-desc').style.textAlign = '';
             $('feedback-desc').style.width = '';
             $('feedback-desc').style.color = '';
@@ -1918,5 +1924,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v9.7</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v9.9</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
