@@ -1,8 +1,11 @@
-<!-- Chronicle v10.1 - Card Centering Refined Jan 15 2026 -->
+<!-- Chronicle v10.17 - Card Text Centering + Cache Fix Jan 16 2026 - CB: 1737066789 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1a0f0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -152,7 +155,7 @@
             background-color:transparent !important;
             border:none !important;
             border-radius:11px;
-            padding:7px 18px 23px 18px;
+            padding:18px;
             min-width:160px;
             max-width:200px;
             min-height:90px;
@@ -177,8 +180,8 @@
             0%,100%{box-shadow:0 0 15px rgba(45,90,39,.5),0 0 30px rgba(45,90,39,.2);transform:scale(1)}
             50%{box-shadow:0 0 30px rgba(45,90,39,.9),0 0 60px rgba(45,90,39,.5),0 0 90px rgba(45,90,39,.3);transform:scale(1.02)}
         }
-        .card-event{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;color:#f4e4c1;line-height:1.3;margin:0 0 3px 0;text-shadow:1px 1px 2px rgba(0,0,0,0.8);text-align:center;width:100%;display:block}
-        .card-year{font-family:Georgia,'Times New Roman',serif;font-size:1.2rem;font-weight:700;color:#c4a44d;text-shadow:1px 1px 2px rgba(0,0,0,0.8);text-align:center;width:100%;display:block;margin:0;line-height:1.3}
+        .card-event{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;color:#f4e4c1;line-height:1.3;margin:3px 0 0 0;text-shadow:1px 1px 2px rgba(0,0,0,0.8);text-align:center;width:100%;display:block;box-sizing:border-box}
+        .card-year{font-family:Georgia,'Times New Roman',serif;font-size:1.2rem;font-weight:700;color:#c4a44d;text-shadow:1px 1px 2px rgba(0,0,0,0.8);text-align:center;width:100%;display:block;margin:0;line-height:1.3;box-sizing:border-box}
         .card-year.hidden{display:none}
         .turn-banner{
             display:none;
@@ -279,7 +282,7 @@
         .feedback-box{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border:4px solid var(--gold);border-radius:16px;padding:14px;max-width:219px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5)}
         .feedback-image{width:146px;height:110px;object-fit:cover;border-radius:8px;margin:0 auto 12px auto;opacity:0.85;box-shadow:0 4px 12px rgba(0,0,0,.3);display:block}
         .feedback-title{font-family:'Cinzel',Georgia,serif;font-size:0.80rem;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.3;text-align:center}
-        .feedback-year{font-family:Georgia,'Times New Roman',serif;font-size:1.10rem;font-weight:700;color:var(--gold);margin:8px 0 12px 0;text-align:center}
+        .feedback-year{font-family:Georgia,'Times New Roman',serif;font-size:1.10rem;font-weight:700;color:var(--gold-dark);margin:8px 0 12px 0;text-align:center}
         .feedback-desc{font-family:Georgia,'Times New Roman',serif;font-size:0.66rem;color:var(--ink);line-height:1.5;margin-bottom:0;text-align:center}
         /* Landscape mode - make all feedback 10% smaller */
         @media(orientation:landscape){
@@ -1171,6 +1174,9 @@ function processMove(playerId,position){
     }else{
         gameState.players[gameState.currentPlayer].score++;
         gameState.players[gameState.currentPlayer].mistakes.push({e:card.e,y:card.y,d:card.d});
+        // Preload the death image that will be shown in feedback
+        const preloadImg = new Image();
+        preloadImg.src = DEATH_IMAGES[currentDeathIndex];
     }
     
     // Broadcast state and attempted position so other players see where card was placed
@@ -1185,8 +1191,8 @@ function processMove(playerId,position){
     }
     renderGame(); // Re-render to show the placed card highlighted
     showPlacementHighlight(position, correct, cardName); // Show where card was placed
-    // Delay feedback popup - 1.3s for wrong, 3s for correct
-    const feedbackDelay = correct ? 3000 : 1300;
+    // Delay feedback popup - 1.8s for wrong, 4s for correct (matches glow animation)
+    const feedbackDelay = correct ? 4000 : 1800;
     setTimeout(()=>{
         showFeedback(correct,card.y,playerName,cardDesc,cardName,position);
     }, feedbackDelay);
@@ -1196,9 +1202,9 @@ function processMove(playerId,position){
     const roundComplete = nextPlayer === 0;
 
     // Timing depends on correct/wrong answer
-    // Correct: wait 3s + feedback duration (6.5s) = 9.5s total
-    // Wrong: wait 3s + feedback duration (3.4s) = 6.4s total
-    const afterFeedback = correct ? (3000 + 6500) : (3000 + 3400);
+    // Correct: wait 4s + feedback duration (7.2s) = 11.2s total
+    // Wrong: wait 1.8s + feedback duration (4.8s) = 6.6s total
+    const afterFeedback = correct ? (4000 + 7200) : (1800 + 4800);
 
     // Draw next card only after feedback ends (when turn actually changes)
     setTimeout(()=>{
@@ -1310,7 +1316,7 @@ function showFeedback(correct,year,player,desc,cardName,position){
         // Show WRONG message with regal styling
         $('feedback-title').textContent='INCORRECT!';
         $('feedback-desc').textContent=cardName || '';
-        yearEl.textContent=year || '';
+        yearEl.textContent=year ? fY(year) : '';
         yearEl.style.display = year ? 'block' : 'none';
 
         // Cycle through death images
@@ -1337,24 +1343,20 @@ function showFeedback(correct,year,player,desc,cardName,position){
         $('feedback-title').style.color = '#c4a44d';
         $('feedback-title').style.fontSize = '1.83rem';
         $('feedback-title').style.fontFamily = "'Cinzel', Georgia, serif";
-        $('feedback-title').style.letterSpacing = '0.1em';
+        $('feedback-title').style.letterSpacing = '0';
         $('feedback-title').style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
         $('feedback-title').style.textAlign = 'center';
         $('feedback-title').style.width = '100%';
-        $('feedback-title').style.display = 'block';
-        $('feedback-title').style.margin = '0 auto 12px auto';
-        $('feedback-title').style.padding = '0 0.1em 0 0';
-        $('feedback-title').style.boxSizing = 'border-box';
         $('feedback-desc').style.textAlign = 'center';
         $('feedback-desc').style.width = '100%';
         $('feedback-desc').style.color = '#f4e4c1';
         yearEl.style.textAlign = 'center';
         yearEl.style.width = '100%';
-        yearEl.style.color = '#c4a44d';
+        yearEl.style.color = '#9a7b3a';
 
         $('feedback-overlay').classList.add('show');
 
-        // Hide after 3.4 seconds (0.7s after showing, leaving 4.1s total)
+        // Hide after 4.8 seconds (4s * 1.2)
         setTimeout(()=>{
             $('feedback-overlay').classList.remove('show');
             // Reset styles
@@ -1375,17 +1377,13 @@ function showFeedback(correct,year,player,desc,cardName,position){
             $('feedback-title').style.textShadow = '';
             $('feedback-title').style.textAlign = '';
             $('feedback-title').style.width = '';
-            $('feedback-title').style.display = '';
-            $('feedback-title').style.margin = '';
-            $('feedback-title').style.padding = '';
-            $('feedback-title').style.boxSizing = '';
             $('feedback-desc').style.textAlign = '';
             $('feedback-desc').style.width = '';
             $('feedback-desc').style.color = '';
             yearEl.style.textAlign = '';
             yearEl.style.width = '';
             yearEl.style.color = '';
-        }, 3400);
+        }, 4800);
 
         return;
     }
@@ -1433,8 +1431,8 @@ function showFeedback(correct,year,player,desc,cardName,position){
 
     $('feedback-overlay').classList.add('show');
 
-    // Same duration for both to allow reading the description
-    const duration=6500;
+    // Shorter duration for faster gameplay
+    const duration=7200;
     setTimeout(()=>{
         $('feedback-overlay').classList.remove('show');
     },duration);
@@ -1875,8 +1873,8 @@ if(document.readyState==='loading'){
     init();
 }
 
-// Register Service Worker for PWA
-if('serviceWorker' in navigator){
+// Service Worker DISABLED for v10.17 - Troubleshooting cache issues
+if(false && 'serviceWorker' in navigator){
     let refreshing=false;
     // Auto-reload when new service worker takes control
     navigator.serviceWorker.addEventListener('controllerchange',()=>{
@@ -1895,15 +1893,7 @@ if('serviceWorker' in navigator){
             }
         }
 
-        // TEMPORARILY DISABLED - Unregister all service workers first
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-            for(let registration of registrations) {
-                registration.unregister();
-                console.log('Unregistered service worker:', registration.scope);
-            }
-        });
-
-        /* navigator.serviceWorker.register('./sw.js?v=9.6')
+        navigator.serviceWorker.register('./sw.js?v=8.7')
             .then(reg=>{
                 console.log('Service Worker registered:', reg.scope);
                 // Check for updates immediately and periodically
@@ -1920,9 +1910,19 @@ if('serviceWorker' in navigator){
                     });
                 });
             })
-            .catch(err=>console.log('Service Worker registration failed:', err)); */
+            .catch(err=>console.log('Service Worker registration failed:', err));
     });
 }
+// Unregister any existing service workers
+if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(registrations=>{
+        for(let registration of registrations){
+            registration.unregister();
+            console.log('Unregistered service worker');
+        }
+    });
+}
+console.log('Chronicle v10.17 - Service Worker disabled for cache troubleshooting');
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.1</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.17</div><script>console.log("Chronicle v10.17 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>

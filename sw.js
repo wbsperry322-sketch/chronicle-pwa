@@ -1,5 +1,5 @@
-// Chronicle PWA Service Worker v9.6 - Firebase
-const CACHE_NAME = 'chronicle-v9.6';
+// Chronicle PWA Service Worker v10.17 - Firebase
+const CACHE_NAME = 'chronicle-v10.17';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icon-192.png',
@@ -65,16 +65,10 @@ self.addEventListener('fetch', (event) => {
   // Skip PeerJS/WebSocket
   if (url.hostname.includes('peerjs.com') || url.protocol === 'wss:' || url.protocol === 'ws:') return;
 
-  // ALWAYS fetch index.html from network with cache bypass
+  // ALWAYS fetch index.html from network
   if (url.pathname.endsWith('index.html') || url.pathname.endsWith('/')) {
     event.respondWith(
-      fetch(event.request, {
-        cache: 'no-store',
-        headers: new Headers({
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache'
-        })
-      }).catch(() => caches.match('./index.html'))
+      fetch(event.request).catch(() => caches.match('./index.html'))
     );
     return;
   }
