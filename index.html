@@ -84,7 +84,6 @@
             #game-screen .game-bottom .game-card{max-width:160px !important;padding:12px 15px !important}
             #game-screen .game-bottom .game-card.thinking{animation:thinking-glow-gold 2s ease-in-out infinite !important}
             #game-screen .game-bottom .game-card.my-turn{animation:thinking-glow-green 2s ease-in-out infinite !important}
-            #game-screen .game-bottom .card-event{font-size:0.65rem !important}
             #game-screen .game-bottom .cards-left,#game-screen .game-bottom .status-text{display:none !important}
             /* Mistakes tray - always show in landscape */
             .mistakes-tray,.mistakes-tray.visible{display:flex !important;transform:translateY(calc(100% - 45px)) !important;flex-direction:column !important}
@@ -163,8 +162,8 @@
             0%,100%{box-shadow:0 0 15px rgba(45,90,39,.5),0 0 30px rgba(45,90,39,.2);transform:scale(1)}
             50%{box-shadow:0 0 30px rgba(45,90,39,.9),0 0 60px rgba(45,90,39,.5),0 0 90px rgba(45,90,39,.3);transform:scale(1.02)}
         }
-        .card-event{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;color:#f4e4c1;line-height:1.4;margin-bottom:10px;text-shadow:1px 1px 2px rgba(0,0,0,0.8)}
-        .card-year{font-family:Georgia,'Times New Roman',serif;font-size:1.2rem;font-weight:700;color:#c4a44d;text-shadow:1px 1px 2px rgba(0,0,0,0.8)}
+        .card-event{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;color:#f4e4c1;line-height:1.4;margin-bottom:10px;text-shadow:1px 1px 2px rgba(0,0,0,0.8);text-align:center}
+        .card-year{font-family:Georgia,'Times New Roman',serif;font-size:1.2rem;font-weight:700;color:#c4a44d;text-shadow:1px 1px 2px rgba(0,0,0,0.8);text-align:center}
         .card-year.hidden{display:none}
         .turn-banner{
             display:none;
@@ -370,6 +369,7 @@
                 <p class="subtitle">Share this code with friends</p>
                 <p class="share-url" id="share-url"></p>
                 <button class="btn copy-btn" id="copy-btn">Copy Link</button>
+                <button class="btn copy-btn" id="text-btn">Text Code</button>
             </div>
             <div class="card-box">
                 <h2>Players</h2>
@@ -549,6 +549,12 @@ function init(){
     $('play-again-btn').onclick=playAgain;
     $('home-btn').onclick=goHome;
     $('copy-btn').onclick=copyLink;
+    $('text-btn').onclick=()=>{
+        const code=lobbyCode;
+        const url=$('share-url').textContent;
+        const message=`Join my Chronicle game! Code: ${code}\n${url}`;
+        window.location.href=`sms:?body=${encodeURIComponent(message)}`;
+    };
     $('join-code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase();});
     $('current-card').onclick=showCardBlurb;
     
@@ -1724,7 +1730,7 @@ if('serviceWorker' in navigator){
             }
         }
 
-        navigator.serviceWorker.register('./sw.js?v=8.0')
+        navigator.serviceWorker.register('./sw.js?v=8.1')
             .then(reg=>{
                 console.log('Service Worker registered:', reg.scope);
                 // Check for updates immediately and periodically
@@ -1745,5 +1751,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v8.0</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v8.1</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
