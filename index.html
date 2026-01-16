@@ -1,4 +1,4 @@
-<!-- Chronicle v10.38 - Background4 Jan 16 2026 - CB: 1737069600 -->
+<!-- Chronicle v10.40 - Green Success Feedback Jan 16 2026 - CB: 1737069700 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -16,7 +16,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
-    <title>Chronicle v10.38 — The Timeline Game</title>
+    <title>Chronicle v10.40 — The Timeline Game</title>
     <style>
         :root{--parchment:#f4e4c1;--parchment-dark:#e8d4a8;--ink:#2c1810;--ink-light:#5c4030;--accent:#8b0000;--gold:#c4a44d;--gold-dark:#9a7b3a;--success:#2d5a27;--error:#8b0000}
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;text-decoration:none !important}
@@ -187,11 +187,11 @@
         .turn-banner{
             display:none;
             font-family:'Cinzel',Georgia,serif;font-weight:700;text-align:center;margin:10px auto;
-            background:linear-gradient(180deg,#8b6914 0%,var(--gold) 15%,var(--gold-dark) 85%,#6b5a1e 100%);
-            color:var(--ink);padding:14px 40px;font-size:1.1rem;letter-spacing:0.1em;
+            background-image:url('banner.jpg');background-size:cover;background-position:center;
+            color:#f4e4c1;padding:14px 40px;font-size:1.1rem;letter-spacing:0.1em;
             position:relative;box-shadow:0 4px 15px rgba(0,0,0,.4);
             border-top:3px solid #d4b45d;border-bottom:3px solid #7a6420;
-            text-shadow:1px 1px 0 rgba(255,255,255,.3)
+            text-shadow:2px 2px 4px rgba(0,0,0,.8)
         }
         .turn-banner::before,.turn-banner::after{
             content:'';position:absolute;bottom:-20px;width:25px;height:25px;
@@ -1364,6 +1364,12 @@ function showFeedback(correct,year,player,desc,cardName,position){
         feedbackImg.style.maxWidth = '100%';
         feedbackImg.style.objectFit = 'cover';
 
+        // Preload the next card's image if it exists
+        if(gameState && gameState.currentCard && eventImages[gameState.currentCard.e]){
+            const preloadImg = new Image();
+            preloadImg.src = eventImages[gameState.currentCard.e];
+        }
+
         // Regal burgundy styling for wrong answer - smaller box
         feedbackBox.style.borderColor = '#8b0000';
         feedbackBox.style.background = 'linear-gradient(145deg, #2a1810, #3d221a)';
@@ -1421,16 +1427,28 @@ function showFeedback(correct,year,player,desc,cardName,position){
         return;
     }
 
-    // Correct answer - reset wrong answer styling, but make it larger to match
-    feedbackBox.style.borderColor = '';
-    feedbackBox.style.background = '';
+    // Correct answer - green styling to match red incorrect styling
+    feedbackBox.style.borderColor = '#2d5016';
+    feedbackBox.style.background = 'linear-gradient(145deg, #1a2810, #223d1a)';
     feedbackBox.style.maxWidth = '256px';
     feedbackBox.style.padding = '22px';
-    $('feedback-title').style.color = '';
-    $('feedback-title').style.fontSize = '';
-    $('feedback-title').style.fontFamily = '';
-    $('feedback-title').style.letterSpacing = '';
-    $('feedback-title').style.textShadow = '';
+    feedbackBox.style.margin = '0 auto';
+    feedbackBox.style.display = 'flex';
+    feedbackBox.style.flexDirection = 'column';
+    feedbackBox.style.alignItems = 'center';
+    $('feedback-title').style.color = '#c4a44d';
+    $('feedback-title').style.fontSize = '1.83rem';
+    $('feedback-title').style.fontFamily = "'Cinzel', Georgia, serif";
+    $('feedback-title').style.letterSpacing = '0';
+    $('feedback-title').style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+    $('feedback-title').style.textAlign = 'center';
+    $('feedback-title').style.width = '100%';
+    $('feedback-desc').style.textAlign = 'center';
+    $('feedback-desc').style.width = '100%';
+    $('feedback-desc').style.color = '#f4e4c1';
+    yearEl.style.textAlign = 'center';
+    yearEl.style.width = '100%';
+    yearEl.style.color = '#9a7b3a';
 
     $('feedback-title').textContent=cardName||'Event';
     $('feedback-desc').textContent=desc||'No description available.';
@@ -1468,6 +1486,28 @@ function showFeedback(correct,year,player,desc,cardName,position){
     const duration=7200;
     setTimeout(()=>{
         $('feedback-overlay').classList.remove('show');
+        // Reset styles
+        feedbackBox.style.borderColor = '';
+        feedbackBox.style.background = '';
+        feedbackBox.style.maxWidth = '';
+        feedbackBox.style.padding = '';
+        feedbackBox.style.margin = '';
+        feedbackBox.style.display = '';
+        feedbackBox.style.flexDirection = '';
+        feedbackBox.style.alignItems = '';
+        $('feedback-title').style.color = '';
+        $('feedback-title').style.fontSize = '';
+        $('feedback-title').style.fontFamily = '';
+        $('feedback-title').style.letterSpacing = '';
+        $('feedback-title').style.textShadow = '';
+        $('feedback-title').style.textAlign = '';
+        $('feedback-title').style.width = '';
+        $('feedback-desc').style.textAlign = '';
+        $('feedback-desc').style.width = '';
+        $('feedback-desc').style.color = '';
+        yearEl.style.textAlign = '';
+        yearEl.style.width = '';
+        yearEl.style.color = '';
     },duration);
 }
 
