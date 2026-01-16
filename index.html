@@ -1,4 +1,4 @@
-<!-- Chronicle v8.8 -->
+<!-- Chronicle v8.9 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -277,8 +277,8 @@
         .feedback-desc{font-family:Georgia,'Times New Roman',serif;font-size:0.9rem;color:var(--ink);line-height:1.5;margin-bottom:0;text-align:center}
         /* Landscape mode - make all feedback even smaller */
         @media(orientation:landscape){
-            .feedback-box{max-width:240px;padding:12px}
-            .feedback-image{width:200px;height:150px}
+            .feedback-box{max-width:280px;padding:15px}
+            .feedback-image{width:240px;height:180px}
             .feedback-title{font-size:0.9rem}
             .feedback-year{font-size:1.1rem}
             .feedback-desc{font-size:0.75rem}
@@ -1247,8 +1247,8 @@ function showFeedback(correct,year,player,desc,cardName,position){
     // Correct answer - reset wrong answer styling, but make it larger to match
     feedbackBox.style.borderColor = '';
     feedbackBox.style.background = '';
-    feedbackBox.style.maxWidth = '450px';
-    feedbackBox.style.padding = '40px';
+    feedbackBox.style.maxWidth = '350px';
+    feedbackBox.style.padding = '30px';
     $('feedback-title').style.color = '';
     $('feedback-title').style.fontSize = '';
     $('feedback-title').style.fontFamily = '';
@@ -1266,12 +1266,16 @@ function showFeedback(correct,year,player,desc,cardName,position){
         yearEl.style.display = 'none';
     }
 
-    // Show event image if available
+    // Show event image if available - larger for correct answers
     if(cardName && eventImages[cardName]){
         feedbackImg.src = eventImages[cardName];
         feedbackImg.style.display = 'block';
+        feedbackImg.style.width = '300px';
+        feedbackImg.style.height = '225px';
     } else {
         feedbackImg.style.display = 'none';
+        feedbackImg.style.width = '';
+        feedbackImg.style.height = '';
     }
 
     // Trigger fireworks
@@ -1735,7 +1739,7 @@ if('serviceWorker' in navigator){
         // Clear old caches only (not the current one)
         const cacheNames = await caches.keys();
         for(const name of cacheNames){
-            if(name !== 'chronicle-v8.8'){
+            if(name !== 'chronicle-v8.9'){
                 await caches.delete(name);
                 console.log('Deleted old cache:', name);
             }
@@ -1762,5 +1766,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v8.8</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v8.9</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
