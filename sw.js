@@ -1,5 +1,5 @@
-// Chronicle PWA Service Worker v10.40 - Firebase
-const CACHE_NAME = 'chronicle-v10.40';
+// Chronicle PWA Service Worker v10.41 - Firebase
+const CACHE_NAME = 'chronicle-v10.41';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './icon-192.png',
