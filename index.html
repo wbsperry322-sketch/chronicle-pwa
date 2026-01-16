@@ -270,7 +270,7 @@
         /* Landscape mode - make all feedback even smaller */
         @media(orientation:landscape){
             .feedback-box{max-width:260px;padding:16px}
-            .feedback-image{width:120px;height:90px}
+            .feedback-image{width:160px;height:120px}
             .feedback-title{font-size:0.95rem}
             .feedback-year{font-size:1.2rem}
             .feedback-desc{font-size:0.8rem}
@@ -324,7 +324,7 @@
             .scoreboard-title{font-size:1.6rem;margin-bottom:15px}
             .scoreboard-name{font-size:1rem;max-width:150px}
             .scoreboard-score{font-size:1.1rem;margin-left:10px}
-            .game-card{text-align:center !important}
+            .game-card{text-align:center !important;display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:center !important}
             .card-event,.card-year{text-align:center !important}
         }
         /* Hide any external loading indicators from CDNs */
@@ -1733,7 +1733,7 @@ if('serviceWorker' in navigator){
             }
         }
 
-        navigator.serviceWorker.register('./sw.js?v=8.5')
+        navigator.serviceWorker.register('./sw.js?v=8.6')
             .then(reg=>{
                 console.log('Service Worker registered:', reg.scope);
                 // Check for updates immediately and periodically
@@ -1754,5 +1754,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v8.5</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v8.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
