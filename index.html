@@ -506,6 +506,9 @@ let lobbyPlayers=[];  // Store lobby players
 let disconnectTimers={};  // Track disconnect timeouts for kicking players
 let gameRef=null,playersRef=null,stateRef=null;  // Firebase references
 let unsubscribers=[];  // Firebase listeners to clean up
+// Death images for incorrect answers
+const DEATH_IMAGES = ['death3.jpg','death5.jpg','death6.jpg','death7.jpg','death8.jpg','death9.jpg','death10.jpg','death11.jpg','death12.jpg','death13.jpg','death14.jpg','death15.jpg','death16.jpg','death17.jpg','death18.jpg','death19.jpg','death20.jpg','death21.jpg'];
+let currentDeathIndex = 0;
 
 // Check for pending rejoin on page load
 function checkPendingRejoin(){
@@ -1310,8 +1313,9 @@ function showFeedback(correct,year,player,desc,cardName,position){
         yearEl.textContent=year || '';
         yearEl.style.display = year ? 'block' : 'none';
 
-        // Show death3.jpg image centered - larger for incorrect
-        feedbackImg.src = 'death3.jpg';
+        // Cycle through death images
+        feedbackImg.src = DEATH_IMAGES[currentDeathIndex];
+        currentDeathIndex = (currentDeathIndex + 1) % DEATH_IMAGES.length;
         feedbackImg.style.display = 'block';
         feedbackImg.style.opacity = '1';
         feedbackImg.style.visibility = 'visible';
@@ -1319,6 +1323,7 @@ function showFeedback(correct,year,player,desc,cardName,position){
         feedbackImg.style.width = '219px';
         feedbackImg.style.height = '165px';
         feedbackImg.style.maxWidth = '100%';
+        feedbackImg.style.objectFit = 'cover';
 
         // Regal burgundy styling for wrong answer - smaller box
         feedbackBox.style.borderColor = '#8b0000';

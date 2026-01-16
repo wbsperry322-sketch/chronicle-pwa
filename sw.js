@@ -5,7 +5,25 @@ const ASSETS_TO_CACHE = [
   './icon-192.png',
   './icon-512.png',
   './library.jpg',
-  './background.jpg'
+  './background.jpg',
+  './death3.jpg',
+  './death5.jpg',
+  './death6.jpg',
+  './death7.jpg',
+  './death8.jpg',
+  './death9.jpg',
+  './death10.jpg',
+  './death11.jpg',
+  './death12.jpg',
+  './death13.jpg',
+  './death14.jpg',
+  './death15.jpg',
+  './death16.jpg',
+  './death17.jpg',
+  './death18.jpg',
+  './death19.jpg',
+  './death20.jpg',
+  './death21.jpg'
 ];
 
 // Install event - cache assets (but NOT index.html - always fetch fresh)
