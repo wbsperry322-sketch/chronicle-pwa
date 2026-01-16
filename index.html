@@ -185,12 +185,13 @@
         .card-year{font-family:Georgia,'Times New Roman',serif;font-size:1.2rem;font-weight:700;color:#c4a44d;text-shadow:1px 1px 2px rgba(0,0,0,0.8);text-align:center;width:100%;display:block;margin:0;line-height:1.3;box-sizing:border-box}
         .card-year.hidden{display:none}
         .turn-banner{
-            display:none;
+            display:inline-block;visibility:hidden;
             font-family:'Cinzel',Georgia,serif;font-weight:700;text-align:center;margin:10px auto;
             background:url('banner.png?v=49') no-repeat center;background-size:100% 100%;
-            color:#f4e4c1;padding:40px 70px;font-size:1.1rem;letter-spacing:0.1em;
+            color:#f4e4c1;padding:25px 50px;font-size:1.1rem;letter-spacing:0.1em;
             position:relative;
-            text-shadow:2px 2px 4px rgba(0,0,0,.8)
+            text-shadow:2px 2px 4px rgba(0,0,0,.8);
+            left:50%;transform:translateX(-50%)
         }
         .turn-banner.my-turn{
             color:#fff;text-shadow:1px 1px 2px rgba(0,0,0,.4)
@@ -1030,7 +1031,7 @@ function renderGame(){
     if(timelineContainer)timelineContainer.style.display='block';
 
     // Turn banner - ensure visible
-    $('turn-banner').style.display='block';
+    $('turn-banner').style.visibility='visible';
     if(isDemo){
         $('turn-banner').textContent=cp.name+"'s Turn";
         $('turn-banner').className='turn-banner my-turn';
@@ -1608,7 +1609,7 @@ function playAgain(){
 
 function leaveLobby(){goHome();}
 
-function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';const gc=document.querySelector('.game-center');if(gc)gc.style.display='none';const gb=document.querySelector('.game-bottom');if(gb)gb.style.display='none';const tc=document.querySelector('.timeline-container');if(tc)tc.style.display='none';$('turn-banner').style.display='none';$('timeline').innerHTML='';goHome();}
+function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';const gc=document.querySelector('.game-center');if(gc)gc.style.display='none';const gb=document.querySelector('.game-bottom');if(gb)gb.style.display='none';const tc=document.querySelector('.timeline-container');if(tc)tc.style.display='none';$('turn-banner').style.visibility='hidden';$('timeline').innerHTML='';goHome();}
 function goHome(){
     // Clean up Firebase listeners and data
     cleanupFirebase();
@@ -1989,5 +1990,5 @@ if('serviceWorker' in navigator){
 }
 console.log('Chronicle v10.42 - Fix Banner My Turn');
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.51</div><script>console.log("Chronicle v10.51 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.52</div><script>console.log("Chronicle v10.52 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
