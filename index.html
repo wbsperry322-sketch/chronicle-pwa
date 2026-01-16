@@ -34,11 +34,15 @@
         .debug-grid{display:none}
         @media(max-height:500px) and (orientation:landscape){
             /* Fix white spaces */
-            html{background:#1a0f0a !important;overflow:visible !important}
-            body{background:#1a0f0a !important;margin:0 !important;padding:0 !important;overflow:visible !important}
+            html{background:#1a0f0a !important;overflow-y:auto !important}
+            body{background:#1a0f0a !important;margin:0 !important;padding:0 !important;overflow-y:auto !important}
             body::before{display:none !important}
             .screen{background:transparent !important}
-            .container{padding:0 !important;background:transparent !important;height:100vh !important;display:flex !important;flex-direction:column !important}
+            .container{padding:0 !important;background:transparent !important;min-height:100vh !important;display:flex !important;flex-direction:column !important}
+            /* Hide game elements on non-game screens */
+            #home-screen .turn-banner,#lobby-screen .turn-banner,#gameover-screen .turn-banner{display:none !important}
+            #home-screen .game-center,#lobby-screen .game-center,#gameover-screen .game-center{display:none !important}
+            #home-screen .game-bottom,#lobby-screen .game-bottom,#gameover-screen .game-bottom{display:none !important}
             /* Game background - ensure it shows in landscape */
             #bg-cover.hide{opacity:0 !important}
             #game-bg{position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;z-index:0 !important;pointer-events:none !important}
