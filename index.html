@@ -40,10 +40,13 @@
             .screen{background:transparent !important}
             .container{padding:15px !important;background:transparent !important;min-height:100vh !important;display:flex !important;flex-direction:column !important}
             /* Hide game elements on non-game screens */
-            #home-screen .turn-banner,#lobby-screen .turn-banner,#gameover-screen .turn-banner{display:none !important}
-            #home-screen .turn-banner::before,#home-screen .turn-banner::after,#lobby-screen .turn-banner::before,#lobby-screen .turn-banner::after,#gameover-screen .turn-banner::before,#gameover-screen .turn-banner::after{display:none !important}
-            #home-screen .game-center,#lobby-screen .game-center,#gameover-screen .game-center{display:none !important}
-            #home-screen .game-bottom,#lobby-screen .game-bottom,#gameover-screen .game-bottom{display:none !important}
+            #home-screen .turn-banner,#lobby-screen .turn-banner,#gameover-screen .turn-banner,
+            #home-screen #turn-banner,#lobby-screen #turn-banner,#gameover-screen #turn-banner{display:none !important;visibility:hidden !important}
+            #home-screen .turn-banner::before,#home-screen .turn-banner::after,#lobby-screen .turn-banner::before,#lobby-screen .turn-banner::after,#gameover-screen .turn-banner::before,#gameover-screen .turn-banner::after,
+            #home-screen #turn-banner::before,#home-screen #turn-banner::after,#lobby-screen #turn-banner::before,#lobby-screen #turn-banner::after,#gameover-screen #turn-banner::before,#gameover-screen #turn-banner::after{display:none !important;visibility:hidden !important}
+            #home-screen .game-center,#lobby-screen .game-center,#gameover-screen .game-center{display:none !important;visibility:hidden !important}
+            #home-screen .game-bottom,#lobby-screen .game-bottom,#gameover-screen .game-bottom{display:none !important;visibility:hidden !important}
+            #home-screen .timeline-container,#lobby-screen .timeline-container,#gameover-screen .timeline-container{display:none !important;visibility:hidden !important}
             /* Game background - ensure it shows in landscape */
             #bg-cover.hide{opacity:0 !important}
             #game-bg{position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;z-index:0 !important;pointer-events:none !important}
