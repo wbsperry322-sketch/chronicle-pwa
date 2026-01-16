@@ -262,14 +262,14 @@
         .scoreboard-name{font-family:Georgia,'Times New Roman',serif;font-size:1.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;font-weight:600;text-shadow:1px 1px 1px rgba(255,255,255,0.3)}
         .scoreboard-score{font-family:Georgia,'Times New Roman',serif;font-size:1.2rem;font-weight:700;color:#8b0000;margin-left:20px;flex-shrink:0;text-shadow:1px 1px 2px rgba(255,255,255,0.4)}
         .feedback-box{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border:4px solid var(--gold);border-radius:16px;padding:20px;max-width:300px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-        .feedback-image{width:100%;max-width:200px;height:auto;border-radius:8px;margin-bottom:12px;opacity:0.85;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+        .feedback-image{width:100%;max-width:200px;height:auto;border-radius:8px;margin:0 auto 12px auto;opacity:0.85;box-shadow:0 4px 12px rgba(0,0,0,.3);display:block}
         .feedback-title{font-family:'Cinzel',Georgia,serif;font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.3;text-align:center}
         .feedback-year{font-family:Georgia,'Times New Roman',serif;font-size:1.5rem;font-weight:700;color:var(--gold);margin:8px 0 12px 0;text-align:center}
         .feedback-desc{font-family:Georgia,'Times New Roman',serif;font-size:0.9rem;color:var(--ink);line-height:1.5;margin-bottom:0;text-align:center}
         /* Landscape mode - make all feedback even smaller */
         @media(orientation:landscape){
             .feedback-box{max-width:260px;padding:16px}
-            .feedback-image{max-width:160px}
+            .feedback-image{max-width:120px}
             .feedback-title{font-size:0.95rem}
             .feedback-year{font-size:1.2rem}
             .feedback-desc{font-size:0.8rem}
@@ -310,7 +310,7 @@
         .card-blurb-overlay.show{opacity:1;visibility:visible}
         .card-blurb-box{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border:4px solid var(--gold);border-radius:16px;padding:20px;max-width:300px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5);transform:scale(.9);transition:transform .2s}
         .card-blurb-overlay.show .card-blurb-box{transform:scale(1)}
-        .blurb-image{width:100%;max-width:200px;height:auto;border-radius:8px;margin-bottom:12px;opacity:0.85;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+        .blurb-image{width:100%;max-width:200px;height:auto;border-radius:8px;margin:0 auto 12px auto;opacity:0.85;box-shadow:0 4px 12px rgba(0,0,0,.3);display:block}
         .card-blurb-title{font-family:'Cinzel',Georgia,serif;font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.3;text-align:center}
         .card-blurb-desc{font-family:Georgia,'Times New Roman',serif;font-size:0.9rem;color:var(--ink);line-height:1.5;margin-bottom:12px;text-align:center}
         .card-blurb-hint{font-family:Georgia,'Times New Roman',serif;font-size:.8rem;color:var(--ink-light);font-style:italic;text-align:center}
@@ -1730,7 +1730,7 @@ if('serviceWorker' in navigator){
             }
         }
 
-        navigator.serviceWorker.register('./sw.js?v=8.2')
+        navigator.serviceWorker.register('./sw.js?v=8.3')
             .then(reg=>{
                 console.log('Service Worker registered:', reg.scope);
                 // Check for updates immediately and periodically
@@ -1751,5 +1751,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v8.2</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v8.3</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
