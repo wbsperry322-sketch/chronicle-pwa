@@ -187,23 +187,15 @@
         .turn-banner{
             display:none;
             font-family:'Cinzel',Georgia,serif;font-weight:700;text-align:center;margin:10px auto;
-            background-image:url('banner.jpg');background-size:cover;background-position:center;
-            color:#f4e4c1;padding:14px 40px;font-size:1.1rem;letter-spacing:0.1em;
-            position:relative;box-shadow:0 4px 15px rgba(0,0,0,.4);
-            border-top:3px solid #d4b45d;border-bottom:3px solid #7a6420;
-            text-shadow:2px 2px 4px rgba(0,0,0,.8)
+            background-image:url('banner.png');background-size:contain;background-position:center;background-repeat:no-repeat;
+            color:#f4e4c1;padding:20px 60px;font-size:1.1rem;letter-spacing:0.1em;
+            position:relative;
+            text-shadow:2px 2px 4px rgba(0,0,0,.8);
+            min-width:280px;min-height:50px
         }
-        .turn-banner::before,.turn-banner::after{
-            content:'';position:absolute;bottom:-20px;width:25px;height:25px;
-            background:linear-gradient(135deg,var(--gold) 50%,transparent 50%);
-        }
-        .turn-banner::before{left:0;transform:skewY(-5deg)}
-        .turn-banner::after{right:0;background:linear-gradient(-135deg,var(--gold) 50%,transparent 50%);transform:skewY(5deg)}
         .turn-banner.my-turn{
-            color:#fff;border-top-color:#4a9f44;border-bottom-color:#1a3a1a;text-shadow:1px 1px 2px rgba(0,0,0,.4)
+            color:#fff;text-shadow:1px 1px 2px rgba(0,0,0,.4)
         }
-        .turn-banner.my-turn::before{background:linear-gradient(135deg,var(--success) 50%,transparent 50%)}
-        .turn-banner.my-turn::after{background:linear-gradient(-135deg,var(--success) 50%,transparent 50%)}
         .timeline-container{background-image:url('timelinebackground.jpg');background-size:cover;background-position:center;border-radius:16px;padding:10px;box-shadow:0 5px 26px rgba(0,0,0,.4);overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 20px);box-sizing:border-box}
         .timeline{min-width:max-content}
         .timeline-row{display:flex;align-items:center;position:relative;padding:7px 13px}
@@ -1998,5 +1990,5 @@ if('serviceWorker' in navigator){
 }
 console.log('Chronicle v10.42 - Fix Banner My Turn');
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.42</div><script>console.log("Chronicle v10.42 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.43</div><script>console.log("Chronicle v10.43 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
