@@ -1995,9 +1995,9 @@ if('serviceWorker' in navigator){
 }
 console.log('Chronicle v10.42 - Fix Banner My Turn');
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v11.0</div><script>console.log("Chronicle v11.0 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";
-const CURRENT_VERSION='v11.0';
-setInterval(async()=>{
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v11.1</div><script>console.log("Chronicle v11.1 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";
+const CURRENT_VERSION='v11.1';
+async function checkForUpdate(){
     try{
         const res=await fetch('index.html?nocache='+Date.now(),{cache:'no-store'});
         const text=await res.text();
@@ -2007,6 +2007,8 @@ setInterval(async()=>{
             location.reload();
         }
     }catch(e){}
-},30000);
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkForUpdate();});
+checkForUpdate();
 </script></body>
 </html>
