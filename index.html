@@ -70,7 +70,7 @@
             #game-screen{height:100vh !important;display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:center !important;padding:0 !important}
             #game-screen.active{height:100vh !important;display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:center !important;padding:0 !important}
             /* Turn banner at top */
-            #game-screen .turn-banner{position:fixed !important;top:5px !important;left:50% !important;transform:translateX(-50%) !important;font-size:1.1rem !important;padding:30px 50px !important;margin:0 !important;z-index:100 !important;min-height:80px !important;display:flex !important;align-items:center !important;justify-content:center !important}
+            #game-screen .turn-banner{position:fixed !important;top:5px !important;left:50% !important;transform:translateX(-50%) !important;font-size:1rem !important;padding:12px 35px !important;margin:0 !important;z-index:100 !important}
             #game-screen .turn-banner::before,#game-screen .turn-banner::after{display:none !important}
             /* Timeline spans full width - moved down */
             #game-screen .game-center{position:fixed !important;top:55% !important;left:10px !important;right:10px !important;transform:translateY(-50%) !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 !important;width:auto !important;height:auto !important;margin:0 !important}
@@ -188,11 +188,10 @@
             display:inline-block;visibility:hidden;
             font-family:'Cinzel',Georgia,serif;font-weight:700;text-align:center;margin:10px auto;
             background:url('banner.png?v=58') no-repeat center;background-size:100% 100%;
-            color:#f4e4c1;padding:40px 60px;font-size:1.3rem;letter-spacing:0.1em;
+            color:#f4e4c1;padding:15px 40px;font-size:1.1rem;letter-spacing:0.1em;
             position:relative;
             text-shadow:2px 2px 4px rgba(0,0,0,.8);
-            left:50%;transform:translateX(-50%);
-            min-height:100px;box-sizing:border-box
+            left:50%;transform:translateX(-50%)
         }
         .turn-banner.my-turn{
             color:#fff;text-shadow:1px 1px 2px rgba(0,0,0,.4)
@@ -226,7 +225,7 @@
         #game-bg img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.20}
         #game-bg::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(26,15,10,0.4)}
         #game-screen .container{position:relative;z-index:1}
-        #game-screen .turn-banner{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:10000;pointer-events:none;min-height:100px;padding:40px 60px;font-size:1.3rem}
+        #game-screen .turn-banner{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:10000;pointer-events:none;padding:15px 40px;font-size:1.1rem}
         .tl-card .ev{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;color:#f4e4c1;margin-bottom:7px;line-height:1.2;text-shadow:1px 1px 2px rgba(0,0,0,0.8)}
         .tl-card .yr{font-family:Georgia,'Times New Roman',serif;font-size:1.3rem;font-weight:700;color:#c4a44d;text-shadow:1px 1px 2px rgba(0,0,0,0.8)}
         .drop-zone{width:55px;height:95px;border:3px dashed #5c3d2e;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(92,61,46,.05);margin:0 4px;transition:all .2s;cursor:pointer}
@@ -1991,5 +1990,5 @@ if('serviceWorker' in navigator){
 }
 console.log('Chronicle v10.42 - Fix Banner My Turn');
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.59</div><script>console.log("Chronicle v10.59 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.60</div><script>console.log("Chronicle v10.60 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
