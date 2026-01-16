@@ -893,13 +893,14 @@ function renderGame(){
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
-    
+
     if(!gameState)return;
     const myPlayerIndex=isDemo?gameState.currentPlayer:gameState.players.findIndex(p=>p.id===myId);
     const isMyTurn=gameState.currentPlayer===myPlayerIndex||(isDemo);
     const cp=gameState.players[gameState.currentPlayer];
-    
-    // Turn banner
+
+    // Turn banner - ensure visible
+    $('turn-banner').style.display='block';
     if(isDemo){
         $('turn-banner').textContent=cp.name+"'s Turn";
         $('turn-banner').className='turn-banner my-turn';
@@ -907,9 +908,10 @@ function renderGame(){
         $('turn-banner').textContent=isMyTurn?'Your Turn!':cp.name+"'s Turn";
         $('turn-banner').className='turn-banner'+(isMyTurn?' my-turn':'');
     }
-    
-    // Card
+
+    // Card - ensure visible
     const cardEl=$('current-card');
+    cardEl.style.display='block';
     cardEl.className='game-card thinking'+(isMyTurn?' my-turn drag-enabled':'');
     cardEl.draggable=isMyTurn;
     const cardName=gameState.currentCard?gameState.currentCard.e:'';
@@ -1359,7 +1361,7 @@ function playAgain(){
 
 function leaveLobby(){goHome();}
 
-function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';goHome();}
+function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';$('timeline').innerHTML='';$('current-card').style.display='none';$('turn-banner').style.display='none';goHome();}
 function goHome(){
     // Clean up Firebase listeners and data
     cleanupFirebase();
