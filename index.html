@@ -1,4 +1,4 @@
-<!-- Chronicle v10.17 - Card Text Centering + Cache Fix Jan 16 2026 - CB: 1737066789 -->
+<!-- Chronicle v10.38 - Background4 Jan 16 2026 - CB: 1737069600 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -16,7 +16,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
-    <title>Chronicle — The Timeline Game</title>
+    <title>Chronicle v10.38 — The Timeline Game</title>
     <style>
         :root{--parchment:#f4e4c1;--parchment-dark:#e8d4a8;--ink:#2c1810;--ink-light:#5c4030;--accent:#8b0000;--gold:#c4a44d;--gold-dark:#9a7b3a;--success:#2d5a27;--error:#8b0000}
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;text-decoration:none !important}
@@ -180,7 +180,8 @@
             0%,100%{box-shadow:0 0 15px rgba(45,90,39,.5),0 0 30px rgba(45,90,39,.2);transform:scale(1)}
             50%{box-shadow:0 0 30px rgba(45,90,39,.9),0 0 60px rgba(45,90,39,.5),0 0 90px rgba(45,90,39,.3);transform:scale(1.02)}
         }
-        .card-event{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;color:#f4e4c1;line-height:1.3;margin:3px 0 0 0;text-shadow:1px 1px 2px rgba(0,0,0,0.8);text-align:center;width:100%;display:block;box-sizing:border-box}
+        .card-event{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:600;color:#f4e4c1;line-height:1.5;margin:0;text-shadow:1px 1px 2px rgba(0,0,0,0.8);text-align:center;width:100%;display:block;box-sizing:border-box;padding:10px 0 0 0}
+        .card-event.multiline{padding:0;margin-top:-2px}
         .card-year{font-family:Georgia,'Times New Roman',serif;font-size:1.2rem;font-weight:700;color:#c4a44d;text-shadow:1px 1px 2px rgba(0,0,0,0.8);text-align:center;width:100%;display:block;margin:0;line-height:1.3;box-sizing:border-box}
         .card-year.hidden{display:none}
         .turn-banner{
@@ -350,7 +351,7 @@
 </head>
 <body>
     <div id="bg-cover"><img src="library.jpg" alt=""></div>
-    <div id="game-bg"><img src="background.jpg" alt=""></div>
+    <div id="game-bg"><img src="background4.jpg" alt=""></div>
         
     <div class="container">
         <!-- HOME SCREEN -->
@@ -1054,7 +1055,39 @@ function renderGame(){
     cardEl.className='game-card thinking'+(isMyTurn?' my-turn drag-enabled':'');
     cardEl.draggable=isMyTurn;
     const cardName=gameState.currentCard?gameState.currentCard.e:'';
-    $('card-event').textContent=cardName;
+    const cardEventEl = $('card-event');
+    cardEventEl.textContent=cardName;
+
+    // Detect if text wraps to multiple lines
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            // Use clientHeight which excludes padding
+            const computedStyle = getComputedStyle(cardEventEl);
+            let lineHeight = parseFloat(computedStyle.lineHeight);
+
+            // If lineHeight is NaN (e.g., "normal"), calculate it from fontSize
+            if (isNaN(lineHeight)) {
+                const fontSize = parseFloat(computedStyle.fontSize);
+                lineHeight = fontSize * 1.5; // line-height: 1.5 from CSS
+            }
+
+            // clientHeight gives us the content height without scrollbars
+            // Compare to 1.5 * lineHeight to detect if we have 2 or more lines
+            const height = cardEventEl.clientHeight;
+            const isMultiline = height > (lineHeight * 1.3); // threshold slightly above single line
+
+            console.log('Card text detection:', cardName, 'clientHeight:', height, 'lineHeight:', lineHeight, 'isMultiline:', isMultiline);
+
+            if (isMultiline) {
+                cardEventEl.classList.add('multiline');
+                console.log('Added multiline class to:', cardName);
+            } else {
+                cardEventEl.classList.remove('multiline');
+                console.log('Removed multiline class from:', cardName);
+            }
+        });
+    });
+
     $('card-year').textContent='????';
     $('card-year').className='card-year hidden';
     $('cards-left').textContent=gameState.deck.length+' cards left';
@@ -1319,9 +1352,9 @@ function showFeedback(correct,year,player,desc,cardName,position){
         yearEl.textContent=year ? fY(year) : '';
         yearEl.style.display = year ? 'block' : 'none';
 
-        // Cycle through death images
-        feedbackImg.src = DEATH_IMAGES[currentDeathIndex];
-        currentDeathIndex = (currentDeathIndex + 1) % DEATH_IMAGES.length;
+        // Show random death image
+        const randomIndex = Math.floor(Math.random() * DEATH_IMAGES.length);
+        feedbackImg.src = DEATH_IMAGES[randomIndex];
         feedbackImg.style.display = 'block';
         feedbackImg.style.opacity = '1';
         feedbackImg.style.visibility = 'visible';
@@ -1873,7 +1906,7 @@ if(document.readyState==='loading'){
     init();
 }
 
-// Service Worker DISABLED for v10.17 - Troubleshooting cache issues
+// Service Worker DISABLED for v10.23 - Troubleshooting cache issues
 if(false && 'serviceWorker' in navigator){
     let refreshing=false;
     // Auto-reload when new service worker takes control
@@ -1922,7 +1955,7 @@ if('serviceWorker' in navigator){
         }
     });
 }
-console.log('Chronicle v10.17 - Service Worker disabled for cache troubleshooting');
+console.log('Chronicle v10.23 - Service Worker disabled for cache troubleshooting');
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.17</div><script>console.log("Chronicle v10.17 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.23</div><script>console.log("Chronicle v10.23 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
