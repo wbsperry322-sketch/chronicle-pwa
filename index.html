@@ -1212,11 +1212,11 @@ function showFeedback(correct,year,player,desc,cardName,position){
         return;
     }
 
-    // Correct answer - reset any wrong answer styling
+    // Correct answer - reset wrong answer styling, but make it larger to match
     feedbackBox.style.borderColor = '';
     feedbackBox.style.background = '';
-    feedbackBox.style.maxWidth = '';
-    feedbackBox.style.padding = '';
+    feedbackBox.style.maxWidth = '450px';
+    feedbackBox.style.padding = '40px';
     $('feedback-title').style.color = '';
     $('feedback-title').style.fontSize = '';
     $('feedback-title').style.fontFamily = '';
