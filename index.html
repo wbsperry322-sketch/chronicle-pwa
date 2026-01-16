@@ -269,11 +269,11 @@
         .feedback-desc{font-family:Georgia,'Times New Roman',serif;font-size:0.9rem;color:var(--ink);line-height:1.5;margin-bottom:0;text-align:center}
         /* Landscape mode - make all feedback even smaller */
         @media(orientation:landscape){
-            .feedback-box{max-width:260px;padding:16px}
-            .feedback-image{width:160px;height:120px}
-            .feedback-title{font-size:0.95rem}
-            .feedback-year{font-size:1.2rem}
-            .feedback-desc{font-size:0.8rem}
+            .feedback-box{max-width:240px;padding:12px}
+            .feedback-image{width:200px;height:150px}
+            .feedback-title{font-size:0.9rem}
+            .feedback-year{font-size:1.1rem}
+            .feedback-desc{font-size:0.75rem}
         }
         .game-over-content{text-align:center}
         .winner-text{font-family:Georgia,'Times New Roman',serif;font-size:1.5rem;color:var(--success);margin:15px 0}
@@ -1733,7 +1733,7 @@ if('serviceWorker' in navigator){
             }
         }
 
-        navigator.serviceWorker.register('./sw.js?v=8.6')
+        navigator.serviceWorker.register('./sw.js?v=8.7')
             .then(reg=>{
                 console.log('Service Worker registered:', reg.scope);
                 // Check for updates immediately and periodically
@@ -1754,5 +1754,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v8.6</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v8.7</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
