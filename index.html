@@ -1214,6 +1214,7 @@ function showFeedback(correct,year,player,desc,cardName,position){
         feedbackImg.style.margin = '0 auto 12px auto';
         feedbackImg.style.width = '219px';
         feedbackImg.style.height = '165px';
+        feedbackImg.style.maxWidth = '100%';
 
         // Regal burgundy styling for wrong answer - smaller box
         feedbackBox.style.borderColor = '#8b0000';
@@ -1278,11 +1279,13 @@ function showFeedback(correct,year,player,desc,cardName,position){
         feedbackImg.style.display = 'block';
         feedbackImg.style.width = '219px';
         feedbackImg.style.height = '165px';
+        feedbackImg.style.maxWidth = '100%';
         feedbackImg.style.margin = '0 auto 12px auto';
     } else {
         feedbackImg.style.display = 'none';
         feedbackImg.style.width = '';
         feedbackImg.style.height = '';
+        feedbackImg.style.maxWidth = '';
         feedbackImg.style.margin = '';
     }
 
