@@ -1,4 +1,4 @@
-<!-- Chronicle v9.1 -->
+<!-- Chronicle v9.2 -->
 <!DOCTYPE html>
 <html lang="en" spellcheck="false">
 <head>
@@ -533,10 +533,99 @@ const showScreen=id=>{
     }
 };
 
+// Clean up old games (older than 24 hours)
+async function cleanupOldGames(){
+    try{
+        const gamesSnap = await db.ref('games').once('value');
+        if(!gamesSnap.exists()) return;
+
+        const games = gamesSnap.val();
+        const now = Date.now();
+        const DAY_MS = 24 * 60 * 60 * 1000;
+
+        for(const code in games){
+            const game = games[code];
+            if(game.created && (now - game.created) > DAY_MS){
+                console.log('Cleaning up old game:', code);
+                await db.ref(`games/${code}`).remove();
+            }
+        }
+    }catch(e){
+        console.error('Cleanup error:', e);
+    }
+}
+
+// Monitor host disconnection and trigger election if needed
+function monitorHostConnection(){
+    if(!lobbyCode || !gameRef) return;
+
+    const hostRef = db.ref(`games/${lobbyCode}/host`);
+    hostRef.on('value', async snap=>{
+        const currentHost = snap.val();
+
+        // If host is null and we're not the host, try to become host
+        if(!currentHost && !isHost){
+            const playersSnap = await db.ref(`games/${lobbyCode}/players`).once('value');
+            const players = playersSnap.val();
+            if(!players) return;
+
+            // Find all connected players
+            const connectedPlayers = Object.values(players).filter(p=>p.connected);
+            if(connectedPlayers.length === 0) return;
+
+            // Sort by ID (earliest timestamp becomes host)
+            connectedPlayers.sort((a,b)=>a.id.localeCompare(b.id));
+            const newHost = connectedPlayers[0];
+
+            // If I'm the new host, claim it
+            if(newHost.id === myId){
+                console.log('Becoming new host!');
+                await becomeHost();
+            }
+        }
+    });
+}
+
+// Promote current player to host
+async function becomeHost(){
+    try{
+        isHost = true;
+
+        // Update game host reference
+        await db.ref(`games/${lobbyCode}/host`).set(myId);
+        await db.ref(`games/${lobbyCode}/players/${myId}/isHost`).set(true);
+
+        // Set up disconnect handling for new host
+        db.ref(`games/${lobbyCode}/players/${myId}/connected`).onDisconnect().set(false);
+        db.ref(`games/${lobbyCode}/host`).onDisconnect().set(null);
+
+        // Set up action listener (host responsibility)
+        const actionsUnsub = db.ref(`games/${lobbyCode}/actions`).orderByChild('timestamp').startAt(Date.now()).on('child_added', snap=>{
+            const action = snap.val();
+            if(action && action.from !== myId){
+                handleAction(action);
+            }
+            // Clean up old actions
+            snap.ref.remove();
+        });
+        unsubscribers.push(()=>db.ref(`games/${lobbyCode}/actions`).off('child_added', actionsUnsub));
+
+        // Show notification to user
+        if($('waiting-msg')) $('waiting-msg').textContent='You are now the host!';
+        console.log('Host migration complete');
+
+    }catch(e){
+        console.error('Error becoming host:', e);
+    }
+}
+
 function init(){
+    // Clean up old games on init
+    cleanupOldGames();
+
     // Check for pending rejoin from connection loss
     if(checkPendingRejoin()) return;
-    
+
     const urlParams=new URLSearchParams(window.location.search);
     const joinCode=urlParams.get('join');
     if(joinCode){
@@ -713,8 +802,9 @@ async function createGame(){
         });
         unsubscribers.push(()=>db.ref(`games/${lobbyCode}/actions`).off('child_added', actionsUnsub));
 
-        // Set up disconnect handling
-        db.ref(`games/${lobbyCode}`).onDisconnect().remove();
+        // Set up disconnect handling - mark as disconnected instead of removing
+        db.ref(`games/${lobbyCode}/players/${myId}/connected`).onDisconnect().set(false);
+        db.ref(`games/${lobbyCode}/host`).onDisconnect().set(null);
 
         $('home-status').textContent='Game created!';
         showScreen('lobby-screen');
@@ -760,8 +850,8 @@ async function joinGame(){
         const myPlayer = {id:myId,name:myName,color:COLORS[existingPlayers % COLORS.length],score:0,connected:true,isHost:false,mistakes:[]};
         await db.ref(`games/${code}/players/${myId}`).set(myPlayer);
 
-        // Set up disconnect handling - remove self
-        db.ref(`games/${code}/players/${myId}`).onDisconnect().remove();
+        // Set up disconnect handling - mark as disconnected instead of removing
+        db.ref(`games/${code}/players/${myId}/connected`).onDisconnect().set(false);
 
         // Listen for player changes
         const playersUnsub = db.ref(`games/${code}/players`).on('value', snap=>{
@@ -770,8 +860,9 @@ async function joinGame(){
                 lobbyPlayers = Object.values(data);
                 updateLobbyUI(lobbyPlayers);
             }else{
-                // Game was deleted (host left)
-                if(!leavingGame) goHome();
+                // Game data gone - only go home if we're intentionally leaving
+                // Otherwise host migration will handle it
+                if(leavingGame) goHome();
             }
         });
         unsubscribers.push(()=>db.ref(`games/${code}/players`).off('value', playersUnsub));
@@ -818,6 +909,9 @@ async function joinGame(){
         });
         unsubscribers.push(()=>db.ref(`games/${code}/status`).off('value', statusUnsub));
 
+        // Start monitoring host connection for migration
+        monitorHostConnection();
+
         $('home-status').textContent='Joined!';
         showScreen('lobby-screen');
         $('lobby-code-display').textContent=code;
@@ -848,14 +942,17 @@ function updateLobbyUI(players){
     list.innerHTML='';
     players.forEach(p=>{
         const div=document.createElement('div');
-        div.className='player-item'+(p.id===myId?' you':'');
-        div.innerHTML=`<div class="player-dot" style="background:${p.color}"></div>
-            <span class="player-name">${p.name}${p.id===myId?' (You)':''}</span>
+        div.className='player-item'+(p.id===myId?' you':'')+(p.connected===false?' disconnected':'');
+        const disconnectedText = p.connected===false?' (disconnected)':'';
+        div.innerHTML=`<div class="player-dot" style="background:${p.color}${p.connected===false?';opacity:0.5':''}"></div>
+            <span class="player-name">${p.name}${p.id===myId?' (You)':''}${disconnectedText}</span>
             ${p.isHost?'<span class="host-badge">Host</span>':''}`;
         list.appendChild(div);
     });
-    $('waiting-msg').style.display=players.length<2?'block':'none';
-    $('start-game-btn').style.display=(isHost&&players.length>=2)?'block':'none';
+    // Count only connected players
+    const connectedCount = players.filter(p=>p.connected!==false).length;
+    $('waiting-msg').style.display=connectedCount<2?'block':'none';
+    $('start-game-btn').style.display=(isHost&&connectedCount>=2)?'block':'none';
 }
 
 function startGame(){
@@ -1750,7 +1847,7 @@ if('serviceWorker' in navigator){
         // Clear old caches only (not the current one)
         const cacheNames = await caches.keys();
         for(const name of cacheNames){
-            if(name !== 'chronicle-v9.1'){
+            if(name !== 'chronicle-v9.2'){
                 await caches.delete(name);
                 console.log('Deleted old cache:', name);
             }
@@ -1777,5 +1874,5 @@ if('serviceWorker' in navigator){
     });
 }
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v9.1</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v9.2</div><script>if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
