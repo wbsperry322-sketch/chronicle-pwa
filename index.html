@@ -900,8 +900,12 @@ function renderGame(){
     const cp=gameState.players[gameState.currentPlayer];
 
     // Ensure game containers are visible
-    document.querySelector('.game-center').style.display='flex';
-    document.querySelector('.game-bottom').style.display='flex';
+    const gameCenter=document.querySelector('.game-center');
+    if(gameCenter)gameCenter.style.display='flex';
+    const gameBottom=document.querySelector('.game-bottom');
+    if(gameBottom)gameBottom.style.display='flex';
+    const timelineContainer=document.querySelector('.timeline-container');
+    if(timelineContainer)timelineContainer.style.display='block';
 
     // Turn banner - ensure visible
     $('turn-banner').style.display='block';
@@ -1365,7 +1369,7 @@ function playAgain(){
 
 function leaveLobby(){goHome();}
 
-function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';document.querySelector('.game-center').style.display='none';document.querySelector('.game-bottom').style.display='none';$('turn-banner').style.display='none';goHome();}
+function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';const gc=document.querySelector('.game-center');if(gc)gc.style.display='none';const gb=document.querySelector('.game-bottom');if(gb)gb.style.display='none';const tc=document.querySelector('.timeline-container');if(tc)tc.style.display='none';$('turn-banner').style.display='none';$('timeline').innerHTML='';goHome();}
 function goHome(){
     // Clean up Firebase listeners and data
     cleanupFirebase();
