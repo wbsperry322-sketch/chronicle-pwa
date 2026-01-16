@@ -1336,6 +1336,9 @@ function showFeedback(correct,year,player,desc,cardName,position){
         $('feedback-title').style.fontFamily = "'Cinzel', Georgia, serif";
         $('feedback-title').style.letterSpacing = '0.1em';
         $('feedback-title').style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+        $('feedback-title').style.textAlign = 'center';
+        $('feedback-desc').style.textAlign = 'center';
+        yearEl.style.textAlign = 'center';
 
         $('feedback-overlay').classList.add('show');
 
@@ -1355,6 +1358,9 @@ function showFeedback(correct,year,player,desc,cardName,position){
             $('feedback-title').style.fontFamily = '';
             $('feedback-title').style.letterSpacing = '';
             $('feedback-title').style.textShadow = '';
+            $('feedback-title').style.textAlign = '';
+            $('feedback-desc').style.textAlign = '';
+            yearEl.style.textAlign = '';
         }, 3400);
 
         return;
