@@ -70,7 +70,7 @@
             #game-screen{height:100vh !important;display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:center !important;padding:0 !important}
             #game-screen.active{height:100vh !important;display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:center !important;padding:0 !important}
             /* Turn banner at top */
-            #game-screen .turn-banner{position:fixed !important;top:5px !important;left:50% !important;transform:translateX(-50%) !important;font-size:1rem !important;padding:20px 40px !important;margin:0 !important;z-index:100 !important}
+            #game-screen .turn-banner{position:fixed !important;top:5px !important;left:50% !important;transform:translateX(-50%) !important;font-size:1.1rem !important;padding:30px 50px !important;margin:0 !important;z-index:100 !important;min-height:80px !important;display:flex !important;align-items:center !important;justify-content:center !important}
             #game-screen .turn-banner::before,#game-screen .turn-banner::after{display:none !important}
             /* Timeline spans full width - moved down */
             #game-screen .game-center{position:fixed !important;top:55% !important;left:10px !important;right:10px !important;transform:translateY(-50%) !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 !important;width:auto !important;height:auto !important;margin:0 !important}
@@ -1990,5 +1990,5 @@ if('serviceWorker' in navigator){
 }
 console.log('Chronicle v10.42 - Fix Banner My Turn');
     </script>
-<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.55</div><script>console.log("Chronicle v10.55 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
+<div id="version-tag" style="position:fixed;bottom:10px;left:10px;font-size:12px;color:#4a90d9;z-index:99999;display:none;">v10.56</div><script>console.log("Chronicle v10.56 loaded - " + new Date().toISOString());if(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:"||new URLSearchParams(location.search).has("test"))document.getElementById("version-tag").style.display="block";</script></body>
 </html>
