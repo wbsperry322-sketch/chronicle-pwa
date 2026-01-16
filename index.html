@@ -1300,8 +1300,9 @@ function showFeedback(correct,year,player,desc,cardName,position){
     if(!correct){
         // Show WRONG message with regal styling
         $('feedback-title').textContent='INCORRECT!';
-        $('feedback-desc').textContent='';
-        yearEl.style.display = 'none';
+        $('feedback-desc').textContent=cardName || '';
+        yearEl.textContent=year || '';
+        yearEl.style.display = year ? 'block' : 'none';
 
         // Show death3.jpg image centered - larger for incorrect
         feedbackImg.src = 'death3.jpg';
