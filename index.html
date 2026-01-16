@@ -270,18 +270,18 @@
         .scoreboard-item:last-child{border-bottom:none}
         .scoreboard-name{font-family:Georgia,'Times New Roman',serif;font-size:1.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;font-weight:600;text-shadow:1px 1px 1px rgba(255,255,255,0.3)}
         .scoreboard-score{font-family:Georgia,'Times New Roman',serif;font-size:1.2rem;font-weight:700;color:#8b0000;margin-left:20px;flex-shrink:0;text-shadow:1px 1px 2px rgba(255,255,255,0.4)}
-        .feedback-box{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border:4px solid var(--gold);border-radius:16px;padding:18px;max-width:270px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-        .feedback-image{width:180px;height:135px;object-fit:cover;border-radius:8px;margin:0 auto 12px auto;opacity:0.85;box-shadow:0 4px 12px rgba(0,0,0,.3);display:block}
-        .feedback-title{font-family:'Cinzel',Georgia,serif;font-size:0.99rem;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.3;text-align:center}
-        .feedback-year{font-family:Georgia,'Times New Roman',serif;font-size:1.35rem;font-weight:700;color:var(--gold);margin:8px 0 12px 0;text-align:center}
-        .feedback-desc{font-family:Georgia,'Times New Roman',serif;font-size:0.81rem;color:var(--ink);line-height:1.5;margin-bottom:0;text-align:center}
+        .feedback-box{background:linear-gradient(145deg,var(--parchment),var(--parchment-dark));border:4px solid var(--gold);border-radius:16px;padding:16px;max-width:243px;width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+        .feedback-image{width:162px;height:122px;object-fit:cover;border-radius:8px;margin:0 auto 12px auto;opacity:0.85;box-shadow:0 4px 12px rgba(0,0,0,.3);display:block}
+        .feedback-title{font-family:'Cinzel',Georgia,serif;font-size:0.89rem;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.3;text-align:center}
+        .feedback-year{font-family:Georgia,'Times New Roman',serif;font-size:1.22rem;font-weight:700;color:var(--gold);margin:8px 0 12px 0;text-align:center}
+        .feedback-desc{font-family:Georgia,'Times New Roman',serif;font-size:0.73rem;color:var(--ink);line-height:1.5;margin-bottom:0;text-align:center}
         /* Landscape mode - make all feedback 10% smaller */
         @media(orientation:landscape){
-            .feedback-box{max-width:227px;padding:12px}
-            .feedback-image{width:194px;height:146px;margin:0 auto 12px auto}
-            .feedback-title{font-size:0.81rem}
-            .feedback-year{font-size:0.99rem}
-            .feedback-desc{font-size:0.68rem}
+            .feedback-box{max-width:204px;padding:11px}
+            .feedback-image{width:175px;height:131px;margin:0 auto 12px auto}
+            .feedback-title{font-size:0.73rem}
+            .feedback-year{font-size:0.89rem}
+            .feedback-desc{font-size:0.61rem}
         }
         .game-over-content{text-align:center}
         .winner-text{font-family:Georgia,'Times New Roman',serif;font-size:1.5rem;color:var(--success);margin:15px 0}
@@ -1211,18 +1211,18 @@ function showFeedback(correct,year,player,desc,cardName,position){
         feedbackImg.style.display = 'block';
         feedbackImg.style.opacity = '1';
         feedbackImg.style.visibility = 'visible';
-        feedbackImg.style.margin = '0 auto';
-        feedbackImg.style.width = '270px';
-        feedbackImg.style.height = '203px';
+        feedbackImg.style.margin = '0 auto 12px auto';
+        feedbackImg.style.width = '243px';
+        feedbackImg.style.height = '183px';
 
         // Regal burgundy styling for wrong answer - smaller box
         feedbackBox.style.borderColor = '#8b0000';
         feedbackBox.style.background = 'linear-gradient(145deg, #2a1810, #3d221a)';
-        feedbackBox.style.maxWidth = '315px';
-        feedbackBox.style.padding = '27px';
+        feedbackBox.style.maxWidth = '284px';
+        feedbackBox.style.padding = '24px';
         feedbackBox.style.margin = '0 auto';
         $('feedback-title').style.color = '#c4a44d';
-        $('feedback-title').style.fontSize = '2.25rem';
+        $('feedback-title').style.fontSize = '2.03rem';
         $('feedback-title').style.fontFamily = "'Cinzel', Georgia, serif";
         $('feedback-title').style.letterSpacing = '0.1em';
         $('feedback-title').style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
@@ -1253,8 +1253,8 @@ function showFeedback(correct,year,player,desc,cardName,position){
     // Correct answer - reset wrong answer styling, but make it larger to match
     feedbackBox.style.borderColor = '';
     feedbackBox.style.background = '';
-    feedbackBox.style.maxWidth = '315px';
-    feedbackBox.style.padding = '27px';
+    feedbackBox.style.maxWidth = '284px';
+    feedbackBox.style.padding = '24px';
     $('feedback-title').style.color = '';
     $('feedback-title').style.fontSize = '';
     $('feedback-title').style.fontFamily = '';
@@ -1272,16 +1272,18 @@ function showFeedback(correct,year,player,desc,cardName,position){
         yearEl.style.display = 'none';
     }
 
-    // Show event image if available - larger for correct answers
+    // Show event image if available - larger for correct answers with centered margin
     if(cardName && eventImages[cardName]){
         feedbackImg.src = eventImages[cardName];
         feedbackImg.style.display = 'block';
-        feedbackImg.style.width = '270px';
-        feedbackImg.style.height = '203px';
+        feedbackImg.style.width = '243px';
+        feedbackImg.style.height = '183px';
+        feedbackImg.style.margin = '0 auto 12px auto';
     } else {
         feedbackImg.style.display = 'none';
         feedbackImg.style.width = '';
         feedbackImg.style.height = '';
+        feedbackImg.style.margin = '';
     }
 
     // Trigger fireworks
