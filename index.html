@@ -1197,8 +1197,8 @@ function processMove(playerId,position){
 
     // Timing depends on correct/wrong answer
     // Correct: wait 3s + feedback duration (6.5s) = 9.5s total
-    // Wrong: wait only for animation (4s), no feedback popup shown
-    const afterFeedback = correct ? (3000 + 6500) : 4000;
+    // Wrong: wait 3s + feedback duration (3.4s) = 6.4s total
+    const afterFeedback = correct ? (3000 + 6500) : (3000 + 3400);
 
     // Draw next card only after feedback ends (when turn actually changes)
     setTimeout(()=>{
