@@ -899,6 +899,10 @@ function renderGame(){
     const isMyTurn=gameState.currentPlayer===myPlayerIndex||(isDemo);
     const cp=gameState.players[gameState.currentPlayer];
 
+    // Ensure game containers are visible
+    document.querySelector('.game-center').style.display='flex';
+    document.querySelector('.game-bottom').style.display='flex';
+
     // Turn banner - ensure visible
     $('turn-banner').style.display='block';
     if(isDemo){
@@ -1361,7 +1365,7 @@ function playAgain(){
 
 function leaveLobby(){goHome();}
 
-function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';$('timeline').innerHTML='';$('current-card').style.display='none';$('turn-banner').style.display='none';goHome();}
+function leaveGame(){leavingGame=true;document.getElementById('leave-game-btn').style.display='none';document.querySelector('.game-center').style.display='none';document.querySelector('.game-bottom').style.display='none';$('turn-banner').style.display='none';goHome();}
 function goHome(){
     // Clean up Firebase listeners and data
     cleanupFirebase();
