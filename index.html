@@ -1206,18 +1206,21 @@ function showFeedback(correct,year,player,desc,cardName,position){
         $('feedback-desc').textContent='';
         yearEl.style.display = 'none';
 
-        // Show death3.jpg image centered
+        // Show death3.jpg image centered - larger for incorrect
         feedbackImg.src = 'death3.jpg';
         feedbackImg.style.display = 'block';
         feedbackImg.style.opacity = '1';
         feedbackImg.style.visibility = 'visible';
         feedbackImg.style.margin = '0 auto';
+        feedbackImg.style.width = '300px';
+        feedbackImg.style.height = '225px';
 
-        // Regal burgundy styling for wrong answer
+        // Regal burgundy styling for wrong answer - smaller box
         feedbackBox.style.borderColor = '#8b0000';
         feedbackBox.style.background = 'linear-gradient(145deg, #2a1810, #3d221a)';
-        feedbackBox.style.maxWidth = '450px';
-        feedbackBox.style.padding = '40px';
+        feedbackBox.style.maxWidth = '350px';
+        feedbackBox.style.padding = '30px';
+        feedbackBox.style.margin = '0 auto';
         $('feedback-title').style.color = '#c4a44d';
         $('feedback-title').style.fontSize = '2.5rem';
         $('feedback-title').style.fontFamily = "'Cinzel', Georgia, serif";
@@ -1234,6 +1237,9 @@ function showFeedback(correct,year,player,desc,cardName,position){
             feedbackBox.style.background = '';
             feedbackBox.style.maxWidth = '';
             feedbackBox.style.padding = '';
+            feedbackBox.style.margin = '';
+            feedbackImg.style.width = '';
+            feedbackImg.style.height = '';
             $('feedback-title').style.color = '';
             $('feedback-title').style.fontSize = '';
             $('feedback-title').style.fontFamily = '';
